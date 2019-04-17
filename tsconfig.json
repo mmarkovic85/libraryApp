@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2015"
+    ]
+  },
+  "files": [
+    "app.ts",
+    "controler/router/Router.ts",
+    "controler/server/Server.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
