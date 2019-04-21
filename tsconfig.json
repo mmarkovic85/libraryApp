@@ -2,12 +2,17 @@
   "compilerOptions": {
     "lib": [
       "es2015"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
     ]
   },
   "files": [
     "app.ts",
-    "controler/router/Router.ts",
-    "controler/server/Server.ts"
+    "public/logic/bookSearch.ts",
+    "src/controller/Controller.ts",
+    "src/database/Db.ts",
+    "src/server/Server.ts"
   ],
   "exclude": [
     "node_modules"

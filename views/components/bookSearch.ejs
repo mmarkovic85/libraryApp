@@ -1,0 +1,43 @@
+<section class="bookSearch">
+  <form>
+    <fieldset>
+
+      <legend>Search library book collection:</legend>
+
+      <section class="search">
+        <section class="labels">
+          <label for="idAuthor">Author:</label>
+          <label for="idTitle">Title:</label>
+          <label for="idYear">Year:</label>
+          <label for="idLanguage">Language:</label>
+        </section>
+
+        <section class="inputs">
+          <input type="text" name="author" id="idAuthor">
+          <input type="text" name="title" id="idTitle">
+          <input type="text" name="year" id="idYear">
+          <input type="text" name="language" id="idLanguage">
+        </section>
+      </section>
+
+      <button type="submit">Search!</button>
+
+    </fieldset>
+  </form>
+
+  <table class="bookSearchResult">
+    <thead>
+      <tr>
+        <th>Author</th>
+        <th>Title</th>
+        <th>Year</th>
+        <th>Language</th>
+        <th>Available</th>
+      </tr>
+    </thead>
+    <tbody class="booksContainer">
+    </tbody>
+  </table>
+
+  <script src="../logic/bookSearch.js" type="module"></script>
+</section>

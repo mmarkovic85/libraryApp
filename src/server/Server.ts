@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as expressLayout from "express-ejs-layouts";
 import Router from "../router/Router";
 
 export default class Server {
@@ -6,9 +7,11 @@ export default class Server {
   static goLive(serverPort: number): void {
     const server: express.Application = express();
 
-    // view engine => ejs
+    // view engine => EJS
     server.set('view engine', 'ejs');
-
+    // EJS layout
+    server.use(expressLayout);
+    server.set('layout', './components/layout');
     server.use(express.static('./public'));
 
     // routes
@@ -21,6 +24,7 @@ export default class Server {
         process.env.PORT || serverPort
         }`)
     );
-  }
 
+    // test
+  }
 }
