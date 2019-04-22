@@ -1,13 +1,13 @@
-/// <reference path="./customTypes.ts"/>
+/// <reference path="../../src/customTypes/customTypes.ts"/>
 
 $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
   event.preventDefault();
 
-  const bookQuery: object = {
-    author: $('#idAuthor').val(),
-    title: $('#idTitle').val(),
-    year: $('#idYear').val(),
-    language: $('#idLanguage').val()
+  const bookQuery: customTypes.Book = {
+    author: $('#idAuthor').val().toString(),
+    title: $('#idTitle').val().toString(),
+    year: $('#idYear').val().toString(),
+    language: $('#idLanguage').val().toString()
   };
 
   $

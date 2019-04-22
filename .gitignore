@@ -1,3 +1,3 @@
 *.js
-src/database/dbconfig.json
+appconfig.json
 node_modules/

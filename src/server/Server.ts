@@ -12,6 +12,7 @@ export default class Server {
     // EJS layout
     server.use(expressLayout);
     server.set('layout', './components/layout');
+    // static files
     server.use(express.static('./public'));
 
     // routes
