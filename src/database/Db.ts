@@ -61,4 +61,28 @@ export default class Db {
 
     return JSON.stringify(dbRes);
   }
+
+  static async findOne(doc: object, collName: string): Promise<string> {
+    const { uri, title } = JSON.parse(Db.config()).db;
+    const client: MDB.MongoClient = new MDB.MongoClient(
+      uri,
+      { useNewUrlParser: true }
+    );
+    let dbRes: string;
+
+    try {
+      await client.connect();
+
+      dbRes = await client
+        .db(title)
+        .collection(collName)
+        .findOne(doc)
+    } catch (err) {
+      if (err) console.log(err);
+    }
+
+    client.close();
+
+    return JSON.stringify(dbRes);
+  }
 }

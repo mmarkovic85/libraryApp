@@ -1,22 +1,23 @@
 <section class="userLogin">
-  <form>
+  <form action="/login" method="POST">
     <fieldset>
       <legend>User login:</legend>
 
       <section class="input">
         <section class="labels">
-          <label for="idUserName">Username:</label>
+          <label for="idUsername">Username:</label>
           <label for="idPassword">Password:</label>
         </section>
 
         <section class="inputs">
-          <input type="text" name="author" id="idUserName">
-          <input type="text" name="title" id="idPassword">
+          <input type="text" name="username" id="idUsername">
+          <input type="text" name="password" id="idPassword">
         </section>
       </section>
 
       <button type="submit">Login</button>
-
     </fieldset>
   </form>
+
+  <script src="../logic/userLogin.js" type="module"></script>
 </section>

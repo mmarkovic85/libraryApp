@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "lib": [
-      "es2015"
+      "es2015",
+      "dom"
     ],
     "typeRoots": [
       "./node_modules/@types"
@@ -12,6 +13,7 @@
     "public/logic/bookSearch.ts",
     "src/controller/Controller.ts",
     "src/database/Db.ts",
+    "src/router/Router.ts",
     "src/server/Server.ts"
   ],
   "exclude": [

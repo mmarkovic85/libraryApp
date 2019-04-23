@@ -2,10 +2,40 @@ import * as express from "express";
 import * as fs from "fs";
 import * as path from "path";
 import * as bcrypt from "bcrypt";
+import * as passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local"
 import Db from "../database/Db";
 /// <reference path="../../src/customTypes/customTypes.ts"/>
 
 export default class Controller {
+  // Passport.js strategy config
+  static passportCongif(): void {
+    passport.use(
+      new LocalStrategy(
+        (username: string, password: string, done: Function): void => {
+          // Match user
+          Db
+            .findOne({ username: username }, "libraryEmployees")
+            .then((dbRes) => {
+              const user: customTypes.Employee = JSON.parse(dbRes);
+              if (!user) {
+                return done(null, false);
+              }
+              // Match password
+              bcrypt
+                .compare(password, user.password)
+                .then((isMatch: boolean) => {
+                  return isMatch ? done(null, user) : done(null, false);
+                })
+                .catch(err => console.log(err));
+
+            })
+            .catch(err => console.log(err));
+        }
+      )
+    );
+  }
+  // Default admin check
   static adminInit() {
     Db
       .find({ username: "admin" }, "libraryEmployees")
@@ -13,7 +43,7 @@ export default class Controller {
         JSON.parse(dbRes).length || Controller.defaultAdmin();
       });
   }
-
+  // Default admin config
   private static defaultAdmin() {
     let { username, password } = JSON.parse(
       fs.readFileSync(
@@ -29,7 +59,6 @@ export default class Controller {
         if (err) throw err;
 
         const admin: customTypes.Employee = {
-          _id: "-1",
           username,
           password: hash
         }
@@ -38,10 +67,11 @@ export default class Controller {
       })
     });
   }
-
+  // GET routes
   static GET(app: express.Application): void {
     Controller.homepage(app);
     Controller.login(app);
+    Controller.dashboard(app);
   }
 
   private static homepage(app: express.Application) {
@@ -56,14 +86,20 @@ export default class Controller {
     });
   }
 
+  private static dashboard(app: express.Application) {
+    app.get("/dashboard", (req: express.Request, res: express.Response): void => {
+      res.render("dashboard");
+    });
+  }
+  // POST routes
   static POST(app: express.Application): void {
     Controller.booksQuery(app);
+    Controller.userLogin(app);
   }
 
   private static booksQuery(app: express.Application) {
     app.post(
       "/books",
-      express.urlencoded({ extended: false }),
       (req: express.Request, res: express.Response): void => {
         const { author, title, year, language } = req.body;
         const query: object[] = [];
@@ -88,5 +124,19 @@ export default class Controller {
           .find(dbQuery, "libraryBooks")
           .then((dbRes: string) => res.json(dbRes));
       });
+  }
+
+  private static userLogin(app: express.Application): void {
+    app.post(
+      "/login",
+      passport.authenticate(
+        'local',
+        {
+          successRedirect: '/dashboard',
+          failureRedirect: '/login',
+          session: false
+        }
+      )
+    );
   }
 }
