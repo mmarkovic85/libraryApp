@@ -13,6 +13,7 @@
     "public/logic/bookSearch.ts",
     "src/controller/Controller.ts",
     "src/database/Db.ts",
+    "src/guard/Guard.ts",
     "src/router/Router.ts",
     "src/server/Server.ts"
   ],

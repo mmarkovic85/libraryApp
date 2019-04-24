@@ -1,19 +1,10 @@
 import * as MDB from "mongodb";
-import * as fs from "fs";
-import * as path from "path";
 import * as assert from "assert";
+import Controller from "../controller/Controller";
 
 export default class Db {
-  // read config json
-  private static config(): string {
-    return fs.readFileSync(
-      path.join(__dirname, "../../", "appconfig.json"),
-      "utf8"
-    );
-  }
-
   static async insertOne(doc: object, collName: string): Promise<boolean> {
-    const { uri, title } = JSON.parse(Db.config()).db;
+    const { uri, dbName } = Controller.appConfig("db");
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }
@@ -23,7 +14,7 @@ export default class Db {
       await client.connect();
 
       const dbRes: MDB.InsertOneWriteOpResult = await client
-        .db(title)
+        .db(dbName)
         .collection(collName)
         .insertOne(doc);
 
@@ -38,7 +29,7 @@ export default class Db {
   }
 
   static async find(doc: object, collName: string): Promise<string> {
-    const { uri, title } = JSON.parse(Db.config()).db;
+    const { uri, dbName } = Controller.appConfig("db");;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }
@@ -49,7 +40,7 @@ export default class Db {
       await client.connect();
 
       dbRes = await client
-        .db(title)
+        .db(dbName)
         .collection(collName)
         .find(doc)
         .toArray();
@@ -62,21 +53,25 @@ export default class Db {
     return JSON.stringify(dbRes);
   }
 
-  static async findOne(doc: object, collName: string): Promise<string> {
-    const { uri, title } = JSON.parse(Db.config()).db;
+  static async findOne(doc: any, collName: string): Promise<string> {
+    const { uri, dbName } = Controller.appConfig("db");;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }
     );
-    let dbRes: string;
+    let dbRes: object;
+    // Parse MongoDB _id
+    const query: object = doc._id ?
+      { _id: new MDB.ObjectID(doc._id) } :
+      doc;
 
     try {
       await client.connect();
 
       dbRes = await client
-        .db(title)
+        .db(dbName)
         .collection(collName)
-        .findOne(doc)
+        .findOne(query)
     } catch (err) {
       if (err) console.log(err);
     }

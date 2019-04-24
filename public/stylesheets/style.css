@@ -7,9 +7,16 @@ input {
   height: 1em;
 }
 
-th, td{
+.bookSearchResult th, td {
   border: 1px solid #000;
   padding: 5px;
+}
+
+.bookSearchResult caption {
+  font-size: 2em;
+  border-color: #000;
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
 }
 
 .bookSearch, .userLogin {
@@ -40,7 +47,7 @@ th, td{
   align-items: flex-end;
 }
 
-table.bookSearchResult{
+table.bookSearchResult {
   display: none;
   width: 100%;
   border-collapse: collapse;

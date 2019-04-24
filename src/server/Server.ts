@@ -2,55 +2,51 @@ import * as express from "express";
 import * as expressLayout from "express-ejs-layouts";
 import * as session from "express-session";
 import * as passport from "passport";
-import Router from "../router/Router";
+import Controller from "../controller/Controller";
 
 export default class Server {
 
-  static goLive(serverPort: number): void {
-    const server: express.Application = Server.configure();
+  static goLive(port: number): void {
+    const server: express.Application = express();
 
-    // server port config
-    server.listen(
-      process.env.PORT || serverPort,
-      (): void => console.log(`Server is live on port ${
-        process.env.PORT || serverPort
-        }`)
-    );
-
-    // test
+    Server.configure(server);
+    Server.start(server, port);
   }
 
-  private static configure(): express.Application {
-    const app: express.Application = express();
-
+  private static configure(server: express.Application): void {
     // view engine => EJS
-    app.set('view engine', 'ejs');
+    server.set('view engine', 'ejs');
     // EJS layout
-    app.use(expressLayout);
-    app.set('layout', './components/layout');
+    server.use(expressLayout);
+    server.set('layout', './components/layout');
     // EJS static files
-    app.use(express.static('./public'));
-
+    server.use(express.static('./public'));
     // Body-parser
-    app.use(express.urlencoded({ extended: false }));
-    app.use(express.json());
-
+    server.use(express.urlencoded({ extended: false }));
+    server.use(express.json());
     // Express session
-    app.use(
+    server.use(
       session({
-        secret: 'secret',
+        secret: 'libraryApp',
         resave: true,
         saveUninitialized: true
       })
     );
-
     // Passport middleware
-    app.use(passport.initialize());
-    app.use(passport.session());
+    server.use(passport.initialize());
+    // Passport session
+    server.use(passport.session());
+    // Routes
+    Controller.map(server);
+  }
 
-    // routes
-    Router.map(app);
+  private static start(server: express.Application, port: number) {
+    // Server port config
+    const serverPort = process.env.PORT || port
 
-    return app;
+    server.listen(
+      serverPort,
+      (): void => console.log(`Server is live on port ${serverPort}`)
+    );
   }
 }

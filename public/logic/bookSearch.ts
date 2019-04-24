@@ -1,4 +1,4 @@
-/// <reference path="../../src/customTypes/customTypes.ts"/>
+/// <reference path="./customTypes.ts"/>
 
 $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
   event.preventDefault();
@@ -17,9 +17,10 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
       data: bookQuery
     })
     .done((serverRes: string) => {
-      $(".bookSearchResult").show();
+      const books: customTypes.Book[] = JSON.parse(serverRes);
+      $(".numOfBooks").text(books.length);
       $(".booksContainer").html("");
-      JSON.parse(serverRes).forEach((document: customTypes.Book): void => {
+      books.forEach((document: customTypes.Book): void => {
         $(".booksContainer").append(
           $(`<tr></tr>`).html(`
           <td>${document.author}</td>
@@ -29,6 +30,6 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
           <td>${document.available ? "yes" : "no"}</td>
           `))
       });
+      $(".bookSearchResult").show();
     });
-
 });
