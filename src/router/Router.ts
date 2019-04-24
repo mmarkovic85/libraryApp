@@ -5,10 +5,21 @@ import Guard from "../guard/Guard";
 export default class Router {
   // GET routes
   static GET(app: Application): void {
+    Router.preGET(app);
     Router.homepage(app);
     Router.dashboard(app);
     Router.login(app);
     Router.logout(app);
+  }
+
+  private static preGET(app: Application) {
+    app.get(
+      "/*",
+      (req: Request, res: Response, next: Function): void => {
+
+        next();
+      }
+    );
   }
 
   private static homepage(app: Application): void {
@@ -24,9 +35,7 @@ export default class Router {
     app.get(
       "/dashboard",
       Guard.ensureAuthenticated,
-      (req: Request, res: Response): void => {
-        res.render("dashboard", { name: req.user.username });
-      }
+      Controller.dashboard
     );
   }
 
@@ -35,7 +44,7 @@ export default class Router {
       "/login",
       Guard.forwardAuthenticated,
       (req: Request, res: Response): void => {
-        res.render("login");
+        res.render("login", { msg: req.flash("error") });
       }
     );
   }
@@ -45,7 +54,7 @@ export default class Router {
       "/logout",
       (req: Request, res: Response): void => {
         req.logout();
-        res.render("login");
+        res.redirect("/login");
       }
     );
   }

@@ -1,8 +1,8 @@
 <section class="userLogin">
   <form action="/login" method="POST">
     <fieldset>
+      <% include ./messages %>
       <legend>User login:</legend>
-
       <section class="input">
         <section class="labels">
           <label for="idUsername">Username:</label>
@@ -18,6 +18,4 @@
       <button type="submit">Login</button>
     </fieldset>
   </form>
-
-  <script src="../logic/userLogin.js" type="module"></script>
 </section>

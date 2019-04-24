@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as expressLayout from "express-ejs-layouts";
 import * as session from "express-session";
+import * as flash from "connect-flash-plus";
 import * as passport from "passport";
 import Controller from "../controller/Controller";
 
@@ -28,14 +29,16 @@ export default class Server {
     server.use(
       session({
         secret: 'libraryApp',
-        resave: true,
-        saveUninitialized: true
+        resave: false,
+        saveUninitialized: false
       })
     );
     // Passport middleware
     server.use(passport.initialize());
     // Passport session
     server.use(passport.session());
+    // Flash messages
+    server.use(flash());
     // Routes
     Controller.map(server);
   }

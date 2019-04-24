@@ -40,13 +40,13 @@ export default class Guard {
             .findEmployee({ username })
             .then((user: Employee): void => {
               if (!user) {
-                return done(null, false);
+                return done(null, false, { message: 'Input valid username!' });
               }
               // Match password
               bcrypt
                 .compare(password, user.password)
                 .then((isMatch: boolean): void => {
-                  return isMatch ? done(null, user) : done(null, false);
+                  return isMatch ? done(null, user) : done(null, false, { message: 'Password incorrect!' });
                 })
                 .catch(err => console.log(err));
             })
@@ -72,6 +72,15 @@ export default class Guard {
         .catch(err => console.log(err));
     });
   }
+  // Authentication middleware
+  static readonly authenticate = passport.authenticate(
+    'local',
+    {
+      successRedirect: '/dashboard',
+      failureRedirect: '/login',
+      failureFlash: true
+    }
+  )
   // Session - middleware gate
   static ensureAuthenticated(req: Request, res: Response, next: Function): void {
     if (req.isAuthenticated()) {
@@ -85,15 +94,5 @@ export default class Guard {
       return next();
     }
     res.redirect('/dashboard');
-  }
-  // Authentication middleware
-  static authenticate(req: Request, res: Response, next: Function): void {
-    passport.authenticate(
-      'local',
-      {
-        successRedirect: '/dashboard',
-        failureRedirect: '/login'
-      }
-    )(req, res, next);
   }
 }

@@ -11,7 +11,8 @@ export interface Employee {
   _id?: string,
   username: string,
   password: string,
-  email?: string
+  email?: string,
+  isAdmin: boolean
 }
 
 export interface EmployeeQuery {
@@ -25,4 +26,9 @@ export interface ConfigObj {
   dbName?: string,
   username?: string,
   password?: string
+}
+
+export interface flashMsg {
+  type: string,
+  message: string
 }

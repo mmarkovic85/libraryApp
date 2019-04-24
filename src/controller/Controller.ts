@@ -4,7 +4,7 @@ import { Application, Request, Response } from "express";
 import Db from "../database/Db";
 import Guard from "../guard/Guard";
 import Router from "../router/Router";
-import { Employee, ConfigObj, EmployeeQuery } from "../customTypes/customTypes";
+import { flashMsg, Employee, ConfigObj, EmployeeQuery } from "../customTypes/customTypes";
 
 export default class Controller {
   static map(app: Application): void {
@@ -15,21 +15,24 @@ export default class Controller {
   }
   // Default admin check
   private static admin(): void {
-    Db
-      .find({ username: "admin" }, "libraryEmployees")
-      .then((dbRes: string): void => {
-        JSON.parse(dbRes).length || Controller.defaultAdmin();
+    const { username } = Controller.appConfig("admin");
+
+    Controller
+      .findEmployee({ username })
+      .then((user: Employee): void => {
+        user || Controller.defaultAdmin();
       });
   }
   private static defaultAdmin(): void {
-    let { username, password } = Controller.appConfig("admin");
+    const { username, password } = Controller.appConfig("admin");
 
     Guard
       .generateHash(password)
       .then((hash: string): void => {
         const admin: Employee = {
           username,
-          password: hash
+          password: hash,
+          isAdmin: true
         };
 
         Db.insertOne(admin, "libraryEmployees");
@@ -98,5 +101,11 @@ export default class Controller {
     }
 
     return res;
+  }
+
+  static dashboard(req: Request, res: Response): void {
+    req.user.isAdmin ?
+      res.render("adminDash", { name: req.user.username }) :
+      res.render("employeeDash", { name: req.user.username });
   }
 }
