@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import * as passport from "passport";
+import * as PSST from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import * as bcrypt from "bcrypt";
 import Controller from "../controller/Controller";
 import { Employee } from "../customTypes/customTypes";
+import { RequestHandlerParams } from "express-serve-static-core";
 
 export default class Guard {
   // Security config
@@ -32,7 +33,7 @@ export default class Guard {
   }
   // Passport strategy config
   private static passportStrategy(): void {
-    passport.use(
+    PSST.use(
       new LocalStrategy(
         (username: string, password: string, done: Function): void => {
           // Match user
@@ -46,7 +47,9 @@ export default class Guard {
               bcrypt
                 .compare(password, user.password)
                 .then((isMatch: boolean): void => {
-                  return isMatch ? done(null, user) : done(null, false, { message: 'Password incorrect!' });
+                  return isMatch ?
+                    done(null, user) :
+                    done(null, false, { message: 'Password incorrect!' });
                 })
                 .catch(err => console.log(err));
             })
@@ -57,13 +60,13 @@ export default class Guard {
   }
   // Session - start
   private static sessionStart(): void {
-    passport.serializeUser((user: Employee, done: Function): void => {
+    PSST.serializeUser((user: Employee, done: Function): void => {
       done(null, user._id);
     });
   }
   // Session - end
   private static sessionEnd(): void {
-    passport.deserializeUser((_id: string, done: Function): void => {
+    PSST.deserializeUser((_id: string, done: Function): void => {
       Controller
         .findEmployee({ _id })
         .then((user: Employee): void => {
@@ -73,7 +76,7 @@ export default class Guard {
     });
   }
   // Authentication middleware
-  static readonly authenticate = passport.authenticate(
+  static readonly authenticate: RequestHandlerParams = PSST.authenticate(
     'local',
     {
       successRedirect: '/dashboard',

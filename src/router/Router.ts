@@ -5,21 +5,10 @@ import Guard from "../guard/Guard";
 export default class Router {
   // GET routes
   static GET(app: Application): void {
-    Router.preGET(app);
     Router.homepage(app);
     Router.dashboard(app);
     Router.login(app);
     Router.logout(app);
-  }
-
-  private static preGET(app: Application) {
-    app.get(
-      "/*",
-      (req: Request, res: Response, next: Function): void => {
-
-        next();
-      }
-    );
   }
 
   private static homepage(app: Application): void {
@@ -60,11 +49,11 @@ export default class Router {
   }
   // POST routes
   static POST(app: Application): void {
-    Router.booksQuery(app);
+    Router.bookSearch(app);
     Router.userLogin(app);
   }
 
-  private static booksQuery(app: Application): void {
+  private static bookSearch(app: Application): void {
     app.post(
       "/books",
       Controller.bookSearch

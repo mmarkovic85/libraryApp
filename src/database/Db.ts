@@ -4,7 +4,7 @@ import Controller from "../controller/Controller";
 
 export default class Db {
   static async insertOne(doc: object, collName: string): Promise<boolean> {
-    const { uri, dbName } = Controller.appConfig("db");
+    const { uri, dbName } = Controller.appConfig().db;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }
@@ -29,7 +29,7 @@ export default class Db {
   }
 
   static async find(doc: object, collName: string): Promise<string> {
-    const { uri, dbName } = Controller.appConfig("db");;
+    const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }
@@ -54,7 +54,7 @@ export default class Db {
   }
 
   static async findOne(doc: any, collName: string): Promise<string> {
-    const { uri, dbName } = Controller.appConfig("db");;
+    const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }

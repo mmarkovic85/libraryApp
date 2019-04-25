@@ -22,10 +22,14 @@ export interface EmployeeQuery {
 }
 
 export interface ConfigObj {
-  uri?: string,
-  dbName?: string,
-  username?: string,
-  password?: string
+  db?: {
+    uri?: string,
+    dbName?: string
+  },
+  defaultAdmin: {
+    username?: string,
+    password?: string
+  }
 }
 
 export interface flashMsg {

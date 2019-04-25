@@ -15,17 +15,16 @@ export default class Controller {
   }
   // Default admin check
   private static admin(): void {
-    const { username } = Controller.appConfig("admin");
+    const { username, password } = Controller.appConfig().defaultAdmin;
 
     Controller
       .findEmployee({ username })
       .then((user: Employee): void => {
-        user || Controller.defaultAdmin();
+        user || Controller.defaultAdmin({ username, password });
       });
   }
-  private static defaultAdmin(): void {
-    const { username, password } = Controller.appConfig("admin");
 
+  private static defaultAdmin({ username, password }): void {
     Guard
       .generateHash(password)
       .then((hash: string): void => {
@@ -40,50 +39,14 @@ export default class Controller {
       .catch(err => console.log(err));
   }
   // Read app config json
-  static appConfig(option: string): ConfigObj {
-    const config: string = fs.readFileSync(
-      path.join(__dirname, "../../", "appconfig.json"),
-      "utf8"
+  static appConfig(): ConfigObj {
+    const config: ConfigObj = JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, "../../", "appconfig.json"),
+        "utf8"
+      )
     );
-    let res: ConfigObj;
-
-    switch (option) {
-      case "db":
-        res = JSON.parse(config).db;
-        break;
-      case "admin":
-        res = JSON.parse(config).defaultAdmin;
-        break;
-    }
-
-    return res;
-  }
-  // Book search API
-  static bookSearch(req: Request, res: Response): void {
-    const { author, title, year, language } = req.body;
-    let query: object[] = [];
-    // Weed out empty search fields
-    author && query.push({
-      author: { $regex: new RegExp(author, "i") }
-    });
-    title && query.push({
-      title: { $regex: new RegExp(title, "i") }
-    });
-    year && query.push({
-      year: { $regex: new RegExp(year, "i") }
-    });
-    language && query.push({
-      language: { $regex: new RegExp(language, "i") }
-    });
-    // Db query and response
-    query.length
-      ?
-      Db
-        .find({ $and: query }, "libraryBooks")
-        .then((dbRes: string) => res.json(dbRes))
-        .catch(err => console.log(err))
-      :
-      res.json("[]");
+    return config;
   }
   // Employee search
   static async findEmployee(employee: EmployeeQuery): Promise<Employee> {
@@ -103,9 +66,41 @@ export default class Controller {
     return res;
   }
 
+  // Router callbacks
+
   static dashboard(req: Request, res: Response): void {
     req.user.isAdmin ?
       res.render("adminDash", { name: req.user.username }) :
       res.render("employeeDash", { name: req.user.username });
+  }
+
+  static bookSearch(req: Request, res: Response): void {
+    const { author, title, year, language } = req.body;
+    let query: object[] = [];
+    // Weed out empty search fields
+    author && query.push({
+      author: { $regex: new RegExp(author, "i") }
+    });
+    title && query.push({
+      title: { $regex: new RegExp(title, "i") }
+    });
+    year && query.push({
+      year: { $regex: new RegExp(year, "i") }
+    });
+    language && query.push({
+      language: { $regex: new RegExp(language, "i") }
+    });
+
+    query.length ?
+      Db
+        .find({ $and: query }, "libraryBooks")
+        .then((dbRes: string) => res.json(dbRes))
+        .catch(err => console.log(err)) :
+      req.user ?
+        Db
+          .find({}, "libraryBooks")
+          .then((dbRes: string) => res.json(dbRes))
+          .catch(err => console.log(err)) :
+        res.json("[]");
   }
 }
