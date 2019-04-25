@@ -1,0 +1,10 @@
+{
+  "db": {
+    "uri": "YOUR_MONGODB_CONNECTION_STRING_ HERE",
+    "dbName": "test"
+  },
+  "defaultAdmin": {
+    "username": "admin",
+    "password": "admin"
+  }
+}
