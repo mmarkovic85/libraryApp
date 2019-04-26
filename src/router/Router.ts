@@ -6,8 +6,9 @@ export default class Router {
   // GET routes
   static GET(app: Application): void {
     Router.homepage(app);
-    Router.dashboard(app);
+    Router.search(app);
     Router.login(app);
+    Router.dashboard(app);
     Router.logout(app);
   }
 
@@ -16,6 +17,15 @@ export default class Router {
       "/",
       (req: Request, res: Response): void => {
         res.render("index");
+      }
+    );
+  }
+
+  private static search(app: Application): void {
+    app.get(
+      "/search",
+      (req: Request, res: Response): void => {
+        res.render("search");
       }
     );
   }
@@ -31,7 +41,7 @@ export default class Router {
   private static login(app: Application): void {
     app.get(
       "/login",
-      Guard.forwardAuthenticated,
+      Guard.skipLogin,
       (req: Request, res: Response): void => {
         res.render("login", { msg: req.flash("error") });
       }
@@ -51,6 +61,7 @@ export default class Router {
   static POST(app: Application): void {
     Router.bookSearch(app);
     Router.userLogin(app);
+    Router.employeeCreate(app);
   }
 
   private static bookSearch(app: Application): void {
@@ -64,6 +75,14 @@ export default class Router {
     app.post(
       "/login",
       Guard.authenticate
+    );
+  }
+
+  private static employeeCreate(app: Application): void {
+    app.post(
+      "/dashboard/empcreate",
+      Guard.forwardAdmin,
+      Controller.employeeCreate
     );
   }
 }

@@ -1,4 +1,9 @@
-<% include ./components/navigation %>
-<h1>Welcome <%= name %>!</h1>
-<h2>administrator dashboard</h2>
-<% include ./components/logout %>
+<% include ./components/loading %>
+<% include ./components/navDash %>
+<% include ./components/dashboard/msgDash %>
+<% include ./components/dashboard/accountConfig %>
+<% include ./components/dashboard/admin/adminDashMenu %>
+<% include ./components/dashboard/admin/activityLog %>
+<% include ./components/dashboard/admin/employeeConfig %>
+<script src="../logic/dashboard.js"></script>
+<script src="../logic/adminDash.js"></script>

@@ -10,12 +10,15 @@
   },
   "files": [
     "app.ts",
+    "public/logic/adminDash.ts",
     "public/logic/bookSearch.ts",
+    "public/logic/dashboard.ts",
     "src/controller/Controller.ts",
     "src/database/Db.ts",
     "src/guard/Guard.ts",
     "src/router/Router.ts",
-    "src/server/Server.ts"
+    "src/server/Server.ts",
+    "src/validate/Validate.ts"
   ],
   "exclude": [
     "node_modules"

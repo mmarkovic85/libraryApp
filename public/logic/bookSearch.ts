@@ -1,6 +1,7 @@
 /// <reference path="./customTypes.ts"/>
 
 $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
+  $(".loading").css("display", "flex");
   event.preventDefault();
 
   const bookQuery: customTypes.Book = {
@@ -31,5 +32,6 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
           `))
       });
       $(".bookSearchResult").show();
+      $(".loading").hide();
     });
 });

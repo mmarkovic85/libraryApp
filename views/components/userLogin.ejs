@@ -1,7 +1,7 @@
-<section class="userLogin">
+<section class="appBody userLogin">
   <form action="/login" method="POST">
     <fieldset>
-      <% include ./messages %>
+      <% include ./msg %>
       <legend>User login:</legend>
       <section class="input">
         <section class="labels">
@@ -11,7 +11,7 @@
 
         <section class="inputs">
           <input type="text" name="username" id="idUsername">
-          <input type="text" name="password" id="idPassword">
+          <input type="password" name="password" id="idPassword">
         </section>
       </section>
 

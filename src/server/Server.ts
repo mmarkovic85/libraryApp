@@ -23,8 +23,8 @@ export default class Server {
     // EJS static files
     server.use(express.static('./public'));
     // Body-parser
-    server.use(express.urlencoded({ extended: false }));
-    server.use(express.json());
+    server.use(express.urlencoded({ extended: true }));
+    server.use(express.json({ strict: true }));
     // Express session
     server.use(
       session({

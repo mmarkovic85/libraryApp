@@ -91,9 +91,17 @@ export default class Guard {
     }
     res.redirect('/login');
   }
-  // Session - passthrough middleware
-  static forwardAuthenticated(req: Request, res: Response, next: Function): void {
+  // Session - employee passthrough middleware
+  static skipLogin(req: Request, res: Response, next: Function): void {
     if (!req.isAuthenticated()) {
+      return next();
+    }
+    res.redirect('/dashboard');
+  }
+
+  // Session - admin passthrough middleware
+  static forwardAdmin(req: Request, res: Response, next: Function): void {
+    if (req.isAuthenticated() && req.user.isAdmin) {
       return next();
     }
     res.redirect('/dashboard');

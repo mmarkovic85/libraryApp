@@ -1,8 +1,8 @@
-<section class="bookSearch">
-  <form action="/books" method="POST">
+<section class="appBody bookSearch">
+  <form>
     <fieldset>
 
-      <legend>Search library book collection:</legend>
+      <legend>Search book(s)</legend>
 
       <section class="input">
         <section class="labels">
@@ -13,14 +13,15 @@
         </section>
 
         <section class="inputs">
-          <input type="text" name="author" id="idAuthor">
-          <input type="text" name="title" id="idTitle">
-          <input type="text" name="year" id="idYear">
-          <input type="text" name="language" id="idLanguage">
+          <input type="text" id="idAuthor">
+          <input type="text" id="idTitle">
+          <input type="text" id="idYear">
+          <input type="text" id="idLanguage">
         </section>
       </section>
 
-      <button type="submit">Search!</button>
+      <button type="reset">Reset</button>
+      <button type="submit">Search</button>
 
     </fieldset>
   </form>

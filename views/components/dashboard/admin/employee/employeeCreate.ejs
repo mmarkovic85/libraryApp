@@ -1,0 +1,46 @@
+<section class="employeeComponent employeeCreate">
+  <form>
+    <fieldset>
+      <legend>New employee info:</legend>
+
+      <section class="input">
+        <section class="labels">
+          <label for="crEmpUsername">Username:</label>
+          <label for="crEmpNewpass1">Password:</label>
+          <label for="crEmpNewpass2">Confirm password:</label>
+          <label for="crEmpName">Name:</label>
+          <label for="crEmpSurname">Surname:</label>
+          <label for="crEmpEmail">E-mail:</label>
+        </section>
+
+        <section class="inputs">
+          <input type="text" id="crEmpUsername" required>
+          <input type="password" id="crEmpNewpass1" required>
+          <input type="password" id="crEmpNewpass2" required>
+          <input type="text" id="crEmpName" required>
+          <input type="text" id="crEmpSurname" required>
+          <input type="email" id="crEmpEmail" required>
+        </section>
+      </section>
+
+    </fieldset>
+
+    <fieldset>
+      <legend>Administrator rights</legend>
+
+      <section class="input">
+        <section class="labels">
+          <label for="crEmpIsAdmin">This employee is system administrator?</label>
+        </section>
+
+        <section class="inputs">
+          <input type="checkbox" id="crEmpIsAdmin">
+        </section>
+      </section>
+
+    </fieldset>
+
+    <button type="reset">Reset</button>
+    <button type="submit">Save</button>
+  </form>
+</section>
