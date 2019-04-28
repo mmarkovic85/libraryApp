@@ -1,6 +1,7 @@
 import * as MDB from "mongodb";
 import * as assert from "assert";
 import Controller from "../controller/Controller";
+import { Employee, Book, DocumentQuery } from "../customTypes/customTypes";
 
 export default class Db {
   static async insertOne(doc: object, collName: string): Promise<boolean> {
@@ -21,20 +22,20 @@ export default class Db {
       assert.strictEqual(1, dbRes.insertedCount, "Document not inserted!");
 
       client.close();
+
+      return dbRes.insertedCount === 1;
     } catch (err) {
       if (err) console.log(err);
     }
-
-    return true;
   }
 
-  static async find(doc: object, collName: string): Promise<string> {
+  static async find(doc: Employee & Book, collName: string): Promise<Employee[] | Book[]> {
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }
     );
-    let dbRes: object[];
+    let dbRes: Employee & Book[];
 
     try {
       await client.connect();
@@ -50,10 +51,10 @@ export default class Db {
       if (err) console.log(err);
     }
 
-    return JSON.stringify(dbRes);
+    return dbRes;
   }
 
-  static async findOne(doc: any, collName: string): Promise<string> {
+  static async findOne(doc: Employee | Book, collName: string): Promise<Employee | Book> {
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
@@ -78,6 +79,56 @@ export default class Db {
 
     client.close();
 
-    return JSON.stringify(dbRes);
+    return dbRes;
+  }
+
+  static async deleteOne(doc: Employee | Book, collName: string): Promise<boolean> {
+    const { uri, dbName } = Controller.appConfig().db;;
+    const client: MDB.MongoClient = new MDB.MongoClient(
+      uri,
+      { useNewUrlParser: true }
+    );
+    try {
+      await client.connect();
+
+      const dbRes: MDB.DeleteWriteOpResultObject = await client
+        .db(dbName)
+        .collection(collName)
+        .deleteOne({ _id: new MDB.ObjectID(doc._id) });
+
+      assert.equal(1, dbRes.deletedCount, "Document not deleted!");
+
+      client.close();
+
+      return dbRes.deletedCount === 1;
+    } catch (err) {
+      if (err) console.log(err);
+    }
+  }
+
+  static async updateOne(doc: DocumentQuery, collName: string): Promise<boolean> {
+    const { uri, dbName } = Controller.appConfig().db;;
+    const client: MDB.MongoClient = new MDB.MongoClient(
+      uri,
+      { useNewUrlParser: true }
+    );
+    const { document, _id } = doc;
+
+    try {
+      await client.connect();
+
+      const dbRes: MDB.UpdateWriteOpResult = await client
+        .db(dbName)
+        .collection(collName)
+        .updateOne({ _id: new MDB.ObjectID(_id) }, { $set: document });
+
+      assert.equal(1, dbRes.modifiedCount, "Document not updated!!");
+
+      client.close();
+
+      return dbRes.modifiedCount === 1;
+    } catch (err) {
+      if (err) console.log(err);
+    }
   }
 }

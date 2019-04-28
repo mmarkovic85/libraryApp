@@ -28,7 +28,7 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
           <td>${document.title}</td>
           <td>${document.year}</td>
           <td>${document.language}</td>
-          <td>${document.available ? "yes" : "no"}</td>
+          <td>${document.isAvailable ? "yes" : "no"}</td>
           `))
       });
       $(".bookSearchResult").show();

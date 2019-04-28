@@ -5,7 +5,7 @@ namespace customTypes {
     title?: string,
     year?: string,
     language?: string,
-    available?: boolean
+    isAvailable?: boolean
   }
 
   export interface Employee {
@@ -23,5 +23,10 @@ namespace customTypes {
   export interface flashMsg {
     type: string,
     message: string
+  }
+
+  export interface DocumentQuery {
+    _id: string,
+    document?: Employee | Book
   }
 }

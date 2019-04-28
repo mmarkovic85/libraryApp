@@ -10,9 +10,11 @@
   },
   "files": [
     "app.ts",
+    "public/logic/accountConfig.ts",
     "public/logic/adminDash.ts",
     "public/logic/bookSearch.ts",
     "public/logic/dashboard.ts",
+    "public/logic/employeeConfig.ts",
     "src/controller/Controller.ts",
     "src/database/Db.ts",
     "src/guard/Guard.ts",

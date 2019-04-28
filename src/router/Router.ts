@@ -62,6 +62,8 @@ export default class Router {
     Router.bookSearch(app);
     Router.userLogin(app);
     Router.employeeCreate(app);
+    Router.employeeSearch(app);
+    Router.bookCreate(app);
   }
 
   private static bookSearch(app: Application): void {
@@ -80,9 +82,58 @@ export default class Router {
 
   private static employeeCreate(app: Application): void {
     app.post(
-      "/dashboard/empcreate",
+      "/dashboard/employeecreate",
       Guard.forwardAdmin,
       Controller.employeeCreate
+    );
+  }
+
+  private static employeeSearch(app: Application): void {
+    app.post(
+      "/dashboard/employeesearch",
+      Guard.forwardAdmin,
+      Controller.employeeSearch
+    );
+  }
+
+  private static bookCreate(app: Application): void {
+    app.post(
+      "/dashboard/bookcreate",
+      Guard.ensureAuthenticated,
+      Controller.bookCreate
+    );
+  }
+
+  static PUT(app: Application): void {
+    Router.employeeUpdate(app);
+    Router.changePassword(app);
+  }
+
+  private static employeeUpdate(app: Application): void {
+    app.put(
+      "/dashboard/employeeupdate",
+      Guard.forwardAdmin,
+      Controller.employeeUpdate
+    );
+  }
+
+  private static changePassword(app: Application): void {
+    app.put(
+      "/dashboard/changepassword",
+      Guard.ensureAuthenticated,
+      Controller.changePassword
+    );
+  }
+
+  static DELETE(app: Application): void {
+    Router.employeeDelete(app);
+  }
+
+  private static employeeDelete(app: Application): void {
+    app.delete(
+      "/dashboard/employedelete",
+      Guard.forwardAdmin,
+      Controller.employeeDelete
     );
   }
 }
