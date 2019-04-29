@@ -37,10 +37,10 @@ $(".employeeCreate form").on("submit", (event: Event): void => {
       data: employee
     })
     .done((res: string): void => {
-      const msg: customTypes.flashMsg[] = JSON.parse(res);
+      const msgs: customTypes.flashMsg[] = JSON.parse(res);
 
       $(".msgDash").text("").show();
-      msg.forEach((msg: customTypes.flashMsg) => {
+      msgs.forEach((msg: customTypes.flashMsg) => {
         $("<p></p>")
           .text(msg.message)
           .attr("class", msg.type)
@@ -58,6 +58,7 @@ $(".employeeCreate form").on("submit", (event: Event): void => {
 
 $(".employeeSearch form").on("submit", (event: JQuery.Event): void => {
   event.preventDefault();
+  $(".msgDash").hide();
   $(".loading").css("display", "flex");
 
   const employee: customTypes.Employee = {
@@ -110,7 +111,7 @@ $(".employeeUpdate form").on("submit", (event: Event): void => {
   event.preventDefault();
   $(".loading").css("display", "flex");
 
-  const employeeData: customTypes.Employee = $("#upEmpDelete").prop("checked") ?
+  const employee: customTypes.Employee = $("#upEmpDelete").prop("checked") ?
     {
       _id: $("#upEmp_id").val().toString(),
     } :
@@ -126,15 +127,15 @@ $(".employeeUpdate form").on("submit", (event: Event): void => {
       url: $("#upEmpDelete").prop("checked") ?
         "/dashboard/employedelete" :
         "/dashboard/employeeupdate",
-      data: employeeData
+      data: employee
     })
     .done((res: string) => {
       $(".employeeComponent").hide();
 
-      const msg: customTypes.flashMsg[] = JSON.parse(res);
+      const msgs: customTypes.flashMsg[] = JSON.parse(res);
 
       $(".msgDash").text("").show();
-      msg.forEach((msg: customTypes.flashMsg) => {
+      msgs.forEach((msg: customTypes.flashMsg) => {
         $("<p></p>")
           .text(msg.message)
           .attr("class", msg.type)

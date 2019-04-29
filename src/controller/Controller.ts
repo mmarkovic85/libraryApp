@@ -78,7 +78,7 @@ export default class Controller {
     return res;
   }
 
-  static filterInput(searchParams: Employee & Book, isEmployee: boolean = false): object {
+  static filterInput(searchParams: Employee & Book, isEmployee: boolean = true): object {
     const { author,
       title,
       year,
@@ -217,7 +217,41 @@ export default class Controller {
           msgs.push({
             type: "error",
             message: "Database error!"
-          })
+          });
+      } catch (err) {
+        if (err) console.log(err)
+      }
+    }
+
+    return msgs;
+  }
+
+  private static async editBook(doc: Book): Promise<flashMsg[]> {
+    const { _id, author, title, year, language } = doc;
+    // Validate input
+    const msgs: flashMsg[] = Validate.bookInput(doc);
+
+    if (msgs.length === 0) {
+      try {
+        const updateData: DocumentQuery = {
+          _id,
+          document: {
+            author,
+            title,
+            year,
+            language
+          }
+        }
+        await Db
+          .updateOne(updateData, "libraryBooks") ?
+          msgs.push({
+            type: "success",
+            message: "Book successfully edited!"
+          }) :
+          msgs.push({
+            type: "error",
+            message: "Book was not updated!"
+          });
       } catch (err) {
         if (err) console.log(err)
       }
@@ -320,7 +354,6 @@ export default class Controller {
           res.json(JSON.stringify([msg]));
         })
         .catch((err: Error) => console.log(err));
-
   }
 
   static changePassword(req: Request, res: Response): void {
@@ -352,5 +385,40 @@ export default class Controller {
         res.json(JSON.stringify(msgs));
       })
       .catch((err: Error) => console.log(err));
+  }
+
+  static bookUpdate(req: Request, res: Response): void {
+    Controller
+      .editBook(req.body)
+      .then((msgs: flashMsg[]) => {
+        res.json(JSON.stringify(msgs));
+      })
+      .catch((err: Error) => console.log(err));
+  }
+
+  static bookDelete(req: Request, res: Response): void {
+    req.body.isAvailable === "true" ?
+
+      Db
+        .deleteOne(req.body, "libraryBooks")
+        .then((dbRes: boolean): void => {
+          const msg: flashMsg = dbRes ?
+            {
+              type: "success",
+              message: "Book successfully deleted!"
+            } :
+            {
+              type: "error",
+              message: "Book was not deleted!"
+            };
+
+          res.json(JSON.stringify([msg]));
+        })
+        .catch((err: Error) => console.log(err)) :
+
+      res.json(JSON.stringify([{
+        type: "error",
+        message: "Cannot delete borrowed book!"
+      }]));
   }
 }

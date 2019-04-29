@@ -68,7 +68,7 @@ export default class Router {
 
   private static bookSearch(app: Application): void {
     app.post(
-      "/books",
+      "/booksearch",
       Controller.bookSearch
     );
   }
@@ -107,6 +107,7 @@ export default class Router {
   static PUT(app: Application): void {
     Router.employeeUpdate(app);
     Router.changePassword(app);
+    Router.bookUpdate(app);
   }
 
   private static employeeUpdate(app: Application): void {
@@ -125,8 +126,17 @@ export default class Router {
     );
   }
 
+  private static bookUpdate(app: Application): void {
+    app.put(
+      "/dashboard/bookupdate",
+      Guard.ensureAuthenticated,
+      Controller.bookUpdate
+    );
+  }
+
   static DELETE(app: Application): void {
     Router.employeeDelete(app);
+    Router.bookDelete(app);
   }
 
   private static employeeDelete(app: Application): void {
@@ -134,6 +144,14 @@ export default class Router {
       "/dashboard/employedelete",
       Guard.forwardAdmin,
       Controller.employeeDelete
+    );
+  }
+
+  private static bookDelete(app: Application): void {
+    app.delete(
+      "/dashboard/bookdelete",
+      Guard.ensureAuthenticated,
+      Controller.bookDelete
     );
   }
 }

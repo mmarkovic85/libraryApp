@@ -7,7 +7,7 @@
       <section class="userInput">
         <section class="labels">
           <label for="upBk_id">ID:</label>
-          <label for="upBkAvailable">Available:</label>
+          <label for="upBkisAvailable">Available:</label>
           <label for="upBkAuthor">Author(s):</label>
           <label for="upBkTitle">Title:</label>
           <label for="upBkYear">Publication year:</label>
@@ -16,11 +16,14 @@
 
         <section class="inputs">
           <input type="text" id="upBk_id" disabled>
-          <input type="text" id="upBkAuthor" disabled>
+          <input type="text" id="upBkisAvailable" disabled>
           <input type="text" id="upBkAuthor" required>
           <input type="text" id="upBkTitle" required>
           <input type="text" id="upBkYear" required>
-          <input type="text" id="upBkLanguage" required>
+          <select id="upBkLanguage" required>
+            <option value="serbian">serbian</option>
+            <option value="english">english</option>
+          </select>
         </section>
       </section>
     </fieldset>

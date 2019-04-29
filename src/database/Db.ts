@@ -1,5 +1,4 @@
 import * as MDB from "mongodb";
-import * as assert from "assert";
 import Controller from "../controller/Controller";
 import { Employee, Book, DocumentQuery } from "../customTypes/customTypes";
 
@@ -11,45 +10,36 @@ export default class Db {
       { useNewUrlParser: true }
     );
 
-    try {
-      await client.connect();
 
-      const dbRes: MDB.InsertOneWriteOpResult = await client
-        .db(dbName)
-        .collection(collName)
-        .insertOne(doc);
+    await client.connect();
 
-      assert.strictEqual(1, dbRes.insertedCount, "Document not inserted!");
+    const dbRes: MDB.InsertOneWriteOpResult = await client
+      .db(dbName)
+      .collection(collName)
+      .insertOne(doc);
 
-      client.close();
+    client.close();
 
-      return dbRes.insertedCount === 1;
-    } catch (err) {
-      if (err) console.log(err);
-    }
+    return dbRes.insertedCount === 1;
+
   }
 
-  static async find(doc: Employee & Book, collName: string): Promise<Employee[] | Book[]> {
+  static async find(doc: Employee | Book, collName: string): Promise<Employee[] | Book[]> {
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
       { useNewUrlParser: true }
     );
-    let dbRes: Employee & Book[];
 
-    try {
-      await client.connect();
+    await client.connect();
 
-      dbRes = await client
-        .db(dbName)
-        .collection(collName)
-        .find(doc)
-        .toArray();
+    const dbRes: Employee[] | Book[] = await client
+      .db(dbName)
+      .collection(collName)
+      .find(doc)
+      .toArray();
 
-      client.close();
-    } catch (err) {
-      if (err) console.log(err);
-    }
+    client.close();
 
     return dbRes;
   }
@@ -60,22 +50,17 @@ export default class Db {
       uri,
       { useNewUrlParser: true }
     );
-    let dbRes: object;
     // Parse MongoDB _id
     const query: object = doc._id ?
       { _id: new MDB.ObjectID(doc._id) } :
       doc;
 
-    try {
-      await client.connect();
+    await client.connect();
 
-      dbRes = await client
-        .db(dbName)
-        .collection(collName)
-        .findOne(query)
-    } catch (err) {
-      if (err) console.log(err);
-    }
+    const dbRes: Employee | Book = await client
+      .db(dbName)
+      .collection(collName)
+      .findOne(query)
 
     client.close();
 
@@ -88,22 +73,18 @@ export default class Db {
       uri,
       { useNewUrlParser: true }
     );
-    try {
-      await client.connect();
 
-      const dbRes: MDB.DeleteWriteOpResultObject = await client
-        .db(dbName)
-        .collection(collName)
-        .deleteOne({ _id: new MDB.ObjectID(doc._id) });
+    await client.connect();
 
-      assert.equal(1, dbRes.deletedCount, "Document not deleted!");
+    const dbRes: MDB.DeleteWriteOpResultObject = await client
+      .db(dbName)
+      .collection(collName)
+      .deleteOne({ _id: new MDB.ObjectID(doc._id) });
 
-      client.close();
+    client.close();
 
-      return dbRes.deletedCount === 1;
-    } catch (err) {
-      if (err) console.log(err);
-    }
+    return dbRes.deletedCount === 1;
+
   }
 
   static async updateOne(doc: DocumentQuery, collName: string): Promise<boolean> {
@@ -114,21 +95,15 @@ export default class Db {
     );
     const { document, _id } = doc;
 
-    try {
-      await client.connect();
+    await client.connect();
 
-      const dbRes: MDB.UpdateWriteOpResult = await client
-        .db(dbName)
-        .collection(collName)
-        .updateOne({ _id: new MDB.ObjectID(_id) }, { $set: document });
+    const dbRes: MDB.UpdateWriteOpResult = await client
+      .db(dbName)
+      .collection(collName)
+      .updateOne({ _id: new MDB.ObjectID(_id) }, { $set: document });
 
-      assert.equal(1, dbRes.modifiedCount, "Document not updated!!");
+    client.close();
 
-      client.close();
-
-      return dbRes.modifiedCount === 1;
-    } catch (err) {
-      if (err) console.log(err);
-    }
+    return dbRes.modifiedCount === 1;
   }
 }

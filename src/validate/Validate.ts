@@ -26,12 +26,12 @@ export default class Validate {
       message: "Passwords don't match!"
     });
     // Name
-    Validate.personalName(name) || errors.push({
+    Validate.nameSurname(name) || errors.push({
       type: "error",
       message: "Invalid name input!"
     });
     // Surname
-    Validate.surname(surname) || errors.push({
+    Validate.nameSurname(surname) || errors.push({
       type: "error",
       message: "Invalid surname input!"
     });
@@ -61,12 +61,8 @@ export default class Validate {
     return (/^([A-Z|a-z]){1}\w{6,19}([A-Z|a-z]|[0-9]){1}$/).test(pass);
   }
 
-  private static personalName(name: string): boolean {
-    return (/^([A-Z]|[ČĆŠĐŽ]){1}([a-z]|[čćšđž]){2,19}$/).test(name);
-  }
-
-  private static surname(surname: string): boolean {
-    return (/^([A-Z]|[ČĆŠĐŽ]){1}([a-z]|[čćšđž]){2,19}$/).test(surname);
+  private static nameSurname(name: string): boolean {
+    return (/^([A-ZČĆŠĐŽ]){1}([a-zčćšđž]){1,19}$/).test(name);
   }
 
   private static email(email: string): boolean {
@@ -96,8 +92,40 @@ export default class Validate {
   }
 
   static bookInput(book: Book): flashMsg[] {
+    const { author, title, year } = book;
     const errors: flashMsg[] = [];
+    // Author
+    Validate.author(author) || errors.push({
+      type: "error",
+      message: "Invalid author input!"
+    });
+    // Title
+    Validate.title(title) || errors.push({
+      type: "error",
+      message: "Invalid title input!"
+    });
+    // Publication year
+    Validate.year(year) || errors.push({
+      type: "error",
+      message: "Invalid publication year input!"
+    });
 
     return errors
   }
+
+  private static author(author: string): boolean {
+    return (/^(([A-ZČĆŠĐŽ]|[a-zčćšđž])[a-zčćšđž] ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}((, (([A-ZČĆŠĐŽ]|[a-zčćšđž])[a-zčćšđž] ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}){1,4}| et al.{1}){0,1}$/)
+      .test(author);
+  }
+
+  private static title(title: string): boolean {
+    return (/^[A-ZČĆŠĐŽ]{1}([A-ZČĆŠĐŽ]|[a-zčćšđž]|-|\d|\s){2,59}$/)
+      .test(title);
+  }
+
+  private static year(year: string): boolean {
+    return (/^\d{4}$/).test(year);
+  }
 }
+
+//

@@ -4,8 +4,16 @@ body {
   margin: 0px;
 }
 
+input, select {
+  height: 1.1em;
+}
+
 input {
-  height: 1em;
+  width: 19em;
+}
+
+select {
+  width: 20em;
 }
 
 nav {
@@ -127,7 +135,7 @@ table.bookSearchResult {
   font-size: 1em;
 }
 
-.srEmpResults li {
+.srEmpResults li, .srBkResults li {
   text-align: left;
   padding: 1em;
 }

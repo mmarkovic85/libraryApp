@@ -4,18 +4,18 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
   $(".loading").css("display", "flex");
   event.preventDefault();
 
-  const bookQuery: customTypes.Book = {
-    author: $('#idAuthor').val().toString(),
-    title: $('#idTitle').val().toString(),
-    year: $('#idYear').val().toString(),
-    language: $('#idLanguage').val().toString()
+  const book: customTypes.Book = {
+    author: $('#srBkAuthor').val().toString(),
+    title: $('#srBkTitle').val().toString(),
+    year: $('#srBkYear').val().toString(),
+    language: $('#srBkLanguage').val().toString()
   };
 
   $
     .ajax({
       type: "POST",
-      url: "/books",
-      data: bookQuery
+      url: "/booksearch",
+      data: book
     })
     .done((serverRes: string) => {
       const books: customTypes.Book[] = JSON.parse(serverRes);
