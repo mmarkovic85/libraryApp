@@ -1,6 +1,8 @@
 // Main Screen
 
-$(".activityLog").show();
+$((): void => {
+  $(".activityLog").show();
+});
 
 // Admin dash menu buttons listeners
 
@@ -19,4 +21,10 @@ $(".bookConfigBtn").click((): void => {
   $(".appDash").hide();
   $(".bookComponent").hide();
   $(".bookConfig").show();
+});
+
+$(".membershipConfigBtn").click((): void => {
+  $(".appDash").hide();
+  $(".membershipComponent").hide();
+  $(".membershipConfig").show();
 });

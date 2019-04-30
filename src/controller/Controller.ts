@@ -4,8 +4,15 @@ import { Application, Request, Response } from "express";
 import Db from "../database/Db";
 import Guard from "../guard/Guard";
 import Router from "../router/Router";
-import { flashMsg, Employee, Book, ConfigObj, DocumentQuery } from "../customTypes/customTypes";
 import Validate from "../validate/Validate";
+import {
+  flashMsg,
+  Employee,
+  Book,
+  Membership,
+  ConfigObj,
+  DocumentQuery
+} from "../customTypes/customTypes";
 
 export default class Controller {
   static map(app: Application): void {
@@ -39,7 +46,7 @@ export default class Controller {
 
         Db.insertOne(admin, "libraryEmployees");
       })
-      .catch((err: Error) => console.log(err));
+      .catch((err: Error): void => console.log(err));
   }
   // Read/write app config json
   static appConfig(configUpdate?: ConfigObj): ConfigObj | undefined {
@@ -78,15 +85,19 @@ export default class Controller {
     return res;
   }
 
-  static filterInput(searchParams: Employee & Book, isEmployee: boolean = true): object {
-    const { author,
+  static filterInput(searchParams: Employee & Book & Membership, isEmployee: boolean = true): object {
+    const {
+      author,
       title,
       year,
       language,
       username,
       name,
       surname,
-      email } = searchParams;
+      email,
+      address,
+      status
+    } = searchParams;
     let inputs: object[] = [];
 
     // Weed out empty search fields
@@ -114,6 +125,12 @@ export default class Controller {
     email && inputs.push({
       email: { $regex: new RegExp(email, "i") }
     });
+    address && inputs.push({
+      address: { $regex: new RegExp(address, "i") }
+    });
+    status && inputs.push({
+      status: { $regex: new RegExp(status, "i") }
+    });
 
     return inputs.length ?
       { $and: inputs } :
@@ -121,8 +138,6 @@ export default class Controller {
         {} :
         null;
   }
-
-  // Add new employee
 
   private static async addEmployee(doc: Employee): Promise<flashMsg[]> {
     const { username, newpass1, name, surname, email, isAdmin } = doc;
@@ -200,8 +215,6 @@ export default class Controller {
     }
   }
 
-  // Add new book
-
   private static async addBook(doc: Book): Promise<flashMsg[]> {
     // Validate input
     const msgs: flashMsg[] = Validate.bookInput(doc);
@@ -216,7 +229,7 @@ export default class Controller {
           }) :
           msgs.push({
             type: "error",
-            message: "Database error!"
+            message: "Book was not saved!"
           });
       } catch (err) {
         if (err) console.log(err)
@@ -260,13 +273,97 @@ export default class Controller {
     return msgs;
   }
 
+  private static async addMembership(doc: Membership): Promise<flashMsg[]> {
+    // Validate input
+    const msgs: flashMsg[] = Validate.membershipInput(doc);
+    // If no errors found
+    if (msgs.length === 0) {
+      try {
+        await Db
+          .insertOne(doc, "libraryMemberships") ?
+          msgs.push({
+            type: "success",
+            message: "Membership successfully saved!"
+          }) :
+          msgs.push({
+            type: "error",
+            message: "Membership was not saved!"
+          });
+      } catch (err) {
+        if (err) console.log(err)
+      }
+    }
+
+    return msgs;
+  }
+
+  private static async editMember(doc: Membership): Promise<flashMsg[]> {
+    const { _id, name, surname, address, status } = doc;
+    // Validate input
+    const msgs: flashMsg[] = Validate.membershipInput(doc);
+
+    if (msgs.length === 0) {
+      try {
+        const updateData: DocumentQuery = {
+          _id,
+          document: {
+            name,
+            surname,
+            address,
+            status
+          }
+        }
+        await Db
+          .updateOne(updateData, "libraryMemberships") ?
+          msgs.push({
+            type: "success",
+            message: "Member successfully edited!"
+          }) :
+          msgs.push({
+            type: "error",
+            message: "Member was not updated!"
+          });
+      } catch (err) {
+        if (err) console.log(err)
+      }
+    }
+
+    return msgs;
+  }
+
+  private static async delMember(doc: Membership): Promise<flashMsg[]> {
+    const { _id } = doc;
+    let msgs: flashMsg[] = [];
+
+    (await Db.findOne({ _id }, "libraryMemberships"))
+      .books.length > 0 ?
+
+      msgs.push({
+        type: "error",
+        message: "Can't delete member who currently have landed books!"
+      }) :
+
+      await Db.deleteOne(doc, "libraryMemberships") ?
+
+        msgs.push({
+          type: "success",
+          message: "Member successfully deleted!"
+        }) :
+
+        msgs.push({
+          type: "error",
+          message: "Member was not deleted!"
+        });
+
+    return msgs;
+  }
+
   // Router callbacks
 
   static dashboard(req: Request, res: Response): void {
-
     res.render(
       req.user.isAdmin ? "adminDash" : "employeeDash",
-      { name: req.user.username }
+      { name: req.user.name }
     );
   }
 
@@ -276,8 +373,10 @@ export default class Controller {
     query ?
       Db
         .find(query, "libraryBooks")
-        .then((dbRes: Book[]) => res.json(JSON.stringify(dbRes)))
-        .catch((err: Error) => console.log(err)) :
+        .then((dbRes: Book[]): void => {
+          res.json(JSON.stringify(dbRes))
+        })
+        .catch((err: Error): void => console.log(err)) :
       res.json("[]");
   }
 
@@ -293,10 +392,10 @@ export default class Controller {
         email,
         isAdmin: isAdmin === "true" ? true : false
       })
-      .then((msgs: flashMsg[]) => {
+      .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
-      .catch((err: Error) => console.log(err));
+      .catch((err: Error): void => console.log(err));
 
   }
 
@@ -306,19 +405,21 @@ export default class Controller {
     query ?
       Db
         .find(query, "libraryEmployees")
-        .then((dbRes: Employee[]) => res.json(JSON.stringify(
-          // omit password hash from response
-          dbRes.map((e: Employee): Employee => {
-            return {
-              _id: e._id,
-              username: e.username,
-              name: e.name,
-              surname: e.surname,
-              email: e.email
-            }
-          })
-        )))
-        .catch((err: Error) => console.log(err)) :
+        .then((dbRes: Employee[]): void => {
+          res.json(JSON.stringify(
+            // omit password hash from response
+            dbRes.map((e: Employee): Employee => {
+              return {
+                _id: e._id,
+                username: e.username,
+                name: e.name,
+                surname: e.surname,
+                email: e.email
+              }
+            })
+          ))
+        })
+        .catch((err: Error): void => console.log(err)) :
       res.json("[]");
 
   }
@@ -329,7 +430,7 @@ export default class Controller {
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
-      .catch((err: Error) => console.log(err));
+      .catch((err: Error): void => console.log(err));
   }
 
   static employeeDelete(req: Request, res: Response): void {
@@ -353,7 +454,7 @@ export default class Controller {
 
           res.json(JSON.stringify([msg]));
         })
-        .catch((err: Error) => console.log(err));
+        .catch((err: Error): void => console.log(err));
   }
 
   static changePassword(req: Request, res: Response): void {
@@ -368,7 +469,7 @@ export default class Controller {
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
-      .catch((err: Error) => console.log(err));
+      .catch((err: Error): void => console.log(err));
   }
 
   static bookCreate(req: Request, res: Response): void {
@@ -381,19 +482,19 @@ export default class Controller {
         language,
         isAvailable: true
       })
-      .then((msgs: flashMsg[]) => {
+      .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
-      .catch((err: Error) => console.log(err));
+      .catch((err: Error): void => console.log(err));
   }
 
   static bookUpdate(req: Request, res: Response): void {
     Controller
       .editBook(req.body)
-      .then((msgs: flashMsg[]) => {
+      .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
-      .catch((err: Error) => console.log(err));
+      .catch((err: Error): void => console.log(err));
   }
 
   static bookDelete(req: Request, res: Response): void {
@@ -414,11 +515,59 @@ export default class Controller {
 
           res.json(JSON.stringify([msg]));
         })
-        .catch((err: Error) => console.log(err)) :
+        .catch((err: Error): void => console.log(err)) :
 
       res.json(JSON.stringify([{
         type: "error",
         message: "Cannot delete borrowed book!"
       }]));
+  }
+
+  static membershipCreate(req: Request, res: Response): void {
+    const { name, surname, address, status } = req.body;
+    Controller
+      .addMembership({
+        name,
+        surname,
+        address,
+        status,
+        books: []
+      })
+      .then((msgs: flashMsg[]): void => {
+        res.json(JSON.stringify(msgs));
+      })
+      .catch((err: Error): void => console.log(err));
+  }
+
+  static membershipSearch(req: Request, res: Response): void {
+    const query: object = Controller.filterInput(req.body);
+
+    query ?
+      Db
+        .find(query, "libraryMemberships")
+        .then((dbRes: Membership[]): void => {
+          res.json(JSON.stringify(dbRes))
+        })
+        .catch((err: Error): void => console.log(err)) :
+      res.json("[]");
+
+  }
+
+  static membershipUpdate(req: Request, res: Response): void {
+    Controller
+      .editMember(req.body)
+      .then((msgs: flashMsg[]): void => {
+        res.json(JSON.stringify(msgs));
+      })
+      .catch((err: Error): void => console.log(err));
+  }
+
+  static membershipDelete(req: Request, res: Response): void {
+    Controller
+      .delMember(req.body)
+      .then((msgs: flashMsg[]): void => {
+        res.json(JSON.stringify(msgs));
+      })
+      .catch((err: Error): void => console.log(err));
   }
 }

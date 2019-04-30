@@ -1,11 +1,5 @@
 /// <reference path="./customTypes.ts"/>
 
-// Account settings listener
-$(".accountConfigBtn").click((): void => {
-  $(".appDash").hide();
-  $(".accountConfig").show();
-});
-
 // Book settings menu buttons
 
 $(".bookCreateBtn").click((): void => {
@@ -65,10 +59,10 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
   $(".loading").css("display", "flex");
 
   const book: customTypes.Book = {
-    author: $("#crBkAuthor").val().toString(),
-    title: $("#crBkTitle").val().toString(),
-    year: $("#crBkYear").val().toString(),
-    language: $("#crBkLanguage").val().toString()
+    author: $("#srBkAuthor").val().toString(),
+    title: $("#srBkTitle").val().toString(),
+    year: $("#srBkYear").val().toString(),
+    language: $("#srBkLanguage").val().toString()
   };
 
   $
@@ -86,10 +80,14 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
         `)
         .show();
 
-      JSON.parse(res).forEach((e: customTypes.Book): void => {
-        // Book HTML
-        $(".srBkResults > ul").append(
-          $(`<li id="${e._id}"></li>`).text(`
+      JSON.parse(res)
+        .sort((a: customTypes.Book, b: customTypes.Book): number => {
+          return a.author < b.author ? -1 : a.author > b.author ? 1 : 0;
+        })
+        .forEach((e: customTypes.Book): void => {
+          // Book HTML
+          $(".srBkResults > ul").append(
+            $(`<li id="${e._id}"></li>`).text(`
             ${e.author}, 
             ${e.title}, 
             ${e.year}, 
@@ -97,20 +95,20 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
             ${e.isAvailable ? "available" : "borrowed"}, 
             ${e._id}
             `)
-        );
-        // Book edit listener
-        $(`#${e._id}`).click((): void => {
-          $(".msgDash").hide();
-          $(".bookComponent").hide();
-          $("#upBk_id").val(e._id);
-          $("#upBkAuthor").val(e.author);
-          $("#upBkTitle").val(e.title);
-          $("#upBkYear").val(e.year);
-          $("#upBkLanguage").val(e.language);
-          $("#upBkisAvailable").val(e.isAvailable ? "available" : "borrowed");
-          $(".bookUpdate").show();
+          );
+          // Book edit listener
+          $(`#${e._id}`).click((): void => {
+            $(".msgDash").hide();
+            $(".bookComponent").hide();
+            $("#upBk_id").val(e._id);
+            $("#upBkAuthor").val(e.author);
+            $("#upBkTitle").val(e.title);
+            $("#upBkYear").val(e.year);
+            $("#upBkLanguage").val(e.language);
+            $("#upBkisAvailable").val(e.isAvailable ? "available" : "borrowed");
+            $(".bookUpdate").show();
+          });
         });
-      });
 
       $(".loading").hide();
     });

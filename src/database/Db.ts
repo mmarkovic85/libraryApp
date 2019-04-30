@@ -1,6 +1,6 @@
 import * as MDB from "mongodb";
 import Controller from "../controller/Controller";
-import { Employee, Book, DocumentQuery } from "../customTypes/customTypes";
+import { Employee, Book, DocumentQuery, Membership } from "../customTypes/customTypes";
 
 export default class Db {
   static async insertOne(doc: object, collName: string): Promise<boolean> {
@@ -24,7 +24,7 @@ export default class Db {
 
   }
 
-  static async find(doc: Employee | Book, collName: string): Promise<Employee[] | Book[]> {
+  static async find(doc: Employee | Book, collName: string): Promise<Employee[] | Book[] | Membership[]> {
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
@@ -33,7 +33,7 @@ export default class Db {
 
     await client.connect();
 
-    const dbRes: Employee[] | Book[] = await client
+    const dbRes: Employee[] | Book[] | Membership[] = await client
       .db(dbName)
       .collection(collName)
       .find(doc)
@@ -44,7 +44,7 @@ export default class Db {
     return dbRes;
   }
 
-  static async findOne(doc: Employee | Book, collName: string): Promise<Employee | Book> {
+  static async findOne(doc: Employee | Book | Membership, collName: string): Promise<Employee & Book & Membership> {
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
@@ -57,7 +57,7 @@ export default class Db {
 
     await client.connect();
 
-    const dbRes: Employee | Book = await client
+    const dbRes: Employee & Book & Membership = await client
       .db(dbName)
       .collection(collName)
       .findOne(query)

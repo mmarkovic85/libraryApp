@@ -1,13 +1,15 @@
-import { Employee, flashMsg, Book } from "../customTypes/customTypes";
+import { Employee, flashMsg, Book, Membership } from "../customTypes/customTypes";
 
 export default class Validate {
-  static employeeInput(newEmployee: Employee): flashMsg[] {
-    const { username,
+  static employeeInput(employee: Employee): flashMsg[] {
+    const {
+      username,
       newpass1,
       newpass2,
       name,
       surname,
-      email } = newEmployee;
+      email
+    } = employee;
     const errors: flashMsg[] = [];
 
     // Username
@@ -94,6 +96,7 @@ export default class Validate {
   static bookInput(book: Book): flashMsg[] {
     const { author, title, year } = book;
     const errors: flashMsg[] = [];
+
     // Author
     Validate.author(author) || errors.push({
       type: "error",
@@ -114,18 +117,48 @@ export default class Validate {
   }
 
   private static author(author: string): boolean {
-    return (/^(([A-ZČĆŠĐŽ]|[a-zčćšđž])[a-zčćšđž] ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}((, (([A-ZČĆŠĐŽ]|[a-zčćšđž])[a-zčćšđž] ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}){1,4}| et al.{1}){0,1}$/)
+    return (/^(([A-ZČĆŠĐŽa-zčćšđž])[a-zčćšđž]{1,2} ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}((, (([A-ZČĆŠĐŽa-zčćšđž])[a-zčćšđž]{1,2} ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}){1,4}| et al.{1}){0,1}$/)
       .test(author);
   }
 
   private static title(title: string): boolean {
-    return (/^[A-ZČĆŠĐŽ]{1}([A-ZČĆŠĐŽ]|[a-zčćšđž]|-|\d|\s){2,59}$/)
+    return (/^[A-ZČĆŠĐŽ]{1}([A-ZČĆŠĐŽa-zčćšđž]|[-.,]|\d|\s){2,59}$/)
       .test(title);
   }
 
   private static year(year: string): boolean {
     return (/^\d{4}$/).test(year);
   }
-}
 
-//
+  static membershipInput(member: Membership): flashMsg[] {
+    const {
+      name,
+      surname,
+      address
+    } = member;
+    const errors: flashMsg[] = [];
+
+    // Name
+    Validate.nameSurname(name) || errors.push({
+      type: "error",
+      message: "Invalid name input!"
+    });
+    // Surname
+    Validate.nameSurname(surname) || errors.push({
+      type: "error",
+      message: "Invalid surname input!"
+    });
+    // Address
+    Validate.address(address) || errors.push({
+      type: "error",
+      message: "Invalid address input!"
+    });
+
+    return errors;
+  }
+
+  private static address(address: string): boolean {
+    return (/^[A-ZČĆŠĐŽ]{1}([A-ZČĆŠĐŽa-zčćšđž]|[-.,]\d|\s){2,59}$/)
+      .test(address);
+  }
+}

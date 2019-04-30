@@ -81,11 +81,11 @@ nav {
   justify-content: space-around;
 }
 
-.inputs {
+.inputs, .inputsSmall {
   align-items: flex-start;
 }
 
-.labels {
+.labels, .labelsSmall {
   align-items: flex-end;
 }
 
@@ -135,7 +135,7 @@ table.bookSearchResult {
   font-size: 1em;
 }
 
-.srEmpResults li, .srBkResults li {
+.resultList li {
   text-align: left;
   padding: 1em;
 }

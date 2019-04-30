@@ -19,6 +19,15 @@ export interface Employee {
   isAdmin?: boolean
 }
 
+export interface Membership {
+  _id?: string,
+  name?: string,
+  surname?: string,
+  address?: string,
+  status?: string,
+  books?: Book[];
+}
+
 export interface ConfigObj {
   db: {
     uri: string,
@@ -38,5 +47,5 @@ export interface flashMsg {
 
 export interface DocumentQuery {
   _id: string,
-  document?: Employee | Book
+  document?: Employee | Book | Membership
 }

@@ -1,0 +1,46 @@
+<section class="membershipComponent membershipUpdate">
+  <form>
+    <fieldset>
+
+      <legend>Update member information</legend>
+
+      <section class="userInput">
+        <section class="labels">
+          <label for="upMem_id">ID:</label>
+          <label for="upMemName">Name:</label>
+          <label for="upMemSurname">Surname:</label>
+          <label for="upMemAddress">Address:</label>
+          <label for="upMemStatus">Status:</label>
+        </section>
+
+        <section class="inputs">
+          <input type="text" id="upMem_id" disabled>
+          <input type="text" id="upMemName" required>
+          <input type="text" id="upMemSurname" required>
+          <input type="text" id="upMemAddress" required>
+          <select id="upMemStatus" required>
+            <option value="student">student</option>
+            <option value="employed">employed</option>
+            <option value="unemployed">unemployed</option>
+            <option value="retired">retired</option>
+          </select>
+        </section>
+      </section>
+    </fieldset>
+
+    <fieldset>
+      <legend>Delete membership</legend>
+      <section class="userInput">
+        <section class="labelsSmall">
+          <label for="upMemDelete">Delete membership:</label>
+        </section>
+
+        <section class="inputsSmall">
+          <input type="checkbox" id="upMemDelete">
+        </section>
+      </section>
+    </fieldset>
+
+    <button type="submit">Update</button>
+  </form>
+</section>

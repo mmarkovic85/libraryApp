@@ -83,23 +83,31 @@ $(".employeeSearch form").on("submit", (event: JQuery.Event): void => {
         `)
         .show();
 
-      JSON.parse(res).forEach((e: customTypes.Employee) => {
-        // Employee HTML
-        $(".srEmpResults > ul").append(
-          $(`<li id="${e._id}"></li>`).text(`${e.username} ${e.name} ${e.surname} ${e.email}`)
-        );
-        // Employee edit listener
-        $(`#${e._id}`).click(() => {
-          $(".msgDash").hide();
-          $(".employeeComponent").hide();
-          $("#upEmp_id").val(e._id);
-          $("#upEmpUsername").val(e.username);
-          $("#upEmpName").val(e.name);
-          $("#upEmpSurname").val(e.surname);
-          $("#upEmpEmail").val(e.email);
-          $(".employeeUpdate").show();
+      JSON.parse(res)
+        .sort((a: customTypes.Employee, b: customTypes.Employee): number => {
+          return a.username < b.username ? -1 : a.username > b.username ? 1 : 0;
+        })
+        .forEach((e: customTypes.Employee) => {
+          // Employee HTML
+          $(".srEmpResults > ul").append(
+            $(`<li id="${e._id}"></li>`).text(`
+            ${e.username}, 
+            ${e.name}, 
+            ${e.surname}, 
+            ${e.email}`)
+          );
+          // Employee edit listener
+          $(`#${e._id}`).click(() => {
+            $(".msgDash").hide();
+            $(".employeeComponent").hide();
+            $("#upEmp_id").val(e._id);
+            $("#upEmpUsername").val(e.username);
+            $("#upEmpName").val(e.name);
+            $("#upEmpSurname").val(e.surname);
+            $("#upEmpEmail").val(e.email);
+            $(".employeeUpdate").show();
+          });
         });
-      });
 
       $(".loading").hide();
     });

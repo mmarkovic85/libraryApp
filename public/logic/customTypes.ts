@@ -20,6 +20,15 @@ namespace customTypes {
     isAdmin?: boolean
   }
 
+  export interface Membership {
+    _id?: string,
+    name?: string,
+    surname?: string,
+    address?: string,
+    status?: string,
+    books?: Book[];
+  }
+
   export interface flashMsg {
     type: string,
     message: string
@@ -27,6 +36,6 @@ namespace customTypes {
 
   export interface DocumentQuery {
     _id: string,
-    document?: Employee | Book
+    document?: Employee | Book | Membership
   }
 }

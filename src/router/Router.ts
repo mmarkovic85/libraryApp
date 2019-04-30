@@ -64,6 +64,8 @@ export default class Router {
     Router.employeeCreate(app);
     Router.employeeSearch(app);
     Router.bookCreate(app);
+    Router.membershipCreate(app);
+    Router.membershipSearch(app);
   }
 
   private static bookSearch(app: Application): void {
@@ -104,10 +106,27 @@ export default class Router {
     );
   }
 
+  private static membershipCreate(app: Application): void {
+    app.post(
+      "/dashboard/membershipcreate",
+      Guard.ensureAuthenticated,
+      Controller.membershipCreate
+    );
+  }
+
+  private static membershipSearch(app: Application): void {
+    app.post(
+      "/dashboard/membershipSearch",
+      Guard.ensureAuthenticated,
+      Controller.membershipSearch
+    );
+  }
+
   static PUT(app: Application): void {
     Router.employeeUpdate(app);
     Router.changePassword(app);
     Router.bookUpdate(app);
+    Router.membershipUpdate(app);
   }
 
   private static employeeUpdate(app: Application): void {
@@ -134,9 +153,18 @@ export default class Router {
     );
   }
 
+  private static membershipUpdate(app: Application): void {
+    app.put(
+      "/dashboard/membershipupdate",
+      Guard.ensureAuthenticated,
+      Controller.membershipUpdate
+    );
+  }
+
   static DELETE(app: Application): void {
     Router.employeeDelete(app);
     Router.bookDelete(app);
+    Router.membershipDelete(app);
   }
 
   private static employeeDelete(app: Application): void {
@@ -152,6 +180,14 @@ export default class Router {
       "/dashboard/bookdelete",
       Guard.ensureAuthenticated,
       Controller.bookDelete
+    );
+  }
+
+  private static membershipDelete(app: Application): void {
+    app.delete(
+      "/dashboard/membershipdelete",
+      Guard.ensureAuthenticated,
+      Controller.membershipDelete
     );
   }
 }
