@@ -1,4 +1,4 @@
-namespace customTypes {
+namespace Types {
   export interface Book {
     _id?: string,
     author?: string,

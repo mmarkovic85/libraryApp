@@ -16,6 +16,11 @@ select {
   width: 20em;
 }
 
+input[type="checkbox"] {
+  widows: 2em;
+  width: 2em;
+}
+
 nav {
   height: 3em;
   border-color: #000;

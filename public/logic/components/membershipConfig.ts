@@ -1,64 +1,32 @@
-/// <reference path="./customTypes.ts"/>
+/// <reference path="../other/Types.ts"/>
 
 // Membership settings menu buttons
+Dirkem.configBtn("membership", "Create", "msg");
+Dirkem.configBtn("membership", "Search", "msg");
 
-$(".membershipCreateBtn").click((): void => {
-  $(".msgDash").hide();
-  $(".membershipComponent").hide();
-  $(".membershipCreate").show();
-});
-
-$(".membershipSearchBtn").click((): void => {
-  $(".msgDash").hide();
-  $(".membershipComponent").hide();
-  $(".membershipSearch").show();
-});
-
-// Membership sreate
+// Membership create
 
 $(".membershipCreate form").on("submit", (event: Event): void => {
-  event.preventDefault();
-  $(".loading").css("display", "flex");
-
-  const membership: customTypes.Membership = {
-    name: $("#crMemName").val().toString(),
-    surname: $("#crMemSurname").val().toString(),
-    address: $("#crMemAddress").val().toString(),
-    status: $("#crMemStatus").val().toString()
-  }
+  Dirkem.pause();
 
   $
     .ajax({
       type: "POST",
       url: "/dashboard/membershipcreate",
-      data: membership
+      data: Dirkem.createInput("membership")
     })
     .done((res: string): void => {
-      const msgs: customTypes.flashMsg[] = JSON.parse(res);
-
-      $(".msgDash").text("").show();
-      msgs.forEach((msg: customTypes.flashMsg) => {
-        $("<p></p>")
-          .text(msg.message)
-          .attr("class", msg.type)
-          .appendTo($(".msgDash"));
-      });
-
-      const form: HTMLFormElement = <HTMLFormElement>event.target;
-      form.reset();
-
-      $(".loading").hide();
+      Dirkem.displayMsgs(res);
+      Dirkem.play(<HTMLFormElement>event.target);
     });
 });
 
 // Membership search
 
 $(".membershipSearch form").on("submit", (event: JQuery.Event): void => {
-  event.preventDefault();
-  $(".msgDash").hide();
-  $(".loading").css("display", "flex");
+  Dirkem.pause(true);
 
-  const membership: customTypes.Membership = {
+  const membership: Types.Membership = {
     name: $("#srMemName").val().toString(),
     surname: $("#srMemSurname").val().toString(),
     address: $("#srMemAddress").val().toString(),
@@ -72,19 +40,13 @@ $(".membershipSearch form").on("submit", (event: JQuery.Event): void => {
       data: membership
     })
     .done((res: string) => {
-      $(".srMemResults")
-        .html(`  
-        <span>Click on member you wish to edit</span>
-        <ul>
-        </ul>
-        `)
-        .show();
+
 
       JSON.parse(res)
-        .sort((a: customTypes.Membership, b: customTypes.Membership): number => {
+        .sort((a: Types.Membership, b: Types.Membership): number => {
           return a.surname < b.surname ? -1 : a.surname > b.surname ? 1 : 0;
         })
-        .forEach((e: customTypes.Membership) => {
+        .forEach((e: Types.Membership) => {
           // membership HTML
           $(".srMemResults > ul").append(
             $(`<li id="${e._id}"></li>`).text(`
@@ -116,7 +78,7 @@ $(".membershipUpdate form").on("submit", (event: Event): void => {
   event.preventDefault();
   $(".loading").css("display", "flex");
 
-  const membership: customTypes.Membership = $("#upMemDelete").prop("checked") ?
+  const membership: Types.Membership = $("#upMemDelete").prop("checked") ?
     {
       _id: $("#upMem_id").val().toString(),
     } :
@@ -139,10 +101,10 @@ $(".membershipUpdate form").on("submit", (event: Event): void => {
     .done((res: string) => {
       $(".membershipComponent").hide();
 
-      const msgs: customTypes.flashMsg[] = JSON.parse(res);
+      const msgs: Types.flashMsg[] = JSON.parse(res);
 
       $(".msgDash").text("").show();
-      msgs.forEach((msg: customTypes.flashMsg) => {
+      msgs.forEach((msg: Types.flashMsg) => {
         $("<p></p>")
           .text(msg.message)
           .attr("class", msg.type)

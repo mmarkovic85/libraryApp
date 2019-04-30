@@ -1,67 +1,32 @@
-/// <reference path="./customTypes.ts"/>
+/// <reference path="../other/Types.ts"/>
 
-// Employee settings menu buttons
-
-$(".employeeCreateBtn").click((): void => {
-  $(".msgDash").hide();
-  $(".employeeComponent").hide();
-  $(".employeeCreate").show();
-});
-
-$(".employeeSearchBtn").click((): void => {
-  $(".msgDash").hide();
-  $(".employeeComponent").hide();
-  $(".employeeSearch").show();
-});
+// Employee settings menu
+Dirkem.configBtn("employee", "Create", "msg");
+Dirkem.configBtn("employee", "Search", "msg");
 
 // Employee create
 
 $(".employeeCreate form").on("submit", (event: Event): void => {
-  event.preventDefault();
-  $(".loading").css("display", "flex");
-
-  const employee: customTypes.Employee = {
-    username: $("#crEmpUsername").val().toString(),
-    newpass1: $("#crEmpNewpass1").val().toString(),
-    newpass2: $("#crEmpNewpass2").val().toString(),
-    name: $("#crEmpName").val().toString(),
-    surname: $("#crEmpSurname").val().toString(),
-    email: $("#crEmpEmail").val().toString(),
-    isAdmin: $("#crEmpIsAdmin").prop("checked")
-  }
+  Dirkem.pause();
 
   $
     .ajax({
       type: "POST",
       url: "/dashboard/employeecreate",
-      data: employee
+      data: Dirkem.createInput("employee")
     })
     .done((res: string): void => {
-      const msgs: customTypes.flashMsg[] = JSON.parse(res);
-
-      $(".msgDash").text("").show();
-      msgs.forEach((msg: customTypes.flashMsg) => {
-        $("<p></p>")
-          .text(msg.message)
-          .attr("class", msg.type)
-          .appendTo($(".msgDash"));
-      });
-
-      const form: HTMLFormElement = <HTMLFormElement>event.target;
-      form.reset();
-
-      $(".loading").hide();
+      Dirkem.displayMsgs(res);
+      Dirkem.play(<HTMLFormElement>event.target);
     });
 });
 
 // Employee search
 
 $(".employeeSearch form").on("submit", (event: JQuery.Event): void => {
-  event.preventDefault();
-  $(".msgDash").hide();
-  $(".loading").css("display", "flex");
+  Dirkem.pause(true);
 
-  const employee: customTypes.Employee = {
+  const employee: Types.Employee = {
     username: $('#srEmpUsername').val().toString(),
     name: $('#srEmpName').val().toString(),
     surname: $('#srEmpSurname').val().toString(),
@@ -75,19 +40,13 @@ $(".employeeSearch form").on("submit", (event: JQuery.Event): void => {
       data: employee
     })
     .done((res: string) => {
-      $(".srEmpResults")
-        .html(`  
-        <span>Click on employee you wish to edit</span>
-        <ul>
-        </ul>
-        `)
-        .show();
+      
 
       JSON.parse(res)
-        .sort((a: customTypes.Employee, b: customTypes.Employee): number => {
+        .sort((a: Types.Employee, b: Types.Employee): number => {
           return a.username < b.username ? -1 : a.username > b.username ? 1 : 0;
         })
-        .forEach((e: customTypes.Employee) => {
+        .forEach((e: Types.Employee) => {
           // Employee HTML
           $(".srEmpResults > ul").append(
             $(`<li id="${e._id}"></li>`).text(`
@@ -109,7 +68,7 @@ $(".employeeSearch form").on("submit", (event: JQuery.Event): void => {
           });
         });
 
-      $(".loading").hide();
+        Dirkem.play();
     });
 });
 
@@ -119,7 +78,7 @@ $(".employeeUpdate form").on("submit", (event: Event): void => {
   event.preventDefault();
   $(".loading").css("display", "flex");
 
-  const employee: customTypes.Employee = $("#upEmpDelete").prop("checked") ?
+  const employee: Types.Employee = $("#upEmpDelete").prop("checked") ?
     {
       _id: $("#upEmp_id").val().toString(),
     } :
@@ -140,10 +99,10 @@ $(".employeeUpdate form").on("submit", (event: Event): void => {
     .done((res: string) => {
       $(".employeeComponent").hide();
 
-      const msgs: customTypes.flashMsg[] = JSON.parse(res);
+      const msgs: Types.flashMsg[] = JSON.parse(res);
 
       $(".msgDash").text("").show();
-      msgs.forEach((msg: customTypes.flashMsg) => {
+      msgs.forEach((msg: Types.flashMsg) => {
         $("<p></p>")
           .text(msg.message)
           .attr("class", msg.type)

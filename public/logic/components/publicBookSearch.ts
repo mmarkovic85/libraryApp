@@ -1,10 +1,10 @@
-/// <reference path="./customTypes.ts"/>
+/// <reference path="../other/Types.ts"/>
 
 $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
   $(".loading").css("display", "flex");
   event.preventDefault();
 
-  const book: customTypes.Book = {
+  const book: Types.Book = {
     author: $('#srBkAuthor').val().toString(),
     title: $('#srBkTitle').val().toString(),
     year: $('#srBkYear').val().toString(),
@@ -18,10 +18,10 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
       data: book
     })
     .done((serverRes: string) => {
-      const books: customTypes.Book[] = JSON.parse(serverRes);
+      const books: Types.Book[] = JSON.parse(serverRes);
       $(".numOfBooks").text(books.length);
       $(".booksContainer").html("");
-      books.forEach((document: customTypes.Book): void => {
+      books.forEach((document: Types.Book): void => {
         $(".booksContainer").append(
           $(`<tr></tr>`).html(`
           <td>${document.author}</td>
