@@ -25,7 +25,7 @@ $(".bookCreate form").on("submit", (event: Event): void => {
 
 // Book search
 
-$(".bookSearch form").on("submit", (event: JQuery.Event): void => {
+$(".bookSearch form").on("submit", (event: Event): void => {
   Dirkem.pause(true);
 
   $
@@ -36,54 +36,30 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
     })
     .done((res: string): void => {
       Dirkem.displayResults("book", res);
-      Dirkem.play();
+      Dirkem.play(<HTMLFormElement>event.target);
     });
 });
 
 // Book update/delete
 
 $(".bookUpdate form").on("submit", (event: Event): void => {
-  event.preventDefault();
-  $(".loading").css("display", "flex");
+  Dirkem.pause();
 
-  const book: Types.Book = $("#upBkDelete").prop("checked") ?
-    {
-      _id: $("#upBk_id").val().toString(),
-      isAvailable: $("#upBkisAvailable").val() === "available" ? true : false
-    } :
-    {
-      _id: $("#upBk_id").val().toString(),
-      author: $("#upBkAuthor").val().toString(),
-      title: $("#upBkTitle").val().toString(),
-      year: $("#upBkYear").val().toString(),
-      language: $("#upBkLanguage").val().toString()
-    };
+  const isForDelete: boolean = $("#upBkDelete").prop("checked");
 
   $
     .ajax({
-      type: $("#upBkDelete").prop("checked") ? "DELETE" : "PUT",
-      url: $("#upBkDelete").prop("checked") ?
+      type: isForDelete ? "DELETE" : "PUT",
+      url: isForDelete ?
         "/dashboard/bookdelete" :
         "/dashboard/bookupdate",
-      data: book
+      data: isForDelete ?
+        Dirkem.deleteInput("book") :
+        Dirkem.updateInput("book")
     })
     .done((res: string): void => {
-      $(".bookComponent").hide();
-
-      const msgs: Types.flashMsg[] = JSON.parse(res);
-
-      $(".msgDash").text("").show();
-      msgs.forEach((msg: Types.flashMsg): void => {
-        $("<p></p>")
-          .text(msg.message)
-          .attr("class", msg.type)
-          .appendTo($(".msgDash"));
-      });
-
-      const form: HTMLFormElement = <HTMLFormElement>event.target;
-      form.reset();
-
-      $(".bookSearch").show();
-      $(".loading").hide();
+      Dirkem.displaySearch("book");
+      Dirkem.displayMsgs(res);
+      Dirkem.play(<HTMLFormElement>event.target);
     });
 });

@@ -1,5 +1,3 @@
 // Account settings listener
-$(".accountConfigBtn").click((): void => {
-  $(".appDash").hide();
-  $(".accountConfig").show();
-});
+
+Dirkem.configBtn("account", "Config");

@@ -1,24 +1,17 @@
 // Main Screen
 
-$((): void => {
-  $(".lendBooks").show();
+Dirkem.mainScreen("librarian");
+
+// Employee dash menu 
+
+$(".lendBooksConfigBtn").click((): void => {
+  $(`.appDash`).hide();
+  $(`.lendBooksUpdate`).hide();
+  $(`.lendBooksSearch`).show();
+  $(`.lendBooksConfig`).show();
 });
 
-// Employee dash menu buttons listeners
+// Common dashboard menu
 
-$(".lendBooksBtn").click((): void => {
-  $(".appDash").hide();
-  $(".lendBooks").show();
-});
-
-$(".bookConfigBtn").click((): void => {
-  $(".appDash").hide();
-  $(".bookComponent").hide();
-  $(".bookConfig").show();
-});
-
-$(".membershipConfigBtn").click((): void => {
-  $(".appDash").hide();
-  $(".membershipComponent").hide();
-  $(".membershipConfig").show();
-});
+Dirkem.configBtn("book", "Config");
+Dirkem.configBtn("membership", "Config");

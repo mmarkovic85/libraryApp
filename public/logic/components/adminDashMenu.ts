@@ -1,6 +1,6 @@
 /// <reference path="../other/Dirkem.ts"/>
 
-Dirkem.adminMainScreen();
+Dirkem.mainScreen("admin");
 
 // Admin dashboard menu
 

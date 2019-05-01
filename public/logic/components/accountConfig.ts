@@ -1,7 +1,7 @@
 /// <reference path="../other/Dirkem.ts"/>
 
 $(".accountConfig form").on("submit", (event: Event): void => {
-  Dirkem.stop();
+  Dirkem.pause();
 
   $
     .ajax({

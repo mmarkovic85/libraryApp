@@ -87,6 +87,7 @@ export default class Controller {
 
   static filterInput(searchParams: Employee & Book & Membership, isEmployee: boolean = true): object {
     const {
+      _id,
       author,
       title,
       year,
@@ -409,13 +410,8 @@ export default class Controller {
           res.json(JSON.stringify(
             // omit password hash from response
             dbRes.map((e: Employee): Employee => {
-              return {
-                _id: e._id,
-                username: e.username,
-                name: e.name,
-                surname: e.surname,
-                email: e.email
-              }
+              const { _id, username, name, surname, email, isAdmin } = e;
+              return { _id, username, name, surname, email, isAdmin }
             })
           ))
         })
