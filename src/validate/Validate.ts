@@ -122,7 +122,7 @@ export default class Validate {
   }
 
   private static title(title: string): boolean {
-    return (/^[A-ZČĆŠĐŽ]{1}([A-ZČĆŠĐŽa-zčćšđž]|[-.,]|\d|\s){2,59}$/)
+    return (/^[A-ZČĆŠĐŽ0-9]{1}([A-ZČĆŠĐŽa-zčćšđž0-9]|[-.,]|\s){2,59}$/)
       .test(title);
   }
 

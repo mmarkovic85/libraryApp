@@ -11,6 +11,7 @@
   "files": [
     "app.ts",
     "public/logic/components/accountConfig.ts",
+    "public/logic/components/activityLog.ts",
     "public/logic/components/adminDashMenu.ts",
     "public/logic/components/bookConfig.ts",
     "public/logic/components/employeeConfig.ts",
@@ -20,6 +21,7 @@
     "public/logic/components/navDash.ts",
     "public/logic/components/publicBookSearch.ts",
     "public/logic/other/Dirkem.ts",
+    "src/activity/Activity.ts",
     "src/controller/Controller.ts",
     "src/database/Db.ts",
     "src/guard/Guard.ts",

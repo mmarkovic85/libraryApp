@@ -50,3 +50,11 @@ export interface DocumentQuery {
   _id: string,
   document?: Employee | Book | Membership
 }
+
+export interface logObj {
+  userId?: string,
+  action?: string,
+  type?: string,
+  data?: Employee | Book | Membership,
+  message?: string
+}

@@ -80,7 +80,8 @@ $(".lendBooksForm form").on("submit", (event: JQuery.Event): void => {
     .ajax({
       type: "POST",
       url: "/booksearch",
-      data: book
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(book)
     })
     .done((res: string): void => {
       $(".srLbResults")
@@ -118,9 +119,17 @@ $(".lendBooksForm form").on("submit", (event: JQuery.Event): void => {
                   $(`#lb${bk._id}`).remove();
                   $(".srLbResults > ul").html("");
                 } else if (!bk.isAvailable) {
-                  console.log("book is alredy lended!");
+                  $(".srLbResults > ul").html("");
+                  Dirkem.displayMsgs(JSON.stringify([{
+                    type: "error",
+                    message: "book is alredy lended!"
+                  }]));
                 } else {
-                  console.log("cannot lend more than 3 books");
+                  $(".srLbResults > ul").html("");
+                  Dirkem.displayMsgs(JSON.stringify([{
+                    type: "error",
+                    message: "cannot lend more than 3 books"
+                  }]));
                 }
               })
           );

@@ -5,6 +5,7 @@ import Db from "../database/Db";
 import Guard from "../guard/Guard";
 import Router from "../router/Router";
 import Validate from "../validate/Validate";
+import Activity from "../activity/Activity";
 import {
   flashMsg,
   Employee,
@@ -38,13 +39,16 @@ export default class Controller {
     Guard
       .generateHash(password)
       .then((hash: string): void => {
-        const admin: Employee = {
+        const admin: object = {
           username,
           password: hash,
           isAdmin: true
         };
-
-        Db.insertOne(admin, "libraryEmployees");
+        Db.insertOne({
+          doc: admin,
+          collName: "libraryEmployees",
+          id: "server start up"
+        });
       })
       .catch((err: Error): void => console.log(err));
   }
@@ -139,7 +143,7 @@ export default class Controller {
         null;
   }
 
-  private static async addEmployee(doc: Employee): Promise<flashMsg[]> {
+  private static async addEmployee(doc: Employee, id: string): Promise<flashMsg[]> {
     const { username, newpass1, name, surname, email, isAdmin } = doc;
     // Validate input
     const msgs: flashMsg[] = Validate.employeeInput(doc);
@@ -156,15 +160,17 @@ export default class Controller {
           await Db
             .insertOne(
               {
-                username,
-                password: await Guard.generateHash(newpass1),
-                name,
-                surname,
-                email,
-                isAdmin
-              },
-              "libraryEmployees"
-            ) ?
+                doc: {
+                  username,
+                  password: await Guard.generateHash(newpass1),
+                  name,
+                  surname,
+                  email,
+                  isAdmin
+                },
+                collName: "libraryEmployees",
+                id
+              }) ?
             msgs.push({
               type: "success",
               message: "Employee successfully saved!"
@@ -172,7 +178,7 @@ export default class Controller {
             msgs.push({
               type: "error",
               message: "Database error!"
-            })
+            });
         }
       } catch (err) {
         if (err) console.log(err);
@@ -184,7 +190,7 @@ export default class Controller {
 
   // Employee password change
 
-  private static async setPassword(doc: Employee): Promise<flashMsg[]> {
+  private static async setPassword(doc: Employee, id: string): Promise<flashMsg[]> {
     const { _id, newpass1 } = doc
 
     const msgs: flashMsg[] = Validate.passwordInput(doc);
@@ -198,7 +204,19 @@ export default class Controller {
             password: hash
           }
         };
-        return await Db.updateOne(updateData, "libraryEmployees") ?
+
+        const isUpdated: boolean = await Db.updateOne(updateData, "libraryEmployees");
+
+        isUpdated && Activity.log({
+          userId: id,
+          type: "password",
+          action: "change",
+          data: id === _id ?
+            null :
+            { _id }
+        });
+
+        return isUpdated ?
           [{
             type: "success",
             message: "Password successfully updated!"
@@ -215,14 +233,18 @@ export default class Controller {
     }
   }
 
-  private static async addBook(doc: Book): Promise<flashMsg[]> {
+  private static async addBook(doc: Book, id: string): Promise<flashMsg[]> {
     // Validate input
     const msgs: flashMsg[] = Validate.bookInput(doc);
     // If no errors found
     if (msgs.length === 0) {
       try {
         await Db
-          .insertOne(doc, "libraryBooks") ?
+          .insertOne({
+            doc,
+            collName: "libraryBooks",
+            id
+          }) ?
           msgs.push({
             type: "success",
             message: "Book successfully saved!"
@@ -239,7 +261,7 @@ export default class Controller {
     return msgs;
   }
 
-  private static async editBook(doc: Book): Promise<flashMsg[]> {
+  private static async editBook(doc: Book, id: string): Promise<flashMsg[]> {
     const { _id, author, title, year, language } = doc;
     // Validate input
     const msgs: flashMsg[] = Validate.bookInput(doc);
@@ -255,8 +277,17 @@ export default class Controller {
             language
           }
         }
-        await Db
-          .updateOne(updateData, "libraryBooks") ?
+
+        const isUpdated: boolean = await Db.updateOne(updateData, "libraryBooks");
+
+        isUpdated && Activity.log({
+          userId: id,
+          type: "book",
+          action: "edit",
+          data: doc
+        })
+
+        isUpdated ?
           msgs.push({
             type: "success",
             message: "Book successfully edited!"
@@ -273,14 +304,18 @@ export default class Controller {
     return msgs;
   }
 
-  private static async addMembership(doc: Membership): Promise<flashMsg[]> {
+  private static async addMembership(doc: Membership, id: string): Promise<flashMsg[]> {
     // Validate input
     const msgs: flashMsg[] = Validate.membershipInput(doc);
     // If no errors found
     if (msgs.length === 0) {
       try {
         await Db
-          .insertOne(doc, "libraryMemberships") ?
+          .insertOne({
+            doc,
+            collName: "libraryMemberships",
+            id
+          }) ?
           msgs.push({
             type: "success",
             message: "Membership successfully saved!"
@@ -297,7 +332,7 @@ export default class Controller {
     return msgs;
   }
 
-  private static async editMember(doc: Membership): Promise<flashMsg[]> {
+  private static async editMember(doc: Membership, id: string): Promise<flashMsg[]> {
     const { _id, name, surname, address, status } = doc;
     // Validate input
     const msgs: flashMsg[] = Validate.membershipInput(doc);
@@ -313,8 +348,17 @@ export default class Controller {
             status
           }
         }
-        await Db
-          .updateOne(updateData, "libraryMemberships") ?
+
+        const isUpdated: boolean = await Db.updateOne(updateData, "libraryMemberships")
+
+        isUpdated && Activity.log({
+          userId: id,
+          type: "member",
+          action: "edit",
+          data: doc
+        })
+
+        isUpdated ?
           msgs.push({
             type: "success",
             message: "Member successfully edited!"
@@ -331,7 +375,7 @@ export default class Controller {
     return msgs;
   }
 
-  private static async delMember(doc: Membership): Promise<flashMsg[]> {
+  private static async delMember(doc: Membership, id: string): Promise<flashMsg[]> {
     const { _id } = doc;
     let msgs: flashMsg[] = [];
 
@@ -343,7 +387,11 @@ export default class Controller {
         message: "Can't delete member who currently have landed books!"
       }) :
 
-      await Db.deleteOne(doc, "libraryMemberships") ?
+      await Db.deleteOne({
+        doc,
+        collName: "libraryMemberships",
+        id
+      }) ?
 
         msgs.push({
           type: "success",
@@ -394,8 +442,8 @@ export default class Controller {
         name,
         surname,
         email,
-        isAdmin: isAdmin === "true" ? true : false
-      })
+        isAdmin
+      }, req.user._id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -425,7 +473,7 @@ export default class Controller {
 
   static employeeUpdate(req: Request, res: Response): void {
     Controller
-      .setPassword(req.body)
+      .setPassword(req.body, req.user._id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -439,7 +487,11 @@ export default class Controller {
         message: "Cannot delete account in use!"
       }])) :
       Db
-        .deleteOne(req.body, "libraryEmployees")
+        .deleteOne({
+          doc: req.body,
+          collName: "libraryEmployees",
+          id: req.user._id
+        })
         .then((dbRes: boolean): void => {
           const msg: flashMsg = dbRes ?
             {
@@ -464,7 +516,7 @@ export default class Controller {
         _id,
         newpass1,
         newpass2
-      })
+      }, _id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -480,7 +532,7 @@ export default class Controller {
         year,
         language,
         isAvailable: true
-      })
+      }, req.user._id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -489,7 +541,7 @@ export default class Controller {
 
   static bookUpdate(req: Request, res: Response): void {
     Controller
-      .editBook(req.body)
+      .editBook(req.body, req.user._id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -500,7 +552,11 @@ export default class Controller {
     req.body.isAvailable ?
 
       Db
-        .deleteOne(req.body, "libraryBooks")
+        .deleteOne({
+          doc: req.body,
+          collName: "libraryBooks",
+          id: req.user._id
+        })
         .then((dbRes: boolean): void => {
           const msg: flashMsg = dbRes ?
             {
@@ -531,7 +587,7 @@ export default class Controller {
         address,
         status,
         books: []
-      })
+      }, req.user._id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -554,7 +610,7 @@ export default class Controller {
 
   static membershipUpdate(req: Request, res: Response): void {
     Controller
-      .editMember(req.body)
+      .editMember(req.body, req.user._id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -563,7 +619,7 @@ export default class Controller {
 
   static membershipDelete(req: Request, res: Response): void {
     Controller
-      .delMember(req.body)
+      .delMember(req.body, req.user._id)
       .then((msgs: flashMsg[]): void => {
         res.json(JSON.stringify(msgs));
       })
@@ -592,13 +648,13 @@ export default class Controller {
 
   static updateMemberBooks(req: Request, res: Response): void {
     Controller
-      .updMemBk(req.body)
+      .updMemBk(req.body, req.user._id)
       .then((dbRes: flashMsg[]): void => {
         res.json(JSON.stringify(dbRes));
       });
   }
 
-  private static async updMemBk(doc: Membership): Promise<flashMsg[]> {
+  private static async updMemBk(doc: Membership, id: string): Promise<flashMsg[]> {
     const { _id, books, returned } = doc;
     // update member
     await Db.updateOne({ _id, document: { books } }, "libraryMemberships");
@@ -608,15 +664,39 @@ export default class Controller {
         _id: books[i], document: { isAvailable: false }
       }, "libraryBooks");
     }
+    books.length > 0 && Activity.log({
+      userId: id,
+      type: "book",
+      action: "lended",
+      data: {
+        _id,
+        books
+      }
+    });
     for (let i = 0; i < returned.length; i++) {
       await Db.updateOne({
         _id: returned[i], document: { isAvailable: true }
       }, "libraryBooks");
     }
+    returned.length > 0 && Activity.log({
+      userId: id,
+      type: "book",
+      action: "returned",
+      data: {
+        _id,
+        returned
+      }
+    });
 
     return [{
       type: "success",
       message: "member updated"
     }];
+  }
+
+  static activityLog(req: Request, res: Response): void {
+    fs
+      .createReadStream('./log/activityLog.txt')
+      .pipe(res);
   }
 }

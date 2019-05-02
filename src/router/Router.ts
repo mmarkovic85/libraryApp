@@ -67,6 +67,7 @@ export default class Router {
     Router.membershipCreate(app);
     Router.membershipSearch(app);
     Router.findMemberBooks(app);
+    Router.activityLog(app);
   }
 
   private static bookSearch(app: Application): void {
@@ -131,12 +132,20 @@ export default class Router {
     );
   }
 
+  private static activityLog(app: Application): void {
+    app.post(
+      "/dashboard/activitylog",
+      Guard.forwardAdmin,
+      Controller.activityLog
+    );
+  }
+
   static PUT(app: Application): void {
     Router.employeeUpdate(app);
     Router.changePassword(app);
     Router.bookUpdate(app);
     Router.membershipUpdate(app);
-    Router.updateMemberBooks(app)
+    Router.updateMemberBooks(app);
   }
 
   private static employeeUpdate(app: Application): void {

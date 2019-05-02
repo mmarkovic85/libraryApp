@@ -4,6 +4,7 @@ import * as session from "express-session";
 import * as flash from "connect-flash-plus";
 import * as passport from "passport";
 import Controller from "../controller/Controller";
+import Activity from "../activity/Activity";
 
 export default class Server {
 
@@ -49,7 +50,9 @@ export default class Server {
 
     server.listen(
       serverPort,
-      (): void => console.log(`Server is live on port ${serverPort}`)
+      (): void => Activity.log({
+        message: `server is live on port ${serverPort}`
+      })
     );
   }
 }
