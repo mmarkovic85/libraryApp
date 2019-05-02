@@ -15,7 +15,8 @@ $(".bookCreate form").on("submit", (event: Event): void => {
     .ajax({
       type: "POST",
       url: "/dashboard/bookcreate",
-      data: Dirkem.createInput("book")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.createInput("book"))
     })
     .done((res: string): void => {
       Dirkem.displayMsgs(res);
@@ -32,7 +33,8 @@ $(".bookSearch form").on("submit", (event: Event): void => {
     .ajax({
       type: "POST",
       url: "/booksearch",
-      data: Dirkem.searchInput("book")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.searchInput("book"))
     })
     .done((res: string): void => {
       Dirkem.displayResults("book", res);
@@ -53,9 +55,12 @@ $(".bookUpdate form").on("submit", (event: Event): void => {
       url: isForDelete ?
         "/dashboard/bookdelete" :
         "/dashboard/bookupdate",
-      data: isForDelete ?
-        Dirkem.deleteInput("book") :
-        Dirkem.updateInput("book")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(
+        isForDelete ?
+          Dirkem.deleteInput("book") :
+          Dirkem.updateInput("book")
+      )
     })
     .done((res: string): void => {
       Dirkem.displaySearch("book");

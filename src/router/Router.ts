@@ -66,6 +66,7 @@ export default class Router {
     Router.bookCreate(app);
     Router.membershipCreate(app);
     Router.membershipSearch(app);
+    Router.findMemberBooks(app);
   }
 
   private static bookSearch(app: Application): void {
@@ -122,11 +123,20 @@ export default class Router {
     );
   }
 
+  private static findMemberBooks(app: Application): void {
+    app.post(
+      "/dashboard/findmemberbooks",
+      Guard.ensureAuthenticated,
+      Controller.findMemberBooks
+    );
+  }
+
   static PUT(app: Application): void {
     Router.employeeUpdate(app);
     Router.changePassword(app);
     Router.bookUpdate(app);
     Router.membershipUpdate(app);
+    Router.updateMemberBooks(app)
   }
 
   private static employeeUpdate(app: Application): void {
@@ -158,6 +168,14 @@ export default class Router {
       "/dashboard/membershipupdate",
       Guard.ensureAuthenticated,
       Controller.membershipUpdate
+    );
+  }
+
+  private static updateMemberBooks(app: Application): void {
+    app.put(
+      "/dashboard/updatememberbooks",
+      Guard.ensureAuthenticated,
+      Controller.updateMemberBooks
     );
   }
 

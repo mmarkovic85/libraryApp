@@ -13,7 +13,8 @@ $(".membershipCreate form").on("submit", (event: Event): void => {
     .ajax({
       type: "POST",
       url: "/dashboard/membershipcreate",
-      data: Dirkem.createInput("membership")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.createInput("membership"))
     })
     .done((res: string): void => {
       Dirkem.displayMsgs(res);
@@ -30,7 +31,8 @@ $(".membershipSearch form").on("submit", (event: Event): void => {
     .ajax({
       type: "POST",
       url: "/dashboard/membershipsearch",
-      data: Dirkem.searchInput("membership")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.searchInput("membership"))
     })
     .done((res: string): void => {
       Dirkem.displayResults("membership", res);
@@ -51,12 +53,15 @@ $(".membershipUpdate form").on("submit", (event: Event): void => {
       url: isForDelete ?
         "/dashboard/membershipdelete" :
         "/dashboard/membershipupdate",
-      data: isForDelete ?
-        Dirkem.deleteInput("membership") :
-        Dirkem.updateInput("membership")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(
+        isForDelete ?
+          Dirkem.deleteInput("membership") :
+          Dirkem.updateInput("membership")
+      )
     })
     .done((res: string): void => {
-      Dirkem.displaySearch("employee");
+      Dirkem.displaySearch("membership");
       Dirkem.displayMsgs(res);
       Dirkem.play(<HTMLFormElement>event.target);
     });

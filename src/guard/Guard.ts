@@ -38,7 +38,7 @@ export default class Guard {
         (username: string, password: string, done: Function): void => {
           // Match user
           Controller
-            .findEmployee({ username })
+            .findOne({ username }, "libraryEmployees")
             .then((user: Employee): void => {
               if (!user) {
                 return done(null, false, { message: 'Input valid username!' });
@@ -68,7 +68,7 @@ export default class Guard {
   private static sessionEnd(): void {
     PSST.deserializeUser((_id: string, done: Function): void => {
       Controller
-        .findEmployee({ _id })
+        .findOne({ _id }, "libraryEmployees")
         .then((user: Employee): void => {
           done(null, user);
         })

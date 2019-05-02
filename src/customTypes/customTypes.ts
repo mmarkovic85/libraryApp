@@ -25,7 +25,8 @@ export interface Membership {
   surname?: string,
   address?: string,
   status?: string,
-  books?: Book[];
+  books?: string[],
+  returned?: string[]
 }
 
 export interface ConfigObj {

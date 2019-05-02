@@ -7,7 +7,8 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
     .ajax({
       type: "POST",
       url: "/booksearch",
-      data: Dirkem.searchInput("book")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.searchInput("book"))
     })
     .done((res: string) => {
       Dirkem.displayPublicResults(res);

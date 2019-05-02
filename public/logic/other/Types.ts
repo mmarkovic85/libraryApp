@@ -26,7 +26,8 @@ namespace Types {
     surname?: string,
     address?: string,
     status?: string,
-    books?: string[];
+    books?: string[],
+    returned?: string[]
   }
 
   export interface flashMsg {

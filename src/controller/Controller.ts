@@ -28,7 +28,7 @@ export default class Controller {
     const { username, password } = Controller.appConfig().defaultAdmin;
 
     Controller
-      .findEmployee({ username })
+      .findOne({ username }, "libraryEmployees")
       .then((user: Employee): void => {
         user || Controller.defaultAdmin({ username, password });
       });
@@ -69,14 +69,14 @@ export default class Controller {
     return config;
   }
   // Employee search
-  static async findEmployee(employee: object): Promise<Employee> {
-    let res: Employee;
+  static async findOne(document: object | Book, collection: string): Promise<Employee | Book> {
+    let res: Employee | Book;
 
     try {
       res =
         await Db.findOne(
-          employee,
-          "libraryEmployees"
+          document,
+          collection
         );
     } catch (err) {
       if (err) console.log(err);
@@ -87,7 +87,6 @@ export default class Controller {
 
   static filterInput(searchParams: Employee & Book & Membership, isEmployee: boolean = true): object {
     const {
-      _id,
       author,
       title,
       year,
@@ -148,7 +147,7 @@ export default class Controller {
     if (msgs.length === 0) {
       try {
 
-        if (await Controller.findEmployee({ $or: [{ username }, { email }] })) {
+        if (await Controller.findOne({ $or: [{ username }, { email }] }, "libraryEmployees")) {
           msgs.push({
             type: "error",
             message: "Username or email already exists!"
@@ -369,7 +368,10 @@ export default class Controller {
   }
 
   static bookSearch(req: Request, res: Response): void {
-    const query: object = Controller.filterInput(req.body, !!req.user);
+    const query: object = Controller.filterInput(
+      req.body,
+      !!req.user
+    );
 
     query ?
       Db
@@ -379,6 +381,7 @@ export default class Controller {
         })
         .catch((err: Error): void => console.log(err)) :
       res.json("[]");
+
   }
 
   static employeeCreate(req: Request, res: Response): void {
@@ -494,7 +497,7 @@ export default class Controller {
   }
 
   static bookDelete(req: Request, res: Response): void {
-    req.body.isAvailable === "true" ?
+    req.body.isAvailable ?
 
       Db
         .deleteOne(req.body, "libraryBooks")
@@ -565,5 +568,55 @@ export default class Controller {
         res.json(JSON.stringify(msgs));
       })
       .catch((err: Error): void => console.log(err));
+  }
+
+  static findMemberBooks(req: Request, res: Response): void {
+    Controller
+      .memBk(req.body)
+      .then((books: Book[]) => {
+        res.json(JSON.stringify(books));
+      });
+  }
+
+  private static async memBk(temp: string[]): Promise<Book[]> {
+    const res: Book[] = [];
+
+    for (let i = 0; i < temp.length; i++) {
+      res.push(
+        await Db.findOne({ _id: temp[i] }, "libraryBooks")
+      );
+    }
+
+    return res;
+  }
+
+  static updateMemberBooks(req: Request, res: Response): void {
+    Controller
+      .updMemBk(req.body)
+      .then((dbRes: flashMsg[]): void => {
+        res.json(JSON.stringify(dbRes));
+      });
+  }
+
+  private static async updMemBk(doc: Membership): Promise<flashMsg[]> {
+    const { _id, books, returned } = doc;
+    // update member
+    await Db.updateOne({ _id, document: { books } }, "libraryMemberships");
+    // update books
+    for (let i = 0; i < books.length; i++) {
+      await Db.updateOne({
+        _id: books[i], document: { isAvailable: false }
+      }, "libraryBooks");
+    }
+    for (let i = 0; i < returned.length; i++) {
+      await Db.updateOne({
+        _id: returned[i], document: { isAvailable: true }
+      }, "libraryBooks");
+    }
+
+    return [{
+      type: "success",
+      message: "member updated"
+    }];
   }
 }

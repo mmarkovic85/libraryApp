@@ -1,6 +1,9 @@
 /// <reference path="./Types.ts"/>
 
 namespace Dirkem {
+  export let books: Set<string>;
+  export let returned: Set<string>;
+
   export function passwordInput(): Types.Employee {
     return {
       newpass1: $("#accNewPassword1").val().toString(),

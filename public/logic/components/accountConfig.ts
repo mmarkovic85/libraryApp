@@ -7,7 +7,8 @@ $(".accountConfig form").on("submit", (event: Event): void => {
     .ajax({
       type: "PUT",
       url: "/dashboard/changepassword",
-      data: Dirkem.passwordInput()
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.passwordInput())
     })
     .done((res: string) => {
       Dirkem.displayMsgs(res);

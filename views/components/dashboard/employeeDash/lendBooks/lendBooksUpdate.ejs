@@ -1,3 +1,63 @@
 <section class="lendBooksComponent lendBooksUpdate">
-  <h1>lendBooksUpdate</h1>
+  <section class="lendBooksMemberUpdate">
+    <form>
+      <fieldset>
+        <legend>Member Info</legend>
+
+        <section class="userInput">
+          <section class="labelsSmall">
+            <label for="upLb_id">ID:</label>
+            <label for="upLbName">Name:</label>
+            <label for="upLbSurname">Surname:</label>
+          </section>
+
+          <section class="inputsSmall">
+            <input type="text" id="upLb_id" disabled>
+            <input type="text" id="upLbName" disabled>
+            <input type="text" id="upLbSurname" disabled>
+          </section>
+        </section>
+
+        <fieldset>
+          <legend>Book(s)</legend>
+          <section class="memberBooks">
+          </section>
+        </fieldset>
+      </fieldset>
+
+      <button class="lbBackBtn">Back</button>
+      <button type="submit">Update</button>
+    </form>
+  </section>
+
+  <section class="lendBooksForm">
+    <form>
+      <fieldset>
+        <legend>Search book(s)</legend>
+
+        <section class="userInput">
+          <section class="labels">
+            <label for="srLbAuthor">Author(s):</label>
+            <label for="srLbTitle">Title:</label>
+            <label for="srLbYear">Publication year:</label>
+            <label for="srLbLanguage">Language:</label>
+          </section>
+
+          <section class="inputs">
+            <input type="text" id="srLbAuthor">
+            <input type="text" id="srLbTitle">
+            <input type="text" id="srLbYear">
+            <input type="text" id="srLbLanguage">
+          </section>
+        </section>
+      </fieldset>
+
+      <button type="reset">Reset</button>
+      <button type="submit">Search</button>
+    </form>
+
+  </section>
+
+  <section class="lendBooksComponent srLbResults resultList">
+  </section>
 </section>

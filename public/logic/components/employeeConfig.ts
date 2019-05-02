@@ -13,7 +13,8 @@ $(".employeeCreate form").on("submit", (event: Event): void => {
     .ajax({
       type: "POST",
       url: "/dashboard/employeecreate",
-      data: Dirkem.createInput("employee")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.createInput("employee"))
     })
     .done((res: string): void => {
       Dirkem.displayMsgs(res);
@@ -30,7 +31,8 @@ $(".employeeSearch form").on("submit", (event: Event): void => {
     .ajax({
       type: "POST",
       url: "/dashboard/employeesearch",
-      data: Dirkem.searchInput("employee")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(Dirkem.searchInput("employee"))
     })
     .done((res: string): void => {
       Dirkem.displayResults("employee", res);
@@ -44,16 +46,19 @@ $(".employeeUpdate form").on("submit", (event: Event): void => {
   Dirkem.pause();
 
   const isForDelete: boolean = $("#upEmpDelete").prop("checked");
-  
+
   $
     .ajax({
       type: isForDelete ? "DELETE" : "PUT",
       url: isForDelete ?
         "/dashboard/employedelete" :
         "/dashboard/employeeupdate",
-      data: isForDelete ?
-        Dirkem.deleteInput("employee") :
-        Dirkem.updateInput("employee")
+      contentType: "application/json; charset=UTF-8",
+      data: JSON.stringify(
+        isForDelete ?
+          Dirkem.deleteInput("employee") :
+          Dirkem.updateInput("employee")
+      )
     })
     .done((res: string): void => {
       Dirkem.displaySearch("employee");

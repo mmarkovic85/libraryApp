@@ -1,3 +1,25 @@
 <section class="lendBooksComponent lendBooksSearch">
-  <h1>lendBooksSearch</h1>
+  <form>
+    <fieldset>
+
+      <legend>Search for member(s)</legend>
+
+      <section class="userInput">
+        <section class="labelsSmall">
+          <label for="srLbName">Name:</label>
+          <label for="srLbSurname">Surname:</label>
+        </section>
+
+        <section class="inputsSmall">
+          <input type="text" id="srLbName">
+          <input type="text" id="srLbSurname">
+        </section>
+      </section>
+    </fieldset>
+
+    <button type="reset">Reset</button>
+    <button type="submit">Search</button>
+  </form>
+  <section class="lendBooksComponent srLbMemResults resultList">
+  </section>
 </section>
