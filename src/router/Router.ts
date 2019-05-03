@@ -40,7 +40,11 @@ export default class Router {
       Guard.forwardEmployee,
       (req: Request, res: Response): void => {
 
-        res.render("login", { msg: req.flash("error") });
+        res.render("login", {
+          msg: req.flash("success").concat(
+            req.flash("error")
+          )
+        });
       }
     );
   }
@@ -65,6 +69,7 @@ export default class Router {
       (req: Request, res: Response): void => {
 
         req.logout();
+        req.flash("success", "You have successfully logged out!")
         res.redirect("/login");
       }
     );
@@ -402,5 +407,22 @@ export default class Router {
           .catch((err: Error): void => console.log(err));
       }
     );
+  }
+
+  static error404(app: Application): void {
+    app.use((req: Request, res: Response): void => {
+      res.status(404);
+
+      // respond html
+      req.accepts('html') && res.render('404', { url: req.url });
+
+      // respond json
+      req.accepts('json') && res.send(JSON.stringify(
+        { error: 'Not found' }
+      ));
+
+      // default respond text
+      res.type('txt').send('Not found');
+    });
   }
 }

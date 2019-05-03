@@ -1,8 +1,8 @@
 /// <reference path="./Types.ts"/>
 
 namespace Dirkem {
-  export let books: Set<string>;
-  export let returned: Set<string>;
+  let borrowedBooks: Set<string>;
+  let returnedBooks: Set<string>;
 
   export function passwordInput(): Types.Employee {
     return {
@@ -33,9 +33,72 @@ namespace Dirkem {
     });
   }
 
+  export function displayErrorMsg(message: string): void {
+    $(".srLbResults > ul").html("");
+
+    $(".msgDash").text("").show();
+
+    $("<p></p>")
+      .text(message)
+      .attr("class", "error")
+      .appendTo($(".msgDash"));
+  }
+
   export function displaySearch(type: string): void {
     $(`.${type}Component`).hide();
     $(`.${type}Search`).show();
+  }
+
+  export function displayLog(log: string) {
+    $(".activityLog > section").html("").show();
+
+    log
+      .split("\n")
+      .reverse()
+      .forEach((logEntry): void => {
+
+        logEntry && $("<p></p>")
+          .text("*" + logEntry)
+          .appendTo($(".activityLog > section"));
+      });
+  }
+
+  function displayMemberBooks(): void {
+    pause(true);
+
+    $(".memberBooks > ul").html("");
+
+    $
+      .ajax({
+        type: "POST",
+        url: "/dashboard/memberbookssearch",
+        contentType: "application/json; charset=UTF-8",
+        data: JSON.stringify(Array.from(borrowedBooks))
+      })
+      .done((books: string): void => {
+        displayDirkemBooks(books);
+        play();
+      });
+  }
+
+  function displayDirkemBooks(booksString: string) {
+    JSON.parse(booksString).forEach((bk: Types.Book): void => {
+      $(".memberBooks > ul").append(
+        $(`<li id="memBk${bk._id}"></li>`)
+          .text(`
+            ${bk.author}, 
+            ${bk.title}, 
+            ${bk.year}, 
+            ${bk.language}, 
+            ${bk._id}
+          `)
+          .click((): void => {
+            borrowedBooks.delete(bk._id);
+            returnedBooks.add(bk._id);
+            $(`#memBk${bk._id}`).remove();
+          })
+      );
+    });
   }
 
   export function mainScreen(type: string): void {
@@ -57,6 +120,7 @@ namespace Dirkem {
     $(`.${component}${action}Btn`).click((): void => {
       $(`.${type}Dash`).hide();
       $(`.${component}Component`).hide();
+      type === "app" && $(`.${component}Search`).show();
       $(`.${component}${action}`).show();
     });
   }
@@ -73,6 +137,8 @@ namespace Dirkem {
         return employeeRaw(action);
       case "membership":
         return membershipRaw(action);
+      case "lendBooks":
+        return lendBooksRaw(action);
     }
   }
 
@@ -161,6 +227,29 @@ namespace Dirkem {
     }
   }
 
+  function lendBooksRaw(action: string): Types.Membership | Types.Book {
+    switch (action) {
+      case "members":
+        return {
+          name: $("#srMemName").val().toString(),
+          surname: $("#srMemSurname").val().toString()
+        };
+      case "book":
+        return {
+          author: $("#srLbAuthor").val().toString(),
+          title: $("#srLbTitle").val().toString(),
+          year: $("#srLbYear").val().toString(),
+          language: $("#srLbLanguage").val().toString()
+        };
+      case "update":
+        return {
+          _id: $("#upLb_id").val().toString(),
+          books: Array.from(borrowedBooks),
+          returned: Array.from(returnedBooks)
+        };
+    }
+  }
+
   export function createInput(
     type: string
   ): Types.Book | Types.Employee | Types.Membership {
@@ -185,18 +274,31 @@ namespace Dirkem {
     return rawInput(type, "up")
   }
 
+  export function lendBooksInput(
+    action: string
+  ): Types.Book | Types.Employee | Types.Membership {
+    return rawInput("lendBooks", action)
+  }
+
   export function displayResults(type: string, res: string): void {
     cleanupPrevRes(type);
     displayNewRes(type, res);
   }
 
   function cleanupPrevRes(type: string): void {
-    $(`.sr${resId(type)}Results`)
+    const prefix: string = resId(type);
+    $(`.sr${prefix}Results`)
       .html(`  
-            <span>Click on ${type} you wish to edit</span>
-            <ul>
-            </ul>
-          `)
+      <span>Click on ${
+        prefix === "LbMem" ?
+          "member" :
+          prefix === "Lb" ?
+            "book" :
+            type + " you wish to edit"
+        }</span>
+      <ul>
+      </ul>
+      `)
       .show();
   }
 
@@ -208,13 +310,19 @@ namespace Dirkem {
         return "Emp";
       case "membership":
         return "Mem";
+      case "lendBooksMembers":
+        return "LbMem";
+      case "lendBooks":
+        return "Lb"
     }
   }
 
   function displayNewRes(type: string, res: string): void {
     let serverRes: Types.Book[] & Types.Employee[] & Types.Membership[];
+
     switch (type) {
       case "book":
+      case "lendBooks":
         serverRes = JSON
           .parse(res)
           .sort((a: Types.Book, b: Types.Book): number => {
@@ -230,6 +338,7 @@ namespace Dirkem {
           });
         break;
       case "membership":
+      case "lendBooksMembers":
         serverRes = JSON
           .parse(res)
           .sort((a: Types.Membership, b: Types.Membership): number => {
@@ -238,12 +347,88 @@ namespace Dirkem {
         break;
     }
 
+
     serverRes.forEach(
-      (e: Types.Book | Types.Employee | Types.Membership): void => {
-        displayHTML(type, e);
-        setResultsListeners(type, e);
-      }
+      type === "lendBooks" || type === "lendBooksMembers" ?
+        (e: Types.Book | Types.Membership): void => {
+          displayLendHTML(type, e);
+        } :
+        (e: Types.Book | Types.Employee | Types.Membership): void => {
+          displayHTML(type, e);
+          setResultsListeners(type, e);
+        }
     );
+  }
+
+  function displayLendHTML(
+    type: string,
+    e: Types.Book & Types.Employee & Types.Membership
+  ): void {
+
+    const {
+      author, title, year, language, _id,
+      isAvailable, name, surname, books
+    } = e;
+
+    switch (type) {
+      case "lendBooks":
+        // Lend book HTML
+        $(".srLbResults > ul").append(
+          $(`<li id="lb${_id}"></li>`)
+            .text(`
+            ${author}, 
+            ${title}, 
+            ${year}, 
+            ${language}, 
+            ${isAvailable ? "available" : "borrowed"}, 
+            ${_id}
+            `)
+            .click((): void => {
+              $(".msgDash").text("").hide();
+              if (borrowedBooks.size < 3 && isAvailable) {
+                borrowedBooks.add(_id);
+                returnedBooks.delete(_id);
+
+                $(".memberBooks > ul").html("");
+                displayMemberBooks();
+                $(`#lb${_id}`).remove();
+                $(".srLbResults > ul").html("");
+              } else if (!isAvailable) {
+
+                displayErrorMsg("book is alredy lended!");
+              } else {
+
+                displayErrorMsg("cannot lend more than 3 books");
+              }
+            })
+        );
+        break;
+      case "lendBooksMembers":
+        // Lend book membership HTML
+        $(".srLbMemResults > ul").append(
+          $(`<li id="lbm${_id}"></li>`)
+            .text(`
+            ${_id}, 
+            ${surname}, 
+            ${name}
+            `)
+            .click(() => {
+              $(".msgDash").hide();
+              $(".lendBooksComponent").hide();
+
+              $("#upLb_id").val(_id);
+              $("#upLbSurname").val(surname);
+              $("#upLbName").val(name);
+
+              borrowedBooks = new Set(books);
+              returnedBooks = new Set();
+
+              displayMemberBooks();
+              $(".lendBooksUpdate").show();
+            })
+        );
+        break;
+    }
   }
 
   function displayHTML(

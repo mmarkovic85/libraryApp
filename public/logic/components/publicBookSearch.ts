@@ -11,6 +11,7 @@ $(".bookSearch form").on("submit", (event: JQuery.Event): void => {
       data: JSON.stringify(Dirkem.searchInput("book"))
     })
     .done((res: string) => {
+
       Dirkem.displayPublicResults(res);
       Dirkem.play();
     });

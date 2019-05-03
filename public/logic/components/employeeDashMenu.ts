@@ -4,12 +4,7 @@ Dirkem.mainScreen("librarian");
 
 // Employee dash menu 
 
-$(".lendBooksConfigBtn").click((): void => {
-  $(`.appDash`).hide();
-  $(`.lendBooksUpdate`).hide();
-  $(`.lendBooksSearch`).show();
-  $(`.lendBooksConfig`).show();
-});
+Dirkem.configBtn("lendBooks", "Config");
 
 // Common dashboard menu
 

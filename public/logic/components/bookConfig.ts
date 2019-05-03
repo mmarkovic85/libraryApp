@@ -19,6 +19,7 @@ $(".bookCreate form").on("submit", (event: Event): void => {
       data: JSON.stringify(Dirkem.createInput("book"))
     })
     .done((res: string): void => {
+
       Dirkem.displayMsgs(res);
       Dirkem.play(<HTMLFormElement>event.target);
     });
@@ -37,7 +38,11 @@ $(".bookSearch form").on("submit", (event: Event): void => {
       data: JSON.stringify(Dirkem.searchInput("book"))
     })
     .done((res: string): void => {
+      
+      res === "[]" ?
+      Dirkem.displayErrorMsg("No match found!"):
       Dirkem.displayResults("book", res);
+
       Dirkem.play(<HTMLFormElement>event.target);
     });
 });
@@ -63,6 +68,7 @@ $(".bookUpdate form").on("submit", (event: Event): void => {
       )
     })
     .done((res: string): void => {
+
       Dirkem.displaySearch("book");
       Dirkem.displayMsgs(res);
       Dirkem.play(<HTMLFormElement>event.target);

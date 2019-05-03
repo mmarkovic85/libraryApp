@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Application, Request, Response } from "express";
+import { Application } from "express";
 import Db from "../database/Db";
 import Guard from "../guard/Guard";
 import Note from "../note/Note";
@@ -24,6 +24,7 @@ export default class Controller {
     Router.POST(app);
     Router.PUT(app);
     Router.DELETE(app);
+    Router.error404(app);
   }
   // Default admin check
   private static admin(): void {
@@ -307,7 +308,10 @@ export default class Controller {
   }
 
   static async editBook(doc: Book, id: string): Promise<flashMsg[]> {
+    const { isAvailable } = doc;
     const msgs: flashMsg[] = Validate.bookInput(doc);
+
+    isAvailable || msgs.push(Note.error("Can't edit lended book!"));
 
     if (msgs.length === 0) {
       const { _id, author, title, year, language } = doc;

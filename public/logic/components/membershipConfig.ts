@@ -1,6 +1,7 @@
 /// <reference path="../other/Types.ts"/>
 
 // Membership settings menu buttons
+
 Dirkem.configBtn("membership", "Create", "msg");
 Dirkem.configBtn("membership", "Search", "msg");
 
@@ -17,6 +18,7 @@ $(".membershipCreate form").on("submit", (event: Event): void => {
       data: JSON.stringify(Dirkem.createInput("membership"))
     })
     .done((res: string): void => {
+
       Dirkem.displayMsgs(res);
       Dirkem.play(<HTMLFormElement>event.target);
     });
@@ -35,7 +37,11 @@ $(".membershipSearch form").on("submit", (event: Event): void => {
       data: JSON.stringify(Dirkem.searchInput("membership"))
     })
     .done((res: string): void => {
+      
+      res === "[]" ?
+      Dirkem.displayErrorMsg("No match found!"):
       Dirkem.displayResults("membership", res);
+      
       Dirkem.play(<HTMLFormElement>event.target);
     });
 });
@@ -61,6 +67,7 @@ $(".membershipUpdate form").on("submit", (event: Event): void => {
       )
     })
     .done((res: string): void => {
+
       Dirkem.displaySearch("membership");
       Dirkem.displayMsgs(res);
       Dirkem.play(<HTMLFormElement>event.target);

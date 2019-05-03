@@ -1,10 +1,9 @@
-import { Request, Response } from "express";
-import * as passport from "passport";
+import { Request, Response, Application } from "express";
+import * as pass from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import * as bcrypt from "bcrypt";
 import Controller from "../controller/Controller";
 import { Employee } from "../types/Types";
-import { RequestHandlerParams } from "express-serve-static-core";
 
 export default class Guard {
   // Security config
@@ -20,7 +19,7 @@ export default class Guard {
 
   // Passport strategy config
   private static passportStrategy(): void {
-    passport.use(new LocalStrategy(
+    pass.use(new LocalStrategy(
       (username: string, password: string, done: Function): void => {
         // Match user
         Controller
@@ -45,14 +44,14 @@ export default class Guard {
 
   // Session - start
   private static sessionStart(): void {
-    passport.serializeUser((user: Employee, done: Function): void => {
+    pass.serializeUser((user: Employee, done: Function): void => {
       done(null, user._id);
     });
   }
 
   // Session - end
   private static sessionEnd(): void {
-    passport.deserializeUser((_id: string, done: Function): void => {
+    pass.deserializeUser((_id: string, done: Function): void => {
       Controller
         .findOne({ _id }, "libraryEmployees")
         .then((user: Employee): void => {
@@ -62,7 +61,7 @@ export default class Guard {
   }
 
   // Authentication middleware
-  static readonly authenticate: RequestHandlerParams = passport.authenticate(
+  static readonly authenticate: Application = pass.authenticate(
     'local',
     {
       successRedirect: '/dashboard',
@@ -70,6 +69,8 @@ export default class Guard {
       failureFlash: true
     }
   )
+
+
 
   // Session - middleware gate
   static ensureAuthenticated(

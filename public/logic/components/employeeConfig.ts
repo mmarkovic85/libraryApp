@@ -17,6 +17,7 @@ $(".employeeCreate form").on("submit", (event: Event): void => {
       data: JSON.stringify(Dirkem.createInput("employee"))
     })
     .done((res: string): void => {
+
       Dirkem.displayMsgs(res);
       Dirkem.play(<HTMLFormElement>event.target);
     });
@@ -35,7 +36,11 @@ $(".employeeSearch form").on("submit", (event: Event): void => {
       data: JSON.stringify(Dirkem.searchInput("employee"))
     })
     .done((res: string): void => {
-      Dirkem.displayResults("employee", res);
+
+      res === "[]" ?
+        Dirkem.displayErrorMsg("No match found!") :
+        Dirkem.displayResults("employee", res);
+
       Dirkem.play(<HTMLFormElement>event.target);
     });
 });
@@ -61,6 +66,7 @@ $(".employeeUpdate form").on("submit", (event: Event): void => {
       )
     })
     .done((res: string): void => {
+
       Dirkem.displaySearch("employee");
       Dirkem.displayMsgs(res);
       Dirkem.play(<HTMLFormElement>event.target);

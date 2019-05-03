@@ -140,11 +140,7 @@ table.bookSearchResult {
   font-size: 1em;
 }
 
-.resultList li {
+.resultList li, .activityLog section, .memberBooks li {
   text-align: left;
   padding: 1em;
-}
-
-.activityLog>section {
-  text-align: left;
 }
