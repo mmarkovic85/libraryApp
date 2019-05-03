@@ -40,7 +40,7 @@ export default class Server {
     server.use(passport.session());
     // Flash messages
     server.use(flash());
-    // Routes
+    // Config custom modules
     Controller.map(server);
   }
 

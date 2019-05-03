@@ -173,7 +173,7 @@ function loadBooks(books: string[]): void {
   $
     .ajax({
       type: "POST",
-      url: "/dashboard/findmemberbooks",
+      url: "/dashboard/memberbookssearch",
       contentType: "application/json; charset=UTF-8",
       data: JSON.stringify(books)
     })

@@ -3,6 +3,7 @@ import * as path from "path";
 import { Application, Request, Response } from "express";
 import Db from "../database/Db";
 import Guard from "../guard/Guard";
+import Note from "../note/Note";
 import Router from "../router/Router";
 import Validate from "../validate/Validate";
 import Activity from "../activity/Activity";
@@ -13,7 +14,7 @@ import {
   Membership,
   ConfigObj,
   DocumentQuery
-} from "../customTypes/customTypes";
+} from "../types/Types";
 
 export default class Controller {
   static map(app: Application): void {
@@ -28,27 +29,31 @@ export default class Controller {
   private static admin(): void {
     const { username, password } = Controller.appConfig().defaultAdmin;
 
-    Controller
+    Db
       .findOne({ username }, "libraryEmployees")
       .then((user: Employee): void => {
         user || Controller.defaultAdmin({ username, password });
-      });
+      })
+      .catch((err: Error): void => console.log(err));;
   }
 
   private static defaultAdmin({ username, password }): void {
     Guard
       .generateHash(password)
       .then((hash: string): void => {
-        const admin: object = {
+        const admin: Employee = {
           username,
           password: hash,
           isAdmin: true
         };
-        Db.insertOne({
-          doc: admin,
-          collName: "libraryEmployees",
-          id: "server start up"
-        });
+
+        Db
+          .insertOne({
+            doc: admin,
+            collName: "libraryEmployees",
+            id: "server init"
+          })
+          .catch((err: Error): void => console.log(err));;
       })
       .catch((err: Error): void => console.log(err));
   }
@@ -57,12 +62,13 @@ export default class Controller {
     let config: ConfigObj;
 
     configUpdate ?
+
       fs.writeFileSync(
         path.join(__dirname, "../../", "appconfig.json"),
         JSON.stringify(configUpdate),
         "utf8",
-      )
-      :
+      ) :
+
       config = JSON.parse(
         fs.readFileSync(
           path.join(__dirname, "../../", "appconfig.json"),
@@ -72,24 +78,12 @@ export default class Controller {
 
     return config;
   }
-  // Employee search
-  static async findOne(document: object | Book, collection: string): Promise<Employee | Book> {
-    let res: Employee | Book;
 
-    try {
-      res =
-        await Db.findOne(
-          document,
-          collection
-        );
-    } catch (err) {
-      if (err) console.log(err);
-    }
+  static filterInput(
+    searchParams: Employee & Book & Membership,
+    isEmployee: boolean = true
+  ): object {
 
-    return res;
-  }
-
-  static filterInput(searchParams: Employee & Book & Membership, isEmployee: boolean = true): object {
     const {
       author,
       title,
@@ -143,521 +137,316 @@ export default class Controller {
         null;
   }
 
-  private static async addEmployee(doc: Employee, id: string): Promise<flashMsg[]> {
-    const { username, newpass1, name, surname, email, isAdmin } = doc;
-    // Validate input
-    const msgs: flashMsg[] = Validate.employeeInput(doc);
-    // If no errors found
-    if (msgs.length === 0) {
-      try {
+  static async findOne(
+    document: Employee | Book,
+    collection: string
+  ): Promise<Employee | Book> {
 
-        if (await Controller.findOne({ $or: [{ username }, { email }] }, "libraryEmployees")) {
-          msgs.push({
-            type: "error",
-            message: "Username or email already exists!"
-          });
-        } else {
-          await Db
-            .insertOne(
-              {
-                doc: {
-                  username,
-                  password: await Guard.generateHash(newpass1),
-                  name,
-                  surname,
-                  email,
-                  isAdmin
-                },
-                collName: "libraryEmployees",
-                id
-              }) ?
-            msgs.push({
-              type: "success",
-              message: "Employee successfully saved!"
-            }) :
-            msgs.push({
-              type: "error",
-              message: "Database error!"
-            });
-        }
-      } catch (err) {
-        if (err) console.log(err);
+    return await Db.findOne(
+      document,
+      collection
+    );
+  }
+
+  static async addBook(doc: Book, id: string): Promise<flashMsg[]> {
+    const msgs: flashMsg[] = Validate.bookInput(doc);
+
+    if (msgs.length === 0) {
+      await Db
+        .insertOne({
+          doc,
+          collName: "libraryBooks",
+          id
+        }) ?
+
+        msgs.push(Note.success("Book successfully saved!")) :
+        msgs.push(Note.error("Book was not saved!"));
+    }
+
+    return msgs;
+  }
+
+  static async addEmployee(doc: Employee, id: string): Promise<flashMsg[]> {
+    const msgs: flashMsg[] = Validate.employeeInput(doc);
+
+    if (msgs.length === 0) {
+      const { username, newpass1, name, surname, email, isAdmin } = doc;
+
+      if (
+        await Db
+          .findOne(
+            { $or: [{ username }, { email }] },
+            "libraryEmployees"
+          )
+      ) {
+
+        msgs.push(Note.error("Username or email already exists!"));
+
+      } else {
+
+        await Db
+          .insertOne(
+            {
+              doc: {
+                username,
+                password: await Guard.generateHash(newpass1),
+                name,
+                surname,
+                email,
+                isAdmin
+              },
+              collName: "libraryEmployees",
+              id
+            }) ?
+
+          msgs.push(Note.success("Employee successfully saved!")) :
+          msgs.push(Note.error("Database error!"));
+
       }
     }
 
     return msgs;
   }
 
-  // Employee password change
+  static async addMembership(
+    doc: Membership,
+    id: string
+  ): Promise<flashMsg[]> {
 
-  private static async setPassword(doc: Employee, id: string): Promise<flashMsg[]> {
-    const { _id, newpass1 } = doc
+    const msgs: flashMsg[] = Validate.membershipInput(doc);
 
+    if (msgs.length === 0) {
+      await Db
+        .insertOne({
+          doc,
+          collName: "libraryMemberships",
+          id
+        }) ?
+
+        msgs.push(Note.success("Membership successfully saved!")) :
+        msgs.push(Note.error("Membership was not saved!"));
+
+    }
+
+    return msgs;
+  }
+
+  static async bookSearch(doc: Book, isEmployee: boolean): Promise<string> {
+    const query: object = Controller.filterInput(
+      doc,
+      isEmployee
+    );
+
+    return JSON.stringify(
+      query ?
+        await Db.find(query, "libraryBooks") :
+        []
+    );
+  }
+
+  static async employeeSearch(doc: Employee): Promise<string> {
+    const query: object = Controller.filterInput(doc);
+
+    const dbRes: Employee[] = query ?
+      await Db.find(query, "libraryEmployees") :
+      [];
+
+    return JSON.stringify(
+      // omit password hash from response
+      dbRes.map((e: Employee): Employee => {
+        const { _id, username, name, surname, email, isAdmin } = e;
+        return { _id, username, name, surname, email, isAdmin }
+      })
+    );
+  }
+
+  static async membershipSearch(doc: Membership): Promise<string> {
+    const query: object = Controller.filterInput(doc);
+
+    return JSON.stringify(
+      query ?
+        await Db.find(query, "libraryMemberships") :
+        []
+    );
+  }
+
+  static async setPassword(doc: Employee, id: string): Promise<flashMsg[]> {
     const msgs: flashMsg[] = Validate.passwordInput(doc);
 
     if (msgs.length === 0) {
-      try {
-        const hash: string = await Guard.generateHash(newpass1);
-        const updateData: DocumentQuery = {
-          _id,
-          document: {
-            password: hash
-          }
-        };
+      const { _id, newpass1 } = doc;
+      const hash: string = await Guard.generateHash(newpass1);
+      const updateData: DocumentQuery = {
+        _id,
+        document: {
+          password: hash
+        }
+      };
 
-        const isUpdated: boolean = await Db.updateOne(updateData, "libraryEmployees");
+      const isUpdated: boolean = await Db.updateOne(
+        updateData,
+        "libraryEmployees"
+      );
 
-        isUpdated && Activity.log({
-          userId: id,
-          type: "password",
-          action: "change",
-          data: id === _id ?
-            null :
-            { _id }
-        });
+      isUpdated && Activity.log({
+        userId: id,
+        type: "password",
+        action: "change",
+        data: id === _id ?
+          null :
+          { _id }
+      });
 
-        return isUpdated ?
-          [{
-            type: "success",
-            message: "Password successfully updated!"
-          }] :
-          [{
-            type: "error",
-            message: "Password was not updated!"
-          }];
-      } catch (err) {
-        if (err) console.log(err);
-      }
-    } else {
-      return msgs;
-    }
-  }
+      isUpdated ?
+        msgs.push(Note.success("Password successfully updated!")) :
+        msgs.push(Note.error("Password was not updated!"));
 
-  private static async addBook(doc: Book, id: string): Promise<flashMsg[]> {
-    // Validate input
-    const msgs: flashMsg[] = Validate.bookInput(doc);
-    // If no errors found
-    if (msgs.length === 0) {
-      try {
-        await Db
-          .insertOne({
-            doc,
-            collName: "libraryBooks",
-            id
-          }) ?
-          msgs.push({
-            type: "success",
-            message: "Book successfully saved!"
-          }) :
-          msgs.push({
-            type: "error",
-            message: "Book was not saved!"
-          });
-      } catch (err) {
-        if (err) console.log(err)
-      }
     }
 
     return msgs;
   }
 
-  private static async editBook(doc: Book, id: string): Promise<flashMsg[]> {
-    const { _id, author, title, year, language } = doc;
-    // Validate input
+  static async editBook(doc: Book, id: string): Promise<flashMsg[]> {
     const msgs: flashMsg[] = Validate.bookInput(doc);
 
     if (msgs.length === 0) {
-      try {
-        const updateData: DocumentQuery = {
-          _id,
-          document: {
-            author,
-            title,
-            year,
-            language
-          }
+      const { _id, author, title, year, language } = doc;
+      const updateData: DocumentQuery = {
+        _id,
+        document: {
+          author,
+          title,
+          year,
+          language
         }
-
-        const isUpdated: boolean = await Db.updateOne(updateData, "libraryBooks");
-
-        isUpdated && Activity.log({
-          userId: id,
-          type: "book",
-          action: "edit",
-          data: doc
-        })
-
-        isUpdated ?
-          msgs.push({
-            type: "success",
-            message: "Book successfully edited!"
-          }) :
-          msgs.push({
-            type: "error",
-            message: "Book was not updated!"
-          });
-      } catch (err) {
-        if (err) console.log(err)
       }
+
+      const isUpdated: boolean = await Db.updateOne(
+        updateData,
+        "libraryBooks"
+      );
+
+      isUpdated && Activity.log({
+        userId: id,
+        type: "book",
+        action: "edit",
+        data: doc
+      })
+
+      isUpdated ?
+        msgs.push(Note.success("Book successfully edited!")) :
+        msgs.push(Note.error("Book was not updated!"));
     }
 
     return msgs;
   }
 
-  private static async addMembership(doc: Membership, id: string): Promise<flashMsg[]> {
-    // Validate input
-    const msgs: flashMsg[] = Validate.membershipInput(doc);
-    // If no errors found
-    if (msgs.length === 0) {
-      try {
-        await Db
-          .insertOne({
-            doc,
-            collName: "libraryMemberships",
-            id
-          }) ?
-          msgs.push({
-            type: "success",
-            message: "Membership successfully saved!"
-          }) :
-          msgs.push({
-            type: "error",
-            message: "Membership was not saved!"
-          });
-      } catch (err) {
-        if (err) console.log(err)
-      }
-    }
-
-    return msgs;
-  }
-
-  private static async editMember(doc: Membership, id: string): Promise<flashMsg[]> {
-    const { _id, name, surname, address, status } = doc;
-    // Validate input
+  static async editMember(doc: Membership, id: string): Promise<flashMsg[]> {
     const msgs: flashMsg[] = Validate.membershipInput(doc);
 
     if (msgs.length === 0) {
-      try {
-        const updateData: DocumentQuery = {
-          _id,
-          document: {
-            name,
-            surname,
-            address,
-            status
-          }
+      const { _id, name, surname, address, status } = doc;
+      const updateData: DocumentQuery = {
+        _id,
+        document: {
+          name,
+          surname,
+          address,
+          status
         }
-
-        const isUpdated: boolean = await Db.updateOne(updateData, "libraryMemberships")
-
-        isUpdated && Activity.log({
-          userId: id,
-          type: "member",
-          action: "edit",
-          data: doc
-        })
-
-        isUpdated ?
-          msgs.push({
-            type: "success",
-            message: "Member successfully edited!"
-          }) :
-          msgs.push({
-            type: "error",
-            message: "Member was not updated!"
-          });
-      } catch (err) {
-        if (err) console.log(err)
       }
+
+      const isUpdated: boolean = await Db.updateOne(
+        updateData,
+        "libraryMemberships"
+      );
+
+      isUpdated && Activity.log({
+        userId: id,
+        type: "member",
+        action: "edit",
+        data: doc
+      })
+
+      isUpdated ?
+        msgs.push(Note.success("Member successfully edited!")) :
+        msgs.push(Note.error("Member was not updated!"));
+
     }
 
     return msgs;
   }
 
-  private static async delMember(doc: Membership, id: string): Promise<flashMsg[]> {
-    const { _id } = doc;
-    let msgs: flashMsg[] = [];
+  static async bookDelete({
+    user_id,
+    delete_id,
+    isAvailable
+  }): Promise<flashMsg[]> {
 
-    (await Db.findOne({ _id }, "libraryMemberships"))
-      .books.length > 0 ?
+    return !isAvailable ?
 
-      msgs.push({
-        type: "error",
-        message: "Can't delete member who currently have landed books!"
-      }) :
+      [Note.error("Cannot delete borrowed book!")] :
 
       await Db.deleteOne({
-        doc,
-        collName: "libraryMemberships",
-        id
+        doc: { _id: delete_id },
+        collName: "libraryBooks",
+        id: user_id
       }) ?
-
-        msgs.push({
-          type: "success",
-          message: "Member successfully deleted!"
-        }) :
-
-        msgs.push({
-          type: "error",
-          message: "Member was not deleted!"
-        });
-
-    return msgs;
+        [Note.success("Book successfully deleted!")] :
+        [Note.error("Book was not deleted!")];
   }
 
-  // Router callbacks
+  static async employeeDelete({ user_id, delete_id }): Promise<flashMsg[]> {
+    return user_id === delete_id ?
 
-  static dashboard(req: Request, res: Response): void {
-    res.render(
-      req.user.isAdmin ? "adminDash" : "employeeDash",
-      { name: req.user.name }
-    );
+      [Note.error("Cannot delete account in use!")] :
+
+      await Db.deleteOne({
+        doc: { _id: delete_id },
+        collName: "libraryEmployees",
+        id: user_id
+      }) ?
+        [Note.success("Employee successfully deleted!")] :
+        [Note.error("Employee was not deleted!")];
   }
 
-  static bookSearch(req: Request, res: Response): void {
-    const query: object = Controller.filterInput(
-      req.body,
-      !!req.user
-    );
+  static async memberDelete({ user_id, delete_id }): Promise<flashMsg[]> {
+    const member = await Db.findOne({ _id: delete_id }, "libraryMemberships");
 
-    query ?
-      Db
-        .find(query, "libraryBooks")
-        .then((dbRes: Book[]): void => {
-          res.json(JSON.stringify(dbRes))
-        })
-        .catch((err: Error): void => console.log(err)) :
-      res.json("[]");
+    return member.books.length > 0 ?
 
+      [Note.error("Can't delete member who currently have landed books!")] :
+
+      await Db.deleteOne({
+        doc: { _id: delete_id },
+        collName: "libraryMemberships",
+        id: user_id
+      }) ?
+        [Note.success("Member successfully deleted!")] :
+        [Note.error("Member was not deleted!")];
   }
 
-  static employeeCreate(req: Request, res: Response): void {
-    const { username, newpass1, newpass2, name, surname, email, isAdmin } = req.body;
-    Controller
-      .addEmployee({
-        username,
-        newpass1,
-        newpass2,
-        name,
-        surname,
-        email,
-        isAdmin
-      }, req.user._id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-
-  }
-
-  static employeeSearch(req: Request, res: Response): void {
-    const query: object = Controller.filterInput(req.body);
-
-    query ?
-      Db
-        .find(query, "libraryEmployees")
-        .then((dbRes: Employee[]): void => {
-          res.json(JSON.stringify(
-            // omit password hash from response
-            dbRes.map((e: Employee): Employee => {
-              const { _id, username, name, surname, email, isAdmin } = e;
-              return { _id, username, name, surname, email, isAdmin }
-            })
-          ))
-        })
-        .catch((err: Error): void => console.log(err)) :
-      res.json("[]");
-
-  }
-
-  static employeeUpdate(req: Request, res: Response): void {
-    Controller
-      .setPassword(req.body, req.user._id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-  }
-
-  static employeeDelete(req: Request, res: Response): void {
-    req.body._id == req.user._id ?
-      res.json(JSON.stringify([{
-        type: "error",
-        message: "Cannot delete account in use!"
-      }])) :
-      Db
-        .deleteOne({
-          doc: req.body,
-          collName: "libraryEmployees",
-          id: req.user._id
-        })
-        .then((dbRes: boolean): void => {
-          const msg: flashMsg = dbRes ?
-            {
-              type: "success",
-              message: "Employee successfully deleted!"
-            } :
-            {
-              type: "error",
-              message: "Employee was not deleted!"
-            };
-
-          res.json(JSON.stringify([msg]));
-        })
-        .catch((err: Error): void => console.log(err));
-  }
-
-  static changePassword(req: Request, res: Response): void {
-    const { newpass1, newpass2 } = req.body;
-    const { _id } = req.user;
-    Controller
-      .setPassword({
-        _id,
-        newpass1,
-        newpass2
-      }, _id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-  }
-
-  static bookCreate(req: Request, res: Response): void {
-    const { author, title, year, language } = req.body;
-    Controller
-      .addBook({
-        author,
-        title,
-        year,
-        language,
-        isAvailable: true
-      }, req.user._id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-  }
-
-  static bookUpdate(req: Request, res: Response): void {
-    Controller
-      .editBook(req.body, req.user._id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-  }
-
-  static bookDelete(req: Request, res: Response): void {
-    req.body.isAvailable ?
-
-      Db
-        .deleteOne({
-          doc: req.body,
-          collName: "libraryBooks",
-          id: req.user._id
-        })
-        .then((dbRes: boolean): void => {
-          const msg: flashMsg = dbRes ?
-            {
-              type: "success",
-              message: "Book successfully deleted!"
-            } :
-            {
-              type: "error",
-              message: "Book was not deleted!"
-            };
-
-          res.json(JSON.stringify([msg]));
-        })
-        .catch((err: Error): void => console.log(err)) :
-
-      res.json(JSON.stringify([{
-        type: "error",
-        message: "Cannot delete borrowed book!"
-      }]));
-  }
-
-  static membershipCreate(req: Request, res: Response): void {
-    const { name, surname, address, status } = req.body;
-    Controller
-      .addMembership({
-        name,
-        surname,
-        address,
-        status,
-        books: []
-      }, req.user._id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-  }
-
-  static membershipSearch(req: Request, res: Response): void {
-    const query: object = Controller.filterInput(req.body);
-
-    query ?
-      Db
-        .find(query, "libraryMemberships")
-        .then((dbRes: Membership[]): void => {
-          res.json(JSON.stringify(dbRes))
-        })
-        .catch((err: Error): void => console.log(err)) :
-      res.json("[]");
-
-  }
-
-  static membershipUpdate(req: Request, res: Response): void {
-    Controller
-      .editMember(req.body, req.user._id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-  }
-
-  static membershipDelete(req: Request, res: Response): void {
-    Controller
-      .delMember(req.body, req.user._id)
-      .then((msgs: flashMsg[]): void => {
-        res.json(JSON.stringify(msgs));
-      })
-      .catch((err: Error): void => console.log(err));
-  }
-
-  static findMemberBooks(req: Request, res: Response): void {
-    Controller
-      .memBk(req.body)
-      .then((books: Book[]) => {
-        res.json(JSON.stringify(books));
-      });
-  }
-
-  private static async memBk(temp: string[]): Promise<Book[]> {
-    const res: Book[] = [];
+  static async memberBooksSearch(temp: string[]): Promise<Book[]> {
+    const books: Book[] = [];
 
     for (let i = 0; i < temp.length; i++) {
-      res.push(
+      books.push(
         await Db.findOne({ _id: temp[i] }, "libraryBooks")
       );
     }
 
-    return res;
+    return books;
   }
 
-  static updateMemberBooks(req: Request, res: Response): void {
-    Controller
-      .updMemBk(req.body, req.user._id)
-      .then((dbRes: flashMsg[]): void => {
-        res.json(JSON.stringify(dbRes));
-      });
-  }
+  static async editMemberBooks(
+    doc: Membership,
+    id: string
+  ): Promise<flashMsg[]> {
 
-  private static async updMemBk(doc: Membership, id: string): Promise<flashMsg[]> {
     const { _id, books, returned } = doc;
     // update member
     await Db.updateOne({ _id, document: { books } }, "libraryMemberships");
+
     // update books
     for (let i = 0; i < books.length; i++) {
       await Db.updateOne({
@@ -673,6 +462,7 @@ export default class Controller {
         books
       }
     });
+
     for (let i = 0; i < returned.length; i++) {
       await Db.updateOne({
         _id: returned[i], document: { isAvailable: true }
@@ -688,15 +478,6 @@ export default class Controller {
       }
     });
 
-    return [{
-      type: "success",
-      message: "member updated"
-    }];
-  }
-
-  static activityLog(req: Request, res: Response): void {
-    fs
-      .createReadStream('./log/activityLog.txt')
-      .pipe(res);
+    return [Note.success("Member books updated!")];
   }
 }

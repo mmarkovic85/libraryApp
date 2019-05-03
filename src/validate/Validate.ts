@@ -1,4 +1,5 @@
-import { Employee, flashMsg, Book, Membership } from "../customTypes/customTypes";
+import Note from "../note/Note";
+import { Employee, flashMsg, Book, Membership } from "../types/Types";
 
 export default class Validate {
   static employeeInput(employee: Employee): flashMsg[] {
@@ -13,35 +14,29 @@ export default class Validate {
     const errors: flashMsg[] = [];
 
     // Username
-    Validate.username({ username, name, surname }) || errors.push({
-      type: "error",
-      message: "Invalid username input!"
-    });
+    Validate.username({ username, name, surname }) || errors.push(
+      Note.error("Invalid username input!")
+    );
     // Password
-    Validate.password(newpass1) || errors.push({
-      type: "error",
-      message: "Invalid password input!"
-    });
+    Validate.password(newpass1) || errors.push(
+      Note.error("Invalid password input!")
+    );
     // Password confirmation
-    newpass1 === newpass2 || errors.push({
-      type: "error",
-      message: "Passwords don't match!"
-    });
+    newpass1 === newpass2 || errors.push(
+      Note.error("Passwords don't match!")
+    );
     // Name
-    Validate.nameSurname(name) || errors.push({
-      type: "error",
-      message: "Invalid name input!"
-    });
+    Validate.nameSurname(name) || errors.push(
+      Note.error("Invalid name input!")
+    );
     // Surname
-    Validate.nameSurname(surname) || errors.push({
-      type: "error",
-      message: "Invalid surname input!"
-    });
+    Validate.nameSurname(surname) || errors.push(
+      Note.error("Invalid surname input!")
+    );
     // E-mail
-    Validate.email(email) || errors.push({
-      type: "error",
-      message: "Invalid e-mail input!"
-    });
+    Validate.email(email) || errors.push(
+      Note.error("Invalid e-mail input!")
+    );
 
     return errors;
   }
@@ -80,15 +75,13 @@ export default class Validate {
     const errors: flashMsg[] = [];
 
     // Password
-    Validate.password(newpass1) || errors.push({
-      type: "error",
-      message: "Invalid password input!"
-    });
+    Validate.password(newpass1) || errors.push(
+      Note.error("Invalid password input!")
+    );
     // Password confirmation
-    newpass1 === newpass2 || errors.push({
-      type: "error",
-      message: "Passwords don't match!"
-    });
+    newpass1 === newpass2 || errors.push(
+      Note.error("Passwords don't match!")
+    );
 
     return errors;
   }
@@ -98,20 +91,17 @@ export default class Validate {
     const errors: flashMsg[] = [];
 
     // Author
-    Validate.author(author) || errors.push({
-      type: "error",
-      message: "Invalid author input!"
-    });
+    Validate.author(author) || errors.push(
+      Note.error("Invalid author input!")
+    );
     // Title
-    Validate.title(title) || errors.push({
-      type: "error",
-      message: "Invalid title input!"
-    });
+    Validate.title(title) || errors.push(
+      Note.error("Invalid title input!")
+    );
     // Publication year
-    Validate.year(year) || errors.push({
-      type: "error",
-      message: "Invalid publication year input!"
-    });
+    Validate.year(year) || errors.push(
+      Note.error("Invalid publication year input!")
+    );
 
     return errors
   }
@@ -139,20 +129,17 @@ export default class Validate {
     const errors: flashMsg[] = [];
 
     // Name
-    Validate.nameSurname(name) || errors.push({
-      type: "error",
-      message: "Invalid name input!"
-    });
+    Validate.nameSurname(name) || errors.push(
+      Note.error("Invalid name input!")
+    );
     // Surname
-    Validate.nameSurname(surname) || errors.push({
-      type: "error",
-      message: "Invalid surname input!"
-    });
+    Validate.nameSurname(surname) || errors.push(
+      Note.error("Invalid surname input!")
+    );
     // Address
-    Validate.address(address) || errors.push({
-      type: "error",
-      message: "Invalid address input!"
-    });
+    Validate.address(address) || errors.push(
+      Note.error("Invalid address input!")
+    );
 
     return errors;
   }

@@ -1,13 +1,13 @@
 import * as fs from "fs";
-import { logObj } from "../customTypes/customTypes";
+import { logObj } from "../types/Types";
 
 export default class Activity {
-  private static logIt(logEntry: string): void {
-    const logIt: string = new Date() + logEntry + "\n";
+  private static logAppend(logEntry: string): void {
+    const logAddition: string = new Date() + logEntry + "\n";
     fs.appendFile(
       './log/activityLog.txt',
 
-      logIt,
+      logAddition,
 
       (err: object) => { if (err) throw err; }
     );
@@ -19,9 +19,13 @@ export default class Activity {
     logObj.userId && (logEntry += " -- " + logObj.userId);
     logObj.action && (logEntry += " -- " + logObj.action);
     logObj.type && (logEntry += " -- " + logObj.type);
-    logObj.data && (logEntry += " -- " + JSON.stringify(logObj.data));
+    logObj.data && (
+      logEntry += (" -- ").concat(
+        JSON.stringify(logObj.data).replace(/"/g, " ")
+      )
+    );
     logObj.message && (logEntry += " -- " + logObj.message);
 
-    Activity.logIt(logEntry);
+    Activity.logAppend(logEntry);
   }
 }

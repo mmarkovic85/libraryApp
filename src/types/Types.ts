@@ -47,8 +47,10 @@ export interface flashMsg {
 }
 
 export interface DocumentQuery {
-  _id: string,
+  _id?: string,
   document?: Employee | Book | Membership
+  $or?: object[],
+  $and?: object[]
 }
 
 export interface logObj {

@@ -1,6 +1,8 @@
+import * as fs from "fs";
 import { Application, Request, Response } from "express";
 import Controller from "../controller/Controller";
 import Guard from "../guard/Guard";
+import { flashMsg, Book } from "../types/Types";
 
 export default class Router {
   // GET routes
@@ -16,6 +18,7 @@ export default class Router {
     app.get(
       "/",
       (req: Request, res: Response): void => {
+
         res.render("index");
       }
     );
@@ -25,7 +28,19 @@ export default class Router {
     app.get(
       "/search",
       (req: Request, res: Response): void => {
+
         res.render("search");
+      }
+    );
+  }
+
+  private static login(app: Application): void {
+    app.get(
+      "/login",
+      Guard.forwardEmployee,
+      (req: Request, res: Response): void => {
+
+        res.render("login", { msg: req.flash("error") });
       }
     );
   }
@@ -34,16 +49,12 @@ export default class Router {
     app.get(
       "/dashboard",
       Guard.ensureAuthenticated,
-      Controller.dashboard
-    );
-  }
-
-  private static login(app: Application): void {
-    app.get(
-      "/login",
-      Guard.skipLogin,
       (req: Request, res: Response): void => {
-        res.render("login", { msg: req.flash("error") });
+
+        res.render(
+          req.user.isAdmin ? "adminDash" : "employeeDash",
+          { name: req.user.name }
+        );
       }
     );
   }
@@ -52,29 +63,24 @@ export default class Router {
     app.get(
       "/logout",
       (req: Request, res: Response): void => {
+
         req.logout();
         res.redirect("/login");
       }
     );
   }
+
   // POST routes
   static POST(app: Application): void {
-    Router.bookSearch(app);
     Router.userLogin(app);
+    Router.activityLog(app);
+    Router.findMemberBooks(app);
     Router.employeeCreate(app);
     Router.employeeSearch(app);
     Router.bookCreate(app);
+    Router.bookSearch(app);
     Router.membershipCreate(app);
     Router.membershipSearch(app);
-    Router.findMemberBooks(app);
-    Router.activityLog(app);
-  }
-
-  private static bookSearch(app: Application): void {
-    app.post(
-      "/booksearch",
-      Controller.bookSearch
-    );
   }
 
   private static userLogin(app: Application): void {
@@ -84,11 +90,61 @@ export default class Router {
     );
   }
 
+  private static activityLog(app: Application): void {
+    app.post(
+      "/dashboard/activitylog",
+      Guard.forwardAdmin,
+      (req: Request, res: Response): void => {
+
+        fs
+          .createReadStream('./log/activityLog.txt')
+          .pipe(res);
+      }
+    );
+  }
+
+  private static findMemberBooks(app: Application): void {
+    app.post(
+      "/dashboard/memberbookssearch",
+      Guard.ensureAuthenticated,
+      (req: Request, res: Response): void => {
+
+        Controller
+          .memberBooksSearch(req.body)
+          .then((books: Book[]) => {
+            res.json(JSON.stringify(books));
+          });
+      }
+    );
+  }
+
   private static employeeCreate(app: Application): void {
     app.post(
       "/dashboard/employeecreate",
       Guard.forwardAdmin,
-      Controller.employeeCreate
+      (req: Request, res: Response): void => {
+
+        const {
+          username, newpass1, newpass2,
+          name, surname, email, isAdmin
+        } = req.body;
+
+        Controller
+          .addEmployee({
+            username,
+            newpass1,
+            newpass2,
+            name,
+            surname,
+            email,
+            isAdmin
+          }, req.user._id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+
+      }
     );
   }
 
@@ -96,7 +152,15 @@ export default class Router {
     app.post(
       "/dashboard/employeesearch",
       Guard.forwardAdmin,
-      Controller.employeeSearch
+      (req: Request, res: Response): void => {
+
+        Controller
+          .employeeSearch(req.body)
+          .then((employees: string) => {
+            res.json(employees);
+          })
+          .catch((err: Error): void => console.log(err));
+      }
     );
   }
 
@@ -104,7 +168,37 @@ export default class Router {
     app.post(
       "/dashboard/bookcreate",
       Guard.ensureAuthenticated,
-      Controller.bookCreate
+      (req: Request, res: Response): void => {
+
+        const { author, title, year, language } = req.body;
+
+        Controller
+          .addBook({
+            author,
+            title,
+            year,
+            language,
+            isAvailable: true
+          }, req.user._id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
+    );
+  }
+
+  private static bookSearch(app: Application): void {
+    app.post(
+      "/booksearch",
+      (req: Request, res: Response): void => {
+
+        Controller
+          .bookSearch(req.body, !!req.user)
+          .then((books: string): void => {
+            res.json(books)
+          })
+      }
     );
   }
 
@@ -112,7 +206,23 @@ export default class Router {
     app.post(
       "/dashboard/membershipcreate",
       Guard.ensureAuthenticated,
-      Controller.membershipCreate
+      (req: Request, res: Response): void => {
+
+        const { name, surname, address, status } = req.body;
+
+        Controller
+          .addMembership({
+            name,
+            surname,
+            address,
+            status,
+            books: []
+          }, req.user._id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
     );
   }
 
@@ -120,63 +230,49 @@ export default class Router {
     app.post(
       "/dashboard/membershipSearch",
       Guard.ensureAuthenticated,
-      Controller.membershipSearch
+      (req: Request, res: Response): void => {
+
+        const query: object = Controller.filterInput(req.body);
+
+        Controller
+          .membershipSearch(req.body)
+          .then((memberships: string) => {
+            res.json(memberships);
+          })
+          .catch((err: Error): void => console.log(err));
+      }
     );
   }
 
-  private static findMemberBooks(app: Application): void {
-    app.post(
-      "/dashboard/findmemberbooks",
-      Guard.ensureAuthenticated,
-      Controller.findMemberBooks
-    );
-  }
-
-  private static activityLog(app: Application): void {
-    app.post(
-      "/dashboard/activitylog",
-      Guard.forwardAdmin,
-      Controller.activityLog
-    );
-  }
-
+  // PUT routes
   static PUT(app: Application): void {
-    Router.employeeUpdate(app);
     Router.changePassword(app);
+    Router.updateMemberBooks(app);
+    Router.employeeUpdate(app);
     Router.bookUpdate(app);
     Router.membershipUpdate(app);
-    Router.updateMemberBooks(app);
-  }
-
-  private static employeeUpdate(app: Application): void {
-    app.put(
-      "/dashboard/employeeupdate",
-      Guard.forwardAdmin,
-      Controller.employeeUpdate
-    );
   }
 
   private static changePassword(app: Application): void {
     app.put(
       "/dashboard/changepassword",
       Guard.ensureAuthenticated,
-      Controller.changePassword
-    );
-  }
+      (req: Request, res: Response): void => {
 
-  private static bookUpdate(app: Application): void {
-    app.put(
-      "/dashboard/bookupdate",
-      Guard.ensureAuthenticated,
-      Controller.bookUpdate
-    );
-  }
+        const { newpass1, newpass2 } = req.body;
+        const { _id } = req.user;
 
-  private static membershipUpdate(app: Application): void {
-    app.put(
-      "/dashboard/membershipupdate",
-      Guard.ensureAuthenticated,
-      Controller.membershipUpdate
+        Controller
+          .setPassword({
+            _id,
+            newpass1,
+            newpass2
+          }, _id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
     );
   }
 
@@ -184,10 +280,66 @@ export default class Router {
     app.put(
       "/dashboard/updatememberbooks",
       Guard.ensureAuthenticated,
-      Controller.updateMemberBooks
+      (req: Request, res: Response): void => {
+
+        Controller
+          .editMemberBooks(req.body, req.user._id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          });
+      }
     );
   }
 
+  private static employeeUpdate(app: Application): void {
+    app.put(
+      "/dashboard/employeeupdate",
+      Guard.forwardAdmin,
+      (req: Request, res: Response): void => {
+
+        Controller
+          .setPassword(req.body, req.user._id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
+    );
+  }
+
+  private static bookUpdate(app: Application): void {
+    app.put(
+      "/dashboard/bookupdate",
+      Guard.ensureAuthenticated,
+      (req: Request, res: Response): void => {
+
+        Controller
+          .editBook(req.body, req.user._id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
+    );
+  }
+
+  private static membershipUpdate(app: Application): void {
+    app.put(
+      "/dashboard/membershipupdate",
+      Guard.ensureAuthenticated,
+      (req: Request, res: Response): void => {
+
+        Controller
+          .editMember(req.body, req.user._id)
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
+    );
+  }
+
+  // DELETE routes
   static DELETE(app: Application): void {
     Router.employeeDelete(app);
     Router.bookDelete(app);
@@ -198,7 +350,18 @@ export default class Router {
     app.delete(
       "/dashboard/employedelete",
       Guard.forwardAdmin,
-      Controller.employeeDelete
+      (req: Request, res: Response): void => {
+
+        Controller
+          .employeeDelete({
+            user_id: req.user._id,
+            delete_id: req.body._id
+          })
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
     );
   }
 
@@ -206,7 +369,19 @@ export default class Router {
     app.delete(
       "/dashboard/bookdelete",
       Guard.ensureAuthenticated,
-      Controller.bookDelete
+      (req: Request, res: Response): void => {
+
+        Controller
+          .bookDelete({
+            user_id: req.user._id,
+            delete_id: req.body._id,
+            isAvailable: req.body.isAvailable
+          })
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
     );
   }
 
@@ -214,7 +389,18 @@ export default class Router {
     app.delete(
       "/dashboard/membershipdelete",
       Guard.ensureAuthenticated,
-      Controller.membershipDelete
+      (req: Request, res: Response): void => {
+
+        Controller
+          .memberDelete({
+            user_id: req.user._id,
+            delete_id: req.body._id
+          })
+          .then((msgs: flashMsg[]): void => {
+            res.json(JSON.stringify(msgs));
+          })
+          .catch((err: Error): void => console.log(err));
+      }
     );
   }
 }

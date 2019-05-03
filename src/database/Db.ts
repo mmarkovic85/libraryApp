@@ -1,7 +1,7 @@
 import * as MDB from "mongodb";
 import Controller from "../controller/Controller";
 import Activity from "../activity/Activity";
-import { Employee, Book, DocumentQuery, Membership } from "../customTypes/customTypes";
+import { Employee, Book, DocumentQuery, Membership } from "../types/Types";
 
 export default class Db {
   private static type(collName: string): string {
@@ -22,7 +22,6 @@ export default class Db {
       { useNewUrlParser: true }
     );
 
-
     await client.connect();
 
     const dbRes: MDB.InsertOneWriteOpResult = await client
@@ -32,20 +31,30 @@ export default class Db {
 
     client.close();
 
-    const { _id, username, name, surname, author, title, year, status, address } = dbRes.ops[0]
+    const {
+      _id, username, name, surname, author,
+      title, year, status, address
+    } = dbRes.ops[0];
 
     Activity.log({
       userId: id,
       action: "create",
       type: Db.type(collName),
-      data: { _id, username, name, surname, author, title, year, status, address }
+      data: {
+        _id, username, name, surname, author,
+        title, year, status, address
+      }
     });
 
     return dbRes.insertedCount === 1;
 
   }
 
-  static async find(doc: Employee | Book, collName: string): Promise<Employee[] | Book[] | Membership[]> {
+  static async find(
+    doc: Employee | Book,
+    collName: string
+  ): Promise<Employee[] | Book[] | Membership[]> {
+
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
@@ -65,7 +74,11 @@ export default class Db {
     return dbRes;
   }
 
-  static async findOne(doc: Employee | Book | Membership, collName: string): Promise<Employee & Book & Membership> {
+  static async findOne(
+    doc: Employee | Book | Membership | DocumentQuery,
+    collName: string
+  ): Promise<Employee & Book & Membership> {
+
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
@@ -78,7 +91,7 @@ export default class Db {
 
     await client.connect();
 
-    const dbRes: Employee & Book & Membership = await client
+    const dbRes: Employee | Book | Membership = await client
       .db(dbName)
       .collection(collName)
       .findOne(query)
@@ -115,7 +128,11 @@ export default class Db {
 
   }
 
-  static async updateOne(doc: DocumentQuery, collName: string): Promise<boolean> {
+  static async updateOne(
+    doc: DocumentQuery,
+    collName: string
+  ): Promise<boolean> {
+
     const { uri, dbName } = Controller.appConfig().db;;
     const client: MDB.MongoClient = new MDB.MongoClient(
       uri,
