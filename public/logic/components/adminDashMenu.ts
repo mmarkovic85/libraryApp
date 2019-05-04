@@ -1,13 +1,13 @@
-/// <reference path="../other/Dirkem.ts"/>
+/// <reference path="../other/Nineveh.ts"/>
 
-Dirkem.mainScreen("admin");
+Nineveh.mainScreen("admin");
 
 // Admin dashboard menu
 
-Dirkem.configBtn("activity", "Log");
-Dirkem.configBtn("employee", "Config");
+Nineveh.configBtn("activity", "Log");
+Nineveh.configBtn("employee", "Config");
 
 // Common dashboard menu
 
-Dirkem.configBtn("book", "Config");
-Dirkem.configBtn("membership", "Config");
+Nineveh.configBtn("book", "Config");
+Nineveh.configBtn("membership", "Config");

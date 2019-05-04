@@ -1,18 +1,18 @@
-/// <reference path="../other/Types.ts"/>
+/// <reference path="../other/Nineveh.ts"/>
 
-$(".bookSearch form").on("submit", (event: JQuery.Event): void => {
-  Dirkem.pause();
+$(".bookSearch form").on("submit", (event: Event): void => {
+  Nineveh.pause();
 
   $
     .ajax({
       type: "POST",
       url: "/booksearch",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.searchInput("book"))
+      data: JSON.stringify(Nineveh.searchInput("book"))
     })
     .done((res: string) => {
 
-      Dirkem.displayPublicResults(res);
-      Dirkem.play();
+      Nineveh.displayResults("book", res, true);
+      Nineveh.play();
     });
 });

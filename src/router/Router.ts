@@ -6,16 +6,16 @@ import { flashMsg, Book } from "../types/Types";
 
 export default class Router {
   // GET routes
-  static GET(app: Application): void {
-    Router.homepage(app);
-    Router.search(app);
-    Router.login(app);
-    Router.dashboard(app);
-    Router.logout(app);
+  static GET(server: Application): void {
+    Router.homepage(server);
+    Router.search(server);
+    Router.login(server);
+    Router.dashboard(server);
+    Router.logout(server);
   }
 
-  private static homepage(app: Application): void {
-    app.get(
+  private static homepage(server: Application): void {
+    server.get(
       "/",
       (req: Request, res: Response): void => {
 
@@ -25,8 +25,8 @@ export default class Router {
     );
   }
 
-  private static search(app: Application): void {
-    app.get(
+  private static search(server: Application): void {
+    server.get(
       "/search",
       (req: Request, res: Response): void => {
 
@@ -36,24 +36,23 @@ export default class Router {
     );
   }
 
-  private static login(app: Application): void {
-    app.get(
+  private static login(server: Application): void {
+    server.get(
       "/login",
       Guard.forwardEmployee,
       (req: Request, res: Response): void => {
 
         res.render("login", {
-          msg: req.flash("success").concat(
-            req.flash("error")
-          )
+          suc: req.flash("success"),
+          err: req.flash("error")
         });
         res.end();
       }
     );
   }
 
-  private static dashboard(app: Application): void {
-    app.get(
+  private static dashboard(server: Application): void {
+    server.get(
       "/dashboard",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -67,8 +66,8 @@ export default class Router {
     );
   }
 
-  private static logout(app: Application): void {
-    app.get(
+  private static logout(server: Application): void {
+    server.get(
       "/logout",
       (req: Request, res: Response): void => {
 
@@ -81,27 +80,27 @@ export default class Router {
   }
 
   // POST routes
-  static POST(app: Application): void {
-    Router.userLogin(app);
-    Router.activityLog(app);
-    Router.findMemberBooks(app);
-    Router.employeeCreate(app);
-    Router.employeeSearch(app);
-    Router.bookCreate(app);
-    Router.bookSearch(app);
-    Router.membershipCreate(app);
-    Router.membershipSearch(app);
+  static POST(server: Application): void {
+    Router.userLogin(server);
+    Router.activityLog(server);
+    Router.findMemberBooks(server);
+    Router.employeeCreate(server);
+    Router.employeeSearch(server);
+    Router.bookCreate(server);
+    Router.bookSearch(server);
+    Router.membershipCreate(server);
+    Router.membershipSearch(server);
   }
 
-  private static userLogin(app: Application): void {
-    app.post(
+  private static userLogin(server: Application): void {
+    server.post(
       "/login",
       Guard.authenticate
     );
   }
 
-  private static activityLog(app: Application): void {
-    app.post(
+  private static activityLog(server: Application): void {
+    server.post(
       "/dashboard/activitylog",
       Guard.forwardAdmin,
       (req: Request, res: Response): void => {
@@ -113,8 +112,8 @@ export default class Router {
     );
   }
 
-  private static findMemberBooks(app: Application): void {
-    app.post(
+  private static findMemberBooks(server: Application): void {
+    server.post(
       "/dashboard/memberbookssearch",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -130,8 +129,8 @@ export default class Router {
     );
   }
 
-  private static employeeCreate(app: Application): void {
-    app.post(
+  private static employeeCreate(server: Application): void {
+    server.post(
       "/dashboard/employeecreate",
       Guard.forwardAdmin,
       (req: Request, res: Response): void => {
@@ -160,8 +159,8 @@ export default class Router {
     );
   }
 
-  private static employeeSearch(app: Application): void {
-    app.post(
+  private static employeeSearch(server: Application): void {
+    server.post(
       "/dashboard/employeesearch",
       Guard.forwardAdmin,
       (req: Request, res: Response): void => {
@@ -177,8 +176,8 @@ export default class Router {
     );
   }
 
-  private static bookCreate(app: Application): void {
-    app.post(
+  private static bookCreate(server: Application): void {
+    server.post(
       "/dashboard/bookcreate",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -202,8 +201,8 @@ export default class Router {
     );
   }
 
-  private static bookSearch(app: Application): void {
-    app.post(
+  private static bookSearch(server: Application): void {
+    server.post(
       "/booksearch",
       (req: Request, res: Response): void => {
 
@@ -211,14 +210,15 @@ export default class Router {
           .bookSearch(req.body, !!req.user)
           .then((books: string): void => {
 
-            res.json(books)
+            res.json(books);
+            res.end();
           });
       }
     );
   }
 
-  private static membershipCreate(app: Application): void {
-    app.post(
+  private static membershipCreate(server: Application): void {
+    server.post(
       "/dashboard/membershipcreate",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -242,8 +242,8 @@ export default class Router {
     );
   }
 
-  private static membershipSearch(app: Application): void {
-    app.post(
+  private static membershipSearch(server: Application): void {
+    server.post(
       "/dashboard/membershipSearch",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -260,16 +260,16 @@ export default class Router {
   }
 
   // PUT routes
-  static PUT(app: Application): void {
-    Router.changePassword(app);
-    Router.updateMemberBooks(app);
-    Router.employeeUpdate(app);
-    Router.bookUpdate(app);
-    Router.membershipUpdate(app);
+  static PUT(server: Application): void {
+    Router.changePassword(server);
+    Router.updateMemberBooks(server);
+    Router.employeeUpdate(server);
+    Router.bookUpdate(server);
+    Router.membershipUpdate(server);
   }
 
-  private static changePassword(app: Application): void {
-    app.put(
+  private static changePassword(server: Application): void {
+    server.put(
       "/dashboard/changepassword",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -292,8 +292,8 @@ export default class Router {
     );
   }
 
-  private static updateMemberBooks(app: Application): void {
-    app.put(
+  private static updateMemberBooks(server: Application): void {
+    server.put(
       "/dashboard/updatememberbooks",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -309,8 +309,8 @@ export default class Router {
     );
   }
 
-  private static employeeUpdate(app: Application): void {
-    app.put(
+  private static employeeUpdate(server: Application): void {
+    server.put(
       "/dashboard/employeeupdate",
       Guard.forwardAdmin,
       (req: Request, res: Response): void => {
@@ -326,8 +326,8 @@ export default class Router {
     );
   }
 
-  private static bookUpdate(app: Application): void {
-    app.put(
+  private static bookUpdate(server: Application): void {
+    server.put(
       "/dashboard/bookupdate",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -343,8 +343,8 @@ export default class Router {
     );
   }
 
-  private static membershipUpdate(app: Application): void {
-    app.put(
+  private static membershipUpdate(server: Application): void {
+    server.put(
       "/dashboard/membershipupdate",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -361,14 +361,14 @@ export default class Router {
   }
 
   // DELETE routes
-  static DELETE(app: Application): void {
-    Router.employeeDelete(app);
-    Router.bookDelete(app);
-    Router.membershipDelete(app);
+  static DELETE(server: Application): void {
+    Router.employeeDelete(server);
+    Router.bookDelete(server);
+    Router.membershipDelete(server);
   }
 
-  private static employeeDelete(app: Application): void {
-    app.delete(
+  private static employeeDelete(server: Application): void {
+    server.delete(
       "/dashboard/employedelete",
       Guard.forwardAdmin,
       (req: Request, res: Response): void => {
@@ -387,8 +387,8 @@ export default class Router {
     );
   }
 
-  private static bookDelete(app: Application): void {
-    app.delete(
+  private static bookDelete(server: Application): void {
+    server.delete(
       "/dashboard/bookdelete",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -408,8 +408,8 @@ export default class Router {
     );
   }
 
-  private static membershipDelete(app: Application): void {
-    app.delete(
+  private static membershipDelete(server: Application): void {
+    server.delete(
       "/dashboard/membershipdelete",
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
@@ -428,21 +428,20 @@ export default class Router {
     );
   }
 
-  static error404(app: Application): void {
-    app.use((req: Request, res: Response): void => {
+  static error404(server: Application): void {
+    server.use((req: Request, res: Response): void => {
       res.status(404);
 
       // respond html
-      req.accepts('html') && res.render('404', { url: req.url });
-
-      // respond json
-      req.accepts('json') && res.send(JSON.stringify(
-        { error: 'Not found' }
-      ));
-
-      // default respond text
-      res.type('txt').send('Not found');
-
+      req.accepts('html') ?
+        res.render('404', { url: req.url }) :
+        // respond json
+        req.accepts('json') ?
+          res.send(JSON.stringify(
+            { error: 'Not found' }
+          )) :
+          // default respond text
+          res.type('txt').send('Not found');
 
       res.end();
     });

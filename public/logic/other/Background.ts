@@ -134,10 +134,13 @@ namespace Background {
         Math.pow(window.innerHeight, 2) * Math.pow(window.innerWidth, 2)
       ) / 1000;
 
-      num = num ||
-        defaultNum < 1200 ?
-        defaultNum :
-        1200;
+      num = num ?
+        num :
+        num === 0 ?
+          0 :
+          defaultNum < 1200 ?
+            defaultNum :
+            1200;
 
       for (let i = 0; i < num; i++) {
         this.circles.add(Circle.random());
@@ -153,9 +156,13 @@ namespace Background {
 
       $(window)
         .resize(() => {
-          this
-            .setupCircles()
-            .init();
+          this.numOfCircles() ?
+
+            this
+              .setupCircles()
+              .init() :
+
+            this.init(false);
         })
         .mousemove((event: JQuery.Event) => {
           if (
@@ -205,7 +212,7 @@ namespace Background {
     }
 
     // Initialize animation area and refresh timer
-    init(): Animation {
+    init(restartTimer: boolean = true): Animation {
       $("body")
         .css({
           margin: "0",
@@ -225,11 +232,18 @@ namespace Background {
 
       // Set timer for animation refresh
       clearInterval(this.updateTimer);
-      this.updateTimer = setInterval(() => {
-        this.updateFrame();
-      }, this.refreshRate);
+
+      restartTimer && (
+        this.updateTimer = setInterval(() => {
+          this.updateFrame();
+        }, this.refreshRate)
+      );
 
       return this;
+    }
+
+    numOfCircles(): number {
+      return this.circles.size;
     }
   }
 }

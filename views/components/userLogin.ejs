@@ -1,9 +1,10 @@
 <section class="appBody userLogin">
   <h1>Please login!</h1>
 
-  <% include ./msg %>
-
   <form action="/login" method="POST">
+
+    <% include ./loginMsg %>
+
     <fieldset>
       <legend>User login:</legend>
       <section class="userInput">

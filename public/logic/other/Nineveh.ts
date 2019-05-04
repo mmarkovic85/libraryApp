@@ -1,10 +1,26 @@
 /// <reference path="./Types.ts"/>
 /// <reference path="./Background.ts"/>
 
-namespace Dirkem {
-  const animation: Background.Animation = new Background.Animation;
+namespace Nineveh {
+  let animation: Background.Animation;
   let borrowedBooks: Set<string>;
   let returnedBooks: Set<string>;
+
+  export function init(): void {
+    animation = new Background.Animation;
+  }
+
+  export function bgAnimationToggle(): void {
+    $(".bgAnimationBtn").click((): void => {
+      const isPlaying: boolean = !!animation.numOfCircles();
+
+      $(".bgAnimationBtn").text(
+        isPlaying ?
+          animation.setupCircles(0) && "Turn on" :
+          animation.setupCircles() && "Turn off"
+      );
+    });
+  }
 
   export function passwordInput(): Types.Employee {
     return {
@@ -36,7 +52,7 @@ namespace Dirkem {
   }
 
   export function displayErrorMsg(message: string): void {
-    $(".srLbResults > ul").html("");
+    $(".srLbResults").html("");
 
     $(".msgDash").text("").show();
 
@@ -59,16 +75,16 @@ namespace Dirkem {
       .reverse()
       .forEach((logEntry): void => {
 
-        logEntry && $("<p></p>")
-          .text("*" + logEntry)
-          .appendTo($(".activityLog > section"));
+        logEntry && $("<p class=\"results\"></p>")
+          .text(logEntry)
+          .appendTo($(".activityComponent"));
       });
   }
 
   function displayMemberBooks(): void {
     pause(true);
 
-    $(".memberBooks > ul").html("");
+    $(".memberBooks").html("");
 
     $
       .ajax({
@@ -78,15 +94,15 @@ namespace Dirkem {
         data: JSON.stringify(Array.from(borrowedBooks))
       })
       .done((books: string): void => {
-        displayDirkemBooks(books);
+        displayBorrowedBooks(books);
         play();
       });
   }
 
-  function displayDirkemBooks(booksString: string) {
+  function displayBorrowedBooks(booksString: string) {
     JSON.parse(booksString).forEach((bk: Types.Book): void => {
-      $(".memberBooks > ul").append(
-        $(`<li id="memBk${bk._id}"></li>`)
+      $(".memberBooks").append(
+        $(`<p id="memBk${bk._id}" class="results"></p>`)
           .text(`
             ${bk.author}, 
             ${bk.title}, 
@@ -234,10 +250,10 @@ namespace Dirkem {
 
   function lendBooksRaw(action: string): Types.Membership | Types.Book {
     switch (action) {
-      case "members":
+      case "member":
         return {
-          name: $("#srMemName").val().toString(),
-          surname: $("#srMemSurname").val().toString()
+          name: $("#srLbName").val().toString(),
+          surname: $("#srLbSurname").val().toString()
         };
       case "book":
         return {
@@ -285,24 +301,29 @@ namespace Dirkem {
     return rawInput("lendBooks", action)
   }
 
-  export function displayResults(type: string, res: string): void {
-    cleanupPrevRes(type);
-    displayNewRes(type, res);
+  export function displayResults(
+    type: string,
+    res: string,
+    public: boolean = false): void {
+
+    cleanupPrevRes(type, public, JSON.parse(res).length);
+    displayNewRes(type, public, res);
   }
 
-  function cleanupPrevRes(type: string): void {
+  function cleanupPrevRes(type: string, public: boolean, numOfBooks: number): void {
+
     const prefix: string = resId(type);
     $(`.sr${prefix}Results`)
-      .html(`  
-      <span>Click on ${
-        prefix === "LbMem" ?
-          "member" :
-          prefix === "Lb" ?
-            "book" :
-            type + " you wish to edit"
-        }</span>
-      <ul>
-      </ul>
+      .html(
+        public ?
+          `<span class="title">Found ${numOfBooks} book(s)</span>` :
+          `<span class="title">Click on ${
+          prefix === "LbMem" ?
+            "member" :
+            prefix === "Lb" ?
+              "book" :
+              type + " you wish to edit"
+          }</span>
       `)
       .show();
   }
@@ -322,7 +343,7 @@ namespace Dirkem {
     }
   }
 
-  function displayNewRes(type: string, res: string): void {
+  function displayNewRes(type: string, public: boolean, res: string): void {
     let serverRes: Types.Book[] & Types.Employee[] & Types.Membership[];
 
     switch (type) {
@@ -359,8 +380,8 @@ namespace Dirkem {
           displayLendHTML(type, e);
         } :
         (e: Types.Book | Types.Employee | Types.Membership): void => {
-          displayHTML(type, e);
-          setResultsListeners(type, e);
+          displayHTML(type, public, e);
+          public || setResultsListeners(type, e);
         }
     );
   }
@@ -378,14 +399,16 @@ namespace Dirkem {
     switch (type) {
       case "lendBooks":
         // Lend book HTML
-        $(".srLbResults > ul").append(
-          $(`<li id="lb${_id}"></li>`)
-            .text(`
+        $(".srLbResults").append(
+          $(`<p id="lb${_id}" class="results"></p>`)
+            .html(`
             ${author}, 
             ${title}, 
             ${year}, 
             ${language}, 
-            ${isAvailable ? "available" : "borrowed"}, 
+            ${isAvailable ?
+                "available" :
+                "<span class=\"borrowed\">borrowed</span>"}, 
             ${_id}
             `)
             .click((): void => {
@@ -394,10 +417,10 @@ namespace Dirkem {
                 borrowedBooks.add(_id);
                 returnedBooks.delete(_id);
 
-                $(".memberBooks > ul").html("");
+                $(".memberBooks").html("");
                 displayMemberBooks();
                 $(`#lb${_id}`).remove();
-                $(".srLbResults > ul").html("");
+                $(".srLbResults").html("");
               } else if (!isAvailable) {
 
                 displayErrorMsg("book is alredy lended!");
@@ -410,8 +433,8 @@ namespace Dirkem {
         break;
       case "lendBooksMembers":
         // Lend book membership HTML
-        $(".srLbMemResults > ul").append(
-          $(`<li id="lbm${_id}"></li>`)
+        $(".srLbMemResults").append(
+          $(`<p id="lbm${_id}" class="results"></p>`)
             .text(`
             ${_id}, 
             ${surname}, 
@@ -438,6 +461,7 @@ namespace Dirkem {
 
   function displayHTML(
     type: string,
+    public: boolean,
     e: Types.Book & Types.Employee & Types.Membership
   ): void {
     const {
@@ -453,8 +477,10 @@ namespace Dirkem {
           ${title}, 
           ${year}, 
           ${language}, 
-          ${isAvailable ? "available" : "borrowed"}, 
-          ${_id}`
+          ${isAvailable ?
+            "available" :
+            "<span class=\"borrowed\">borrowed</span>"}, 
+          ${public || _id}`
         break;
       case "employee":
         resText = `
@@ -475,8 +501,8 @@ namespace Dirkem {
         break;
     }
 
-    $(`.sr${resId(type)}Results > ul`).append(
-      $(`<li id="${_id}"></li>`).text(resText)
+    $(`.sr${resId(type)}Results`).append(
+      $(`<p id="${_id}" class="results"></p>`).html(resText)
     );
   }
 
@@ -521,25 +547,5 @@ namespace Dirkem {
 
       $(`.${type}Update`).show();
     });
-  }
-
-  export function displayPublicResults(res: string): void {
-    const books: Types.Book[] = JSON.parse(res);
-
-    $(".numOfBooks").text(books.length);
-    $(".booksContainer").html("");
-
-    books.forEach((document: Types.Book): void => {
-      $(".booksContainer").append(
-        $(`<tr></tr>`).html(`
-          <td>${document.author}</td>
-          <td>${document.title}</td>
-          <td>${document.year}</td>
-          <td>${document.language}</td>
-          <td>${document.isAvailable ? "yes" : "no"}</td>
-          `))
-    });
-
-    $(".bookSearchResult").show();
   }
 }

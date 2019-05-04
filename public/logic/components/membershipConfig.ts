@@ -1,55 +1,55 @@
-/// <reference path="../other/Types.ts"/>
+/// <reference path="../other/Nineveh.ts"/>
 
 // Membership settings menu buttons
 
-Dirkem.configBtn("membership", "Create", "msg");
-Dirkem.configBtn("membership", "Search", "msg");
+Nineveh.configBtn("membership", "Create", "msg");
+Nineveh.configBtn("membership", "Search", "msg");
 
 // Membership create
 
 $(".membershipCreate form").on("submit", (event: Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   $
     .ajax({
       type: "POST",
       url: "/dashboard/membershipcreate",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.createInput("membership"))
+      data: JSON.stringify(Nineveh.createInput("membership"))
     })
     .done((res: string): void => {
 
-      Dirkem.displayMsgs(res);
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.displayMsgs(res);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });
 
 // Membership search
 
 $(".membershipSearch form").on("submit", (event: Event): void => {
-  Dirkem.pause(true);
+  Nineveh.pause(true);
 
   $
     .ajax({
       type: "POST",
       url: "/dashboard/membershipsearch",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.searchInput("membership"))
+      data: JSON.stringify(Nineveh.searchInput("membership"))
     })
     .done((res: string): void => {
       
       res === "[]" ?
-      Dirkem.displayErrorMsg("No match found!"):
-      Dirkem.displayResults("membership", res);
+      Nineveh.displayErrorMsg("No match found!"):
+      Nineveh.displayResults("membership", res);
       
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });
 
 // Member update/delete
 
 $(".membershipUpdate form").on("submit", (event: Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   const isForDelete: boolean = $("#upMemDelete").prop("checked");
 
@@ -62,14 +62,14 @@ $(".membershipUpdate form").on("submit", (event: Event): void => {
       contentType: "application/json; charset=UTF-8",
       data: JSON.stringify(
         isForDelete ?
-          Dirkem.deleteInput("membership") :
-          Dirkem.updateInput("membership")
+          Nineveh.deleteInput("membership") :
+          Nineveh.updateInput("membership")
       )
     })
     .done((res: string): void => {
 
-      Dirkem.displaySearch("membership");
-      Dirkem.displayMsgs(res);
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.displaySearch("membership");
+      Nineveh.displayMsgs(res);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });

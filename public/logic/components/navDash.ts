@@ -1,3 +1,5 @@
+/// <reference path="../other/Nineveh.ts"/>
+
 // Account settings listener
 
-Dirkem.configBtn("account", "Config");
+Nineveh.configBtn("account", "Config");

@@ -1,56 +1,56 @@
-/// <reference path="../other/Dirkem.ts"/>
+/// <reference path="../other/Nineveh.ts"/>
 
 // Book settings menu buttons
 
 // Book settings menu
-Dirkem.configBtn("book", "Create", "msg")
-Dirkem.configBtn("book", "Search", "msg")
+Nineveh.configBtn("book", "Create", "msg")
+Nineveh.configBtn("book", "Search", "msg")
 
 // Book create
 
 $(".bookCreate form").on("submit", (event: Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   $
     .ajax({
       type: "POST",
       url: "/dashboard/bookcreate",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.createInput("book"))
+      data: JSON.stringify(Nineveh.createInput("book"))
     })
     .done((res: string): void => {
 
-      Dirkem.displayMsgs(res);
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.displayMsgs(res);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });
 
 // Book search
 
 $(".bookSearch form").on("submit", (event: Event): void => {
-  Dirkem.pause(true);
+  Nineveh.pause(true);
 
   $
     .ajax({
       type: "POST",
       url: "/booksearch",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.searchInput("book"))
+      data: JSON.stringify(Nineveh.searchInput("book"))
     })
     .done((res: string): void => {
       
       res === "[]" ?
-      Dirkem.displayErrorMsg("No match found!"):
-      Dirkem.displayResults("book", res);
+      Nineveh.displayErrorMsg("No match found!"):
+      Nineveh.displayResults("book", res);
 
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });
 
 // Book update/delete
 
 $(".bookUpdate form").on("submit", (event: Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   const isForDelete: boolean = $("#upBkDelete").prop("checked");
 
@@ -63,14 +63,14 @@ $(".bookUpdate form").on("submit", (event: Event): void => {
       contentType: "application/json; charset=UTF-8",
       data: JSON.stringify(
         isForDelete ?
-          Dirkem.deleteInput("book") :
-          Dirkem.updateInput("book")
+          Nineveh.deleteInput("book") :
+          Nineveh.updateInput("book")
       )
     })
     .done((res: string): void => {
 
-      Dirkem.displaySearch("book");
-      Dirkem.displayMsgs(res);
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.displaySearch("book");
+      Nineveh.displayMsgs(res);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });

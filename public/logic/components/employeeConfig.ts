@@ -1,54 +1,54 @@
-/// <reference path="../other/Types.ts"/>
+/// <reference path="../other/Nineveh.ts"/>
 
 // Employee settings menu
-Dirkem.configBtn("employee", "Create", "msg");
-Dirkem.configBtn("employee", "Search", "msg");
+Nineveh.configBtn("employee", "Create", "msg");
+Nineveh.configBtn("employee", "Search", "msg");
 
 // Employee create
 
 $(".employeeCreate form").on("submit", (event: Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   $
     .ajax({
       type: "POST",
       url: "/dashboard/employeecreate",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.createInput("employee"))
+      data: JSON.stringify(Nineveh.createInput("employee"))
     })
     .done((res: string): void => {
 
-      Dirkem.displayMsgs(res);
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.displayMsgs(res);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });
 
 // Employee search
 
 $(".employeeSearch form").on("submit", (event: Event): void => {
-  Dirkem.pause(true);
+  Nineveh.pause(true);
 
   $
     .ajax({
       type: "POST",
       url: "/dashboard/employeesearch",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.searchInput("employee"))
+      data: JSON.stringify(Nineveh.searchInput("employee"))
     })
     .done((res: string): void => {
 
       res === "[]" ?
-        Dirkem.displayErrorMsg("No match found!") :
-        Dirkem.displayResults("employee", res);
+        Nineveh.displayErrorMsg("No match found!") :
+        Nineveh.displayResults("employee", res);
 
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });
 
 // Employee update/delete
 
 $(".employeeUpdate form").on("submit", (event: Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   const isForDelete: boolean = $("#upEmpDelete").prop("checked");
 
@@ -61,14 +61,14 @@ $(".employeeUpdate form").on("submit", (event: Event): void => {
       contentType: "application/json; charset=UTF-8",
       data: JSON.stringify(
         isForDelete ?
-          Dirkem.deleteInput("employee") :
-          Dirkem.updateInput("employee")
+          Nineveh.deleteInput("employee") :
+          Nineveh.updateInput("employee")
       )
     })
     .done((res: string): void => {
 
-      Dirkem.displaySearch("employee");
-      Dirkem.displayMsgs(res);
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.displaySearch("employee");
+      Nineveh.displayMsgs(res);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });

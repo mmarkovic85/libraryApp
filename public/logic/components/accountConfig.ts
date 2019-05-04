@@ -1,18 +1,20 @@
-/// <reference path="../other/Dirkem.ts"/>
+/// <reference path="../other/Nineveh.ts"/>
+
+Nineveh.bgAnimationToggle();
 
 $(".accountConfig form").on("submit", (event: Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   $
     .ajax({
       type: "PUT",
       url: "/dashboard/changepassword",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.passwordInput())
+      data: JSON.stringify(Nineveh.passwordInput())
     })
     .done((res: string) => {
-      
-      Dirkem.displayMsgs(res);
-      Dirkem.play(<HTMLFormElement>event.target);
+
+      Nineveh.displayMsgs(res);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });

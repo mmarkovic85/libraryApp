@@ -1,5 +1,7 @@
+/// <reference path="../other/Nineveh.ts"/>
+
 $(".activityLog > button").click((): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   $
     .ajax({
@@ -9,7 +11,7 @@ $(".activityLog > button").click((): void => {
     })
     .done((res: string): void => {
 
-      Dirkem.displayLog(res);
-      Dirkem.play();
+      Nineveh.displayLog(res);
+      Nineveh.play();
     });
 });

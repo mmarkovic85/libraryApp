@@ -1,5 +1,5 @@
 /// <reference path="../other/Types.ts"/>
-/// <reference path="../other/Dirkem.ts"/>
+/// <reference path="../other/Nineveh.ts"/>
 
 // Back button listener, lendBooksUpdate component
 
@@ -13,58 +13,58 @@ $(".lbBackBtn").click((event: JQuery.Event): void => {
 // Member setup
 
 $(".lendBooksSearch form").on("submit", (event: Event): void => {
-  Dirkem.pause(true);
-
+  Nineveh.pause(true);
+  
   $
     .ajax({
       type: "POST",
       url: "/dashboard/membershipsearch",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.lendBooksInput("member"))
+      data: JSON.stringify(Nineveh.lendBooksInput("member"))
     })
     .done((members: string) => {
 
-      Dirkem.displayResults("lendBooksMembers", members);
-      Dirkem.play(<HTMLFormElement>event.target);
+      Nineveh.displayResults("lendBooksMembers", members);
+      Nineveh.play(<HTMLFormElement>event.target);
     });
 });
 
 // Book search
 
 $(".lendBooksForm form").on("submit", (event: JQuery.Event): void => {
-  Dirkem.pause(true);
+  Nineveh.pause(true);
 
   $
     .ajax({
       type: "POST",
       url: "/booksearch",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.lendBooksInput("book"))
+      data: JSON.stringify(Nineveh.lendBooksInput("book"))
     })
     .done((books: string): void => {
 
-      Dirkem.displayResults("lendBooks", books);
-      Dirkem.play();
+      Nineveh.displayResults("lendBooks", books);
+      Nineveh.play();
     });
 });
 
 // Update member
 
 $(".lendBooksMemberUpdate form").on("submit", (event: JQuery.Event): void => {
-  Dirkem.pause();
+  Nineveh.pause();
 
   $
     .ajax({
       type: "PUT",
       url: "/dashboard/updatememberbooks",
       contentType: "application/json; charset=UTF-8",
-      data: JSON.stringify(Dirkem.lendBooksInput("update"))
+      data: JSON.stringify(Nineveh.lendBooksInput("update"))
     })
     .done((res: string): void => {
 
       $(".lendBooksUpdate").hide();
       $(".lendBooksSearch").show();
-      Dirkem.displayMsgs(res);
-      Dirkem.play();
+      Nineveh.displayMsgs(res);
+      Nineveh.play();
     });
 });

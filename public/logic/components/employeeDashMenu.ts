@@ -1,12 +1,14 @@
+/// <reference path="../other/Nineveh.ts"/>
+
 // Main Screen
 
-Dirkem.mainScreen("librarian");
+Nineveh.mainScreen("librarian");
 
 // Employee dash menu 
 
-Dirkem.configBtn("lendBooks", "Config");
+Nineveh.configBtn("lendBooks", "Config");
 
 // Common dashboard menu
 
-Dirkem.configBtn("book", "Config");
-Dirkem.configBtn("membership", "Config");
+Nineveh.configBtn("book", "Config");
+Nineveh.configBtn("membership", "Config");
