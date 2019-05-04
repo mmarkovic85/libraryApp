@@ -1,6 +1,8 @@
 /// <reference path="./Types.ts"/>
+/// <reference path="./Background.ts"/>
 
 namespace Dirkem {
+  const animation: Background.Animation = new Background.Animation;
   let borrowedBooks: Set<string>;
   let returnedBooks: Set<string>;
 
@@ -154,11 +156,14 @@ namespace Dirkem {
         };
       case "up":
         return {
+          isAvailable: $(`#${action}BkisAvailable`).val() === "available" ?
+            true :
+            false,
           _id: $("#upBk_id").val().toString(),
-          author: $("#upBkAuthor").val().toString(),
-          title: $("#upBkTitle").val().toString(),
-          year: $("#upBkYear").val().toString(),
-          language: $("#upBkLanguage").val().toString()
+          author: $(`#${action}BkAuthor`).val().toString(),
+          title: $(`#${action}BkTitle`).val().toString(),
+          year: $(`#${action}BkYear`).val().toString(),
+          language: $(`#${action}BkLanguage`).val().toString()
         };
       case "del":
         return {

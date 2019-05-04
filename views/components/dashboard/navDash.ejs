@@ -1,8 +1,12 @@
-<nav class="appBody">
-  <span>Welcome <%= name ? name: "defaultAdmin"; %>!</span>
-  <button class="accountConfigBtn">Settings</button>
-  <a href="/logout">
-    <button>Logout</button>
-  </a>
+<nav class="appBody appNav dashNav">
+  <span>
+    Welcome <span class="username"><%= name ? name: "defaultAdmin"; %></span>!
+  </span>
+  <section>
+    <button class="accountConfigBtn">Settings</button>
+    <a href="/logout">
+      <button>Logout</button>
+    </a>
+  </section>
 </nav>
 <script src="./logic/components/navDash.js"></script>

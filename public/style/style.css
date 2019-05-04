@@ -1,19 +1,26 @@
 body {
-  font: 1em Verdana, sans-serif;
+  color: #29313e;
+  font: xx-small Verdana, sans-serif;
   text-align: center;
   margin: 0px;
 }
 
 input, select {
-  height: 1.1em;
+  border: 1px #29313e solid;
+  font-size: 1em;
+}
+
+label {
+  display: block;
+  padding: auto;
 }
 
 input {
-  width: 19em;
+  width: 10em;
 }
 
 select {
-  width: 20em;
+  width: 10em;
 }
 
 input[type="checkbox"] {
@@ -21,10 +28,59 @@ input[type="checkbox"] {
   width: 2em;
 }
 
-nav {
-  height: 3em;
-  border-color: #000;
+button {
+  font-size: 1em;
+  padding: 0.2em;
+  margin: 0.2em;
+}
+
+fieldset {
+  border: 1px solid #d04931;
+}
+
+.bookSearchResult th, td {
+  border: 1px solid #d04931;
+  padding: 5px;
+}
+
+.bookSearchResult caption {
+  font-size: 2em;
+  border-color: #d04931;
   border-style: solid;
+  border-width: 1px 1px 0px 1px;
+}
+
+.appBody, .appDash, .dashMenu {
+  background: rgba(255, 203, 63, 0.9);
+  width: 80%;
+  min-width: 207px;
+  border: 1px solid #d04931;
+  border-radius: 10px;
+  padding: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.appBody {
+  margin-bottom: 1em;
+}
+
+.appDash {
+  margin-top: 1em;
+  display: none;
+}
+
+.dashMenu {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.appNav {
+  border-top-left-radius: 0%;
+  border-top-right-radius: 0%;
+  height: 3em;
   border-width: 0px 1px 1px 1px;
   display: flex;
   flex-flow: row nowrap;
@@ -32,33 +88,27 @@ nav {
   align-items: center;
 }
 
-.bookSearchResult th, td {
-  border: 1px solid #000;
-  padding: 5px;
+.msgDash {
+  background-color: unset;
+  padding: unset;
+  border: unset;
 }
 
-.bookSearchResult caption {
-  font-size: 2em;
-  border-color: #000;
-  border-style: solid;
-  border-width: 1px 1px 0px 1px;
+.error, .success {
+  color: #fbe6c0;
+  font-size: 1em;
 }
 
-.appBody {
-  width: 80%;
-  margin-left: 10%;
-  margin-right: 10%;
-  border: 1px solid #000;
+.error, .success {
+  background-color: #d04931;
 }
 
-.appDash {
-  display: none;
-  width: 69%;
-  border: 1px solid #000;
-  padding: 5px;
-  margin-top: 1em;
-  margin-left: 28%;
-  margin-right: 3%
+.success {
+  background-color: #2f5567;
+}
+
+.dashNav {
+  justify-content: space-around;
 }
 
 .employeeComponent {
@@ -115,24 +165,10 @@ table.bookSearchResult {
 }
 
 .loadingMsg {
-  border: 1px solid #000;
+  border: 1px solid #29313e;
   padding: 5px;
   background-color: #fff;
-  color: #000;
-}
-
-.dashMenu {
-  width: 25%;
-  border-color: #000;
-  border-style: solid;
-  border-width: 1px 1px 1px 0px;
-  display: flex;
-  flex-flow: column wrap;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 7em;
-  left: 0;
+  color: #29313e;
 }
 
 .dashMenu>button {
@@ -143,4 +179,66 @@ table.bookSearchResult {
 .resultList li, .activityLog section, .memberBooks li {
   text-align: left;
   padding: 1em;
+}
+
+.username {
+  font-size: 1.2em;
+  color: #d04931;
+}
+
+#animationCanvas {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: -5;
+  background-color: #fbe6c0;
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+
+@media only screen and (min-width: 480px) {
+  body {
+    font-size: small;
+  }
+  .appBody {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .dashMenu {
+    width: 25%;
+    min-width: 75px;
+    border-width: 1px 1px 1px 0px;
+    border-top-left-radius: 0%;
+    border-bottom-left-radius: 0%;
+    float: left;
+  }
+  .appDash {
+    width: 69%;
+    margin-left: 28%;
+    margin-right: 3%;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+
+@media only screen and (min-width: 768px) {
+  body {
+    font-size: medium;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+
+@media only screen and (min-width: 992px) {
+  body {
+    font-size: large;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+
+@media only screen and (min-width: 1200px) {
+  body {
+    font-size: x-large;
+  }
 }

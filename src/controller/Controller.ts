@@ -34,8 +34,7 @@ export default class Controller {
       .findOne({ username }, "libraryEmployees")
       .then((user: Employee): void => {
         user || Controller.defaultAdmin({ username, password });
-      })
-      .catch((err: Error): void => console.log(err));;
+      });
   }
 
   private static defaultAdmin({ username, password }): void {
@@ -53,10 +52,8 @@ export default class Controller {
             doc: admin,
             collName: "libraryEmployees",
             id: "server init"
-          })
-          .catch((err: Error): void => console.log(err));;
-      })
-      .catch((err: Error): void => console.log(err));
+          });
+      });
   }
   // Read/write app config json
   static appConfig(configUpdate?: ConfigObj): ConfigObj | undefined {
@@ -346,10 +343,16 @@ export default class Controller {
   }
 
   static async editMember(doc: Membership, id: string): Promise<flashMsg[]> {
+    const { _id, name, surname, address, status } = doc;
+
     const msgs: flashMsg[] = Validate.membershipInput(doc);
 
+    const member = await Db.findOne({ _id }, "libraryMemberships");
+    member.books.length > 0 && msgs.push(
+      Note.error("Can't delete member who currently have landed books!")
+    );
+
     if (msgs.length === 0) {
-      const { _id, name, surname, address, status } = doc;
       const updateData: DocumentQuery = {
         _id,
         document: {
@@ -387,9 +390,7 @@ export default class Controller {
     isAvailable
   }): Promise<flashMsg[]> {
 
-    return !isAvailable ?
-
-      [Note.error("Cannot delete borrowed book!")] :
+    return isAvailable ?
 
       await Db.deleteOne({
         doc: { _id: delete_id },
@@ -397,11 +398,15 @@ export default class Controller {
         id: user_id
       }) ?
         [Note.success("Book successfully deleted!")] :
-        [Note.error("Book was not deleted!")];
+        [Note.error("Book was not deleted!")] :
+
+      [Note.error("Cannot delete borrowed book!")];
+
+
   }
 
   static async employeeDelete({ user_id, delete_id }): Promise<flashMsg[]> {
-    return user_id === delete_id ?
+    return user_id.toString() === delete_id ?
 
       [Note.error("Cannot delete account in use!")] :
 

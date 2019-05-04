@@ -20,6 +20,7 @@ export default class Router {
       (req: Request, res: Response): void => {
 
         res.render("index");
+        res.end();
       }
     );
   }
@@ -30,6 +31,7 @@ export default class Router {
       (req: Request, res: Response): void => {
 
         res.render("search");
+        res.end();
       }
     );
   }
@@ -45,6 +47,7 @@ export default class Router {
             req.flash("error")
           )
         });
+        res.end();
       }
     );
   }
@@ -59,6 +62,7 @@ export default class Router {
           req.user.isAdmin ? "adminDash" : "employeeDash",
           { name: req.user.name }
         );
+        res.end();
       }
     );
   }
@@ -71,6 +75,7 @@ export default class Router {
         req.logout();
         req.flash("success", "You have successfully logged out!")
         res.redirect("/login");
+        res.end();
       }
     );
   }
@@ -117,7 +122,9 @@ export default class Router {
         Controller
           .memberBooksSearch(req.body)
           .then((books: Book[]) => {
+
             res.json(JSON.stringify(books));
+            res.end();
           });
       }
     );
@@ -145,10 +152,10 @@ export default class Router {
             isAdmin
           }, req.user._id)
           .then((msgs: flashMsg[]): void => {
-            res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
 
+            res.json(JSON.stringify(msgs));
+            res.end();
+          });
       }
     );
   }
@@ -162,9 +169,10 @@ export default class Router {
         Controller
           .employeeSearch(req.body)
           .then((employees: string) => {
+
             res.json(employees);
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -186,9 +194,10 @@ export default class Router {
             isAvailable: true
           }, req.user._id)
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -201,8 +210,9 @@ export default class Router {
         Controller
           .bookSearch(req.body, !!req.user)
           .then((books: string): void => {
+
             res.json(books)
-          })
+          });
       }
     );
   }
@@ -224,9 +234,10 @@ export default class Router {
             books: []
           }, req.user._id)
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -237,14 +248,13 @@ export default class Router {
       Guard.ensureAuthenticated,
       (req: Request, res: Response): void => {
 
-        const query: object = Controller.filterInput(req.body);
-
         Controller
           .membershipSearch(req.body)
           .then((memberships: string) => {
+
             res.json(memberships);
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -274,9 +284,10 @@ export default class Router {
             newpass2
           }, _id)
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -290,7 +301,9 @@ export default class Router {
         Controller
           .editMemberBooks(req.body, req.user._id)
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
+            res.end();
           });
       }
     );
@@ -305,9 +318,10 @@ export default class Router {
         Controller
           .setPassword(req.body, req.user._id)
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -321,9 +335,10 @@ export default class Router {
         Controller
           .editBook(req.body, req.user._id)
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -337,9 +352,10 @@ export default class Router {
         Controller
           .editMember(req.body, req.user._id)
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -363,9 +379,10 @@ export default class Router {
             delete_id: req.body._id
           })
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -383,9 +400,10 @@ export default class Router {
             isAvailable: req.body.isAvailable
           })
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -402,9 +420,10 @@ export default class Router {
             delete_id: req.body._id
           })
           .then((msgs: flashMsg[]): void => {
+
             res.json(JSON.stringify(msgs));
-          })
-          .catch((err: Error): void => console.log(err));
+            res.end();
+          });
       }
     );
   }
@@ -423,6 +442,9 @@ export default class Router {
 
       // default respond text
       res.type('txt').send('Not found');
+
+
+      res.end();
     });
   }
 }
