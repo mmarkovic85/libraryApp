@@ -1,4 +1,4 @@
-import { Request, Response, Application } from "express";
+import { Request, Response, Application, NextFunction } from "express";
 import * as pass from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import * as bcrypt from "bcrypt";
@@ -26,7 +26,7 @@ export default class Guard {
           .findOne({ username }, "libraryEmployees")
           .then((user: Employee): void => {
             if (!user) {
-              return done(null, false, { message: 'Input valid username!' });
+              return done(null, false, { message: "Input valid username!" });
             }
 
             // Match password
@@ -35,7 +35,7 @@ export default class Guard {
               .then((isMatch: boolean): void => {
                 return isMatch ?
                   done(null, user) :
-                  done(null, false, { message: 'Password incorrect!' });
+                  done(null, false, { message: "Password incorrect!" });
               });
           });
       }
@@ -62,10 +62,10 @@ export default class Guard {
 
   // Authentication middleware
   static readonly authenticate: Application = pass.authenticate(
-    'local',
+    "local",
     {
-      successRedirect: '/dashboard',
-      failureRedirect: '/login',
+      successRedirect: "/dashboard",
+      failureRedirect: "/login",
       failureFlash: true
     }
   )
@@ -80,22 +80,30 @@ export default class Guard {
     if (req.isAuthenticated()) {
       return next();
     }
-    res.redirect('/login');
+    res.redirect("/login");
   }
 
   // Session - employee passthrough middleware
-  static forwardEmployee(req: Request, res: Response, next: Function): void {
-    if (req.isAuthenticated()) {
-      res.redirect('/dashboard');
+  static forwardEmployee(
+    req: Request,
+    res: Response,
+    next: NextFunction): void {
+
+    if (!req.isAuthenticated()) {
+      return next();
     }
-    return next();
+    res.redirect("/dashboard");
   }
 
   // Session - admin passthrough middleware
-  static forwardAdmin(req: Request, res: Response, next: Function): void {
+  static forwardAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction): void {
+
     if (req.isAuthenticated() && req.user.isAdmin) {
       return next();
     }
-    res.redirect('/dashboard');
+    res.redirect("/dashboard");
   }
 }
