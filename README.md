@@ -9,4 +9,4 @@ Named after city that housed first library known to human history, Nineveh is so
     * membership records, including: add, edit, or remove member accounts;
 * Member-books interaction, including lending and returning books to/from members;
 
-For more information on setting up, and using application, further consult user manual.
+For more information on setting up and using application, further consult user manual(./public/usermanual.pdf).
