@@ -8,5 +8,5 @@ Named after city that housed first library known to human history, Nineveh is so
     * book collection records, including: add, edit, or remove books to/from collection;
     * membership records, including: add, edit, or remove member accounts;
 * Member-books interaction, including lending and returning books to/from members;
-\
+
 For more information on setting up, and using application, further consult user manual.
