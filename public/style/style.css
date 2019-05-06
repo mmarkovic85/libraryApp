@@ -58,7 +58,7 @@ fieldset {
   min-width: 207px;
   border: 1px solid #d04931;
   border-radius: 10px;
-  padding: 5px;
+  padding: 0.3em;
   margin-left: auto;
   margin-right: auto;
 }
@@ -98,8 +98,8 @@ fieldset {
 .error, .success {
   width: 100%;
   border-radius: 10px;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 0%;
+  margin-bottom: 0.1em;
   color: #fbe6c0;
   font-size: 2em;
 }
@@ -190,11 +190,26 @@ fieldset {
 }
 
 .title {
+  display: block;
   font-size: 1.5em;
+  color: #2f5567;
+  margin: 0.5em;
 }
 
 .borrowed {
   color: #d04931;
+}
+
+.textAlignJust {
+  text-align: justify;
+}
+
+p.textAlignJust {
+  text-indent: 2em;
+}
+
+.emphasize, h1 {
+  color: #2f5567;
 }
 
 #animationCanvas {

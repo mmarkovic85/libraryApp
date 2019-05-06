@@ -423,10 +423,10 @@ namespace Nineveh {
                 $(".srLbResults").html("");
               } else if (!isAvailable) {
 
-                displayErrorMsg("book is alredy lended!");
+                displayErrorMsg("Book is alredy borrowed!");
               } else {
 
-                displayErrorMsg("cannot lend more than 3 books");
+                displayErrorMsg("Can't borrow more than 3 books");
               }
             })
         );
@@ -479,8 +479,8 @@ namespace Nineveh {
           ${language}, 
           ${isAvailable ?
             "available" :
-            "<span class=\"borrowed\">borrowed</span>"}, 
-          ${public || _id}`
+            "<span class=\"borrowed\">borrowed</span>"}
+          ${public ? "" : _id}`
         break;
       case "employee":
         resText = `

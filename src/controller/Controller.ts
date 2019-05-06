@@ -308,7 +308,7 @@ export default class Controller {
     const { isAvailable } = doc;
     const msgs: flashMsg[] = Validate.bookInput(doc);
 
-    isAvailable || msgs.push(Note.error("Can't edit lended book!"));
+    isAvailable || msgs.push(Note.error("Can't edit borrowed book!"));
 
     if (msgs.length === 0) {
       const { _id, author, title, year, language } = doc;

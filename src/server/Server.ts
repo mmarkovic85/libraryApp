@@ -17,19 +17,19 @@ export default class Server {
 
   private static configure(server: express.Application): void {
     // view engine => EJS
-    server.set('view engine', 'ejs');
+    server.set("view engine", "ejs");
     // EJS layout
     server.use(expressLayout);
-    server.set('layout', './components/layout');
+    server.set("layout", "./components/layout");
     // EJS static files
-    server.use(express.static('./public'));
+    server.use(express.static("./public"));
     // Body-parser
     server.use(express.urlencoded({ extended: true }));
     server.use(express.json({ strict: true }));
     // Express session
     server.use(
       session({
-        secret: 'libraryApp',
+        secret: "libraryApp",
         resave: false,
         saveUninitialized: false
       })

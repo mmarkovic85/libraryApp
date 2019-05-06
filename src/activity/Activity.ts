@@ -5,7 +5,7 @@ export default class Activity {
   private static logAppend(logEntry: string): void {
     const logAddition: string = new Date() + logEntry + "\n";
     fs.appendFile(
-      './log/activityLog.txt',
+      "./log/activityLog.txt",
 
       logAddition,
 

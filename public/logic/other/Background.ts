@@ -156,13 +156,14 @@ namespace Background {
 
       $(window)
         .resize(() => {
-          this.numOfCircles() ?
 
-            this
-              .setupCircles()
-              .init() :
-
-            this.init(false);
+          this
+            .setupCircles(
+              this.numOfCircles() ?
+                undefined :
+                0
+            )
+            .init();
         })
         .mousemove((event: JQuery.Event) => {
           if (

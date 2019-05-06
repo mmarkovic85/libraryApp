@@ -55,7 +55,7 @@ export default class Validate {
   }
 
   private static password(pass: string): boolean {
-    return (/^([A-Z|a-z]){1}\w{6,19}([A-Z|a-z]|[0-9]){1}$/).test(pass);
+    return (/^([A-Z|a-z]){1}(\w|[-.]){6,18}([A-Z|a-z]|[0-9]){1}$/).test(pass);
   }
 
   private static nameSurname(name: string): boolean {
@@ -107,12 +107,12 @@ export default class Validate {
   }
 
   private static author(author: string): boolean {
-    return (/^(([A-ZČĆŠĐŽa-zčćšđž])[a-zčćšđž]{1,2} ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}((, (([A-ZČĆŠĐŽa-zčćšđž])[a-zčćšđž]{1,2} ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}){1,4}| et al.{1}){0,1}$/)
+    return (/^([A-ZČĆŠĐŽa-zčćšđža-zčćšđž]{2,3} ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}((, (([A-ZČĆŠĐŽa-zčćšđž])[a-zčćšđž]{1,2} ){0,1}[A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19} [A-ZČĆŠĐŽ]{1}[a-zčćšđž]{1,19}( [A-ZČĆŠĐŽ].){0,1}){1,4}| et al.{1}){0,1}$/)
       .test(author);
   }
 
   private static title(title: string): boolean {
-    return (/^[A-ZČĆŠĐŽ0-9]{1}([A-ZČĆŠĐŽa-zčćšđž0-9]|[-.,]|\s){2,59}$/)
+    return (/^[A-ZČĆŠĐŽ0-9]{1}([A-ZČĆŠĐŽa-zčćšđž0-9]|[-.,:]|\s){2,59}$/)
       .test(title);
   }
 

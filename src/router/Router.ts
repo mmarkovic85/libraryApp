@@ -12,6 +12,7 @@ export default class Router {
     Router.login(server);
     Router.dashboard(server);
     Router.logout(server);
+    Router.error404page(server);
   }
 
   private static homepage(server: Application): void {
@@ -79,6 +80,17 @@ export default class Router {
     );
   }
 
+  private static error404page(server: Application): void {
+    server.get(
+      "/404",
+      (req: Request, res: Response): void => {
+
+        res.render("404");
+        res.end();
+      }
+    );
+  }
+
   // POST routes
   static POST(server: Application): void {
     Router.userLogin(server);
@@ -105,9 +117,10 @@ export default class Router {
       Guard.forwardAdmin,
       (req: Request, res: Response): void => {
 
-        fs
-          .createReadStream('./log/activityLog.txt')
-          .pipe(res);
+        res.send(
+          fs.readFileSync("./log/activityLog.txt")
+        );
+        res.end();
       }
     );
   }
@@ -433,15 +446,15 @@ export default class Router {
       res.status(404);
 
       // respond html
-      req.accepts('html') ?
-        res.render('404', { url: req.url }) :
+      req.accepts("html") ?
+        res.render("404", { url: req.url }) :
         // respond json
-        req.accepts('json') ?
-          res.send(JSON.stringify(
-            { error: 'Not found' }
+        req.accepts("json") ?
+          res.json(JSON.stringify(
+            { error: "Not found" }
           )) :
           // default respond text
-          res.type('txt').send('Not found');
+          res.type("txt").send("Not found");
 
       res.end();
     });
