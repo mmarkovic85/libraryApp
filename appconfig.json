@@ -1,6 +1,6 @@
 {
   "db": {
-    "uri": "YOUR_MONGODB_CONNECTION_STRING_ HERE",
+    "uri": "YOUR_MONGODB_CONNECTION_STRING_HERE",
     "dbName": "test"
   },
   "defaultAdmin": {
