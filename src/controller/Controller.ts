@@ -6,14 +6,14 @@ import Guard from "../guard/Guard";
 import Note from "../note/Note";
 import Router from "../router/Router";
 import Validate from "../validate/Validate";
-import Activity from "../activity/Activity";
 import {
   flashMsg,
   Employee,
   Book,
   Membership,
   ConfigObj,
-  DocumentQuery
+  DocumentQuery,
+  logObj
 } from "../types/Types";
 
 export default class Controller {
@@ -51,7 +51,7 @@ export default class Controller {
           .insertOne({
             doc: admin,
             collName: "libraryEmployees",
-            id: "server init"
+            id: "server default admin"
           });
       });
   }
@@ -286,7 +286,7 @@ export default class Controller {
         "libraryEmployees"
       );
 
-      isUpdated && Activity.log({
+      isUpdated && Controller.log({
         userId: id,
         type: "password",
         action: "change",
@@ -327,7 +327,7 @@ export default class Controller {
         "libraryBooks"
       );
 
-      isUpdated && Activity.log({
+      isUpdated && Controller.log({
         userId: id,
         type: "book",
         action: "edit",
@@ -368,7 +368,7 @@ export default class Controller {
         "libraryMemberships"
       );
 
-      isUpdated && Activity.log({
+      isUpdated && Controller.log({
         userId: id,
         type: "member",
         action: "edit",
@@ -462,7 +462,7 @@ export default class Controller {
         _id: books[i], document: { isAvailable: false }
       }, "libraryBooks");
     }
-    books.length > 0 && Activity.log({
+    books.length > 0 && Controller.log({
       userId: id,
       type: "book",
       action: "lended",
@@ -477,7 +477,7 @@ export default class Controller {
         _id: returned[i], document: { isAvailable: true }
       }, "libraryBooks");
     }
-    returned.length > 0 && Activity.log({
+    returned.length > 0 && Controller.log({
       userId: id,
       type: "book",
       action: "returned",
@@ -488,5 +488,39 @@ export default class Controller {
     });
 
     return [Note.success("Member books updated!")];
+  }
+
+  private static addLog(entry: string): void {
+    Db
+      .insertOne({
+        doc: {
+          date: Date.now().toString(),
+          entry
+        },
+        collName: "libraryLogs",
+        id: null
+      });
+  }
+
+  static log(logObj: logObj): void {
+    let logEntry: string = "";
+
+    logObj.userId && (logEntry += " - " + logObj.userId);
+    logObj.action && (logEntry += " - " + logObj.action);
+    logObj.type && (logEntry += " - " + logObj.type);
+    logObj.data && (
+      logEntry += (" - ").concat(
+        JSON.stringify(logObj.data).replace(/"/g, " ")
+      )
+    );
+    logObj.message && (logEntry += " - " + logObj.message);
+
+    Controller.addLog(logEntry);
+  }
+
+  static async fetchLogs(): Promise<string> {
+    return JSON.stringify(
+      await Db.find({}, "libraryLogs")
+    );
   }
 }

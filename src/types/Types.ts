@@ -54,6 +54,8 @@ export interface DocumentQuery {
 }
 
 export interface logObj {
+  date?: string,
+  entry?: string,
   userId?: string,
   action?: string,
   type?: string,

@@ -39,4 +39,14 @@ namespace Types {
     _id: string,
     document?: Employee | Book | Membership
   }
+
+  export interface logObj {
+    date?: string,
+    entry?: string,
+    userId?: string,
+    action?: string,
+    type?: string,
+    data?: Employee | Book | Membership,
+    message?: string
+  }
 }

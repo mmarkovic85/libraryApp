@@ -117,10 +117,12 @@ export default class Router {
       Guard.forwardAdmin,
       (req: Request, res: Response): void => {
 
-        res.send(
-          fs.readFileSync("./log/activityLog.txt")
-        );
-        res.end();
+        Controller
+          .fetchLogs()
+          .then((logs: string) => {
+            res.json(logs);
+            res.end();
+          });
       }
     );
   }

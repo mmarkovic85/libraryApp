@@ -6,12 +6,11 @@ $(".activityLog > button").click((): void => {
   $
     .ajax({
       type: "POST",
-      url: "/dashboard/activitylog",
-      dataType: "text"
+      url: "/dashboard/activitylog"
     })
     .done((res: string): void => {
 
-      Nineveh.displayLog(res);
+      Nineveh.displayLogs(res);
       Nineveh.play();
     });
 });

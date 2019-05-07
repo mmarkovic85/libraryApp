@@ -1,6 +1,5 @@
 import * as MDB from "mongodb";
 import Controller from "../controller/Controller";
-import Activity from "../activity/Activity";
 import { Employee, Book, DocumentQuery, Membership } from "../types/Types";
 
 export default class Db {
@@ -21,7 +20,7 @@ export default class Db {
       uri,
       { useNewUrlParser: true }
     );
-
+    
     await client.connect();
 
     const dbRes: MDB.InsertOneWriteOpResult = await client
@@ -36,7 +35,7 @@ export default class Db {
       title, year, status, address
     } = dbRes.ops[0];
 
-    Activity.log({
+    id && Controller.log({
       userId: id,
       action: "create",
       type: Db.type(collName),
@@ -117,7 +116,7 @@ export default class Db {
 
     client.close();
 
-    Activity.log({
+    Controller.log({
       userId: id,
       action: "delete",
       type: Db.type(collName),

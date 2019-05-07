@@ -67,16 +67,24 @@ namespace Nineveh {
     $(`.${type}Search`).show();
   }
 
-  export function displayLog(log: string) {
+  export function displayLogs(logs: string) {
     $(".activityLog > section").html("").show();
 
-    log
-      .split("\n")
+    JSON.parse(logs)
+      .sort()
       .reverse()
-      .forEach((logEntry): void => {
+      .forEach((log: Types.logObj): void => {
+        const date: Date = (new Date(
+          parseInt(log.date)
+        ));
 
-        logEntry && $("<p class=\"results\"></p>")
-          .text(logEntry)
+        $("<p class=\"results\"></p>")
+          .text(
+            date.toLocaleDateString() +
+            " " +
+            date.toLocaleTimeString() +
+            log.entry
+          )
           .appendTo($(".activityComponent"));
       });
   }
@@ -104,10 +112,10 @@ namespace Nineveh {
       $(".memberBooks").append(
         $(`<p id="memBk${bk._id}" class="results"></p>`)
           .text(`
-            ${bk.author}, 
-            ${bk.title}, 
-            ${bk.year}, 
-            ${bk.language}, 
+            ${bk.author},
+            ${bk.title},
+            ${bk.year},
+            ${bk.language},
             ${bk._id}
           `)
           .click((): void => {
@@ -402,13 +410,13 @@ namespace Nineveh {
         $(".srLbResults").append(
           $(`<p id="lb${_id}" class="results"></p>`)
             .html(`
-            ${author}, 
-            ${title}, 
-            ${year}, 
-            ${language}, 
+            ${author},
+            ${title},
+            ${year},
+            ${language},
             ${isAvailable ?
                 "available" :
-                "<span class=\"borrowed\">borrowed</span>"}, 
+                "<span class=\"borrowed\">borrowed</span>"},
             ${_id}
             `)
             .click((): void => {
@@ -436,8 +444,8 @@ namespace Nineveh {
         $(".srLbMemResults").append(
           $(`<p id="lbm${_id}" class="results"></p>`)
             .text(`
-            ${_id}, 
-            ${surname}, 
+            ${_id},
+            ${surname},
             ${name}
             `)
             .click(() => {
@@ -473,10 +481,10 @@ namespace Nineveh {
     switch (type) {
       case "book":
         resText = `
-          ${author}, 
-          ${title}, 
-          ${year}, 
-          ${language}, 
+          ${author},
+          ${title},
+          ${year},
+          ${language},
           ${isAvailable ?
             "available" :
             "<span class=\"borrowed\">borrowed</span>"}
@@ -484,18 +492,18 @@ namespace Nineveh {
         break;
       case "employee":
         resText = `
-          ${username}, 
-          ${name}, 
-          ${surname}, 
-          ${email}, 
+          ${username},
+          ${name},
+          ${surname},
+          ${email},
           ${isAdmin ? "administrator" : "librarian"}
           ${_id}`
         break;
       case "membership":
         resText = `
-          ${surname}, 
-          ${name}, 
-          ${status}, 
+          ${surname},
+          ${name},
+          ${status},
           ${address}
           ${_id}`
         break;
