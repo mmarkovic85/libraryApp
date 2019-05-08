@@ -37,9 +37,10 @@ $(".employeeSearch form").on("submit", (event: Event): void => {
     })
     .done((res: string): void => {
 
-      res === "[]" ?
-        Nineveh.displayErrorMsg("No match found!") :
-        Nineveh.displayResults("employee", res);
+      res === "[]" &&
+        Nineveh.displayErrorMsg("No match found!");
+
+      Nineveh.displayResults("employee", res);
 
       Nineveh.play(<HTMLFormElement>event.target);
     });

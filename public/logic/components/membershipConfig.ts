@@ -38,8 +38,9 @@ $(".membershipSearch form").on("submit", (event: Event): void => {
     })
     .done((res: string): void => {
       
-      res === "[]" ?
-      Nineveh.displayErrorMsg("No match found!"):
+      res === "[]" &&
+      Nineveh.displayErrorMsg("No match found!");
+
       Nineveh.displayResults("membership", res);
       
       Nineveh.play(<HTMLFormElement>event.target);

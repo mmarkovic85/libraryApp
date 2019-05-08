@@ -23,8 +23,12 @@ $(".lendBooksSearch form").on("submit", (event: Event): void => {
       data: JSON.stringify(Nineveh.lendBooksInput("member"))
     })
     .done((members: string) => {
+      
+      members === "[]" &&
+      Nineveh.displayErrorMsg("No match found!");
 
       Nineveh.displayResults("lendBooksMembers", members);
+
       Nineveh.play(<HTMLFormElement>event.target);
     });
 });
@@ -43,7 +47,11 @@ $(".lendBooksForm form").on("submit", (event: JQuery.Event): void => {
     })
     .done((books: string): void => {
 
+      books === "[]" &&
+      Nineveh.displayErrorMsg("No match found!");
+
       Nineveh.displayResults("lendBooks", books);
+
       Nineveh.play();
     });
 });

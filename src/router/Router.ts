@@ -60,7 +60,7 @@ export default class Router {
 
         res.render(
           req.user.isAdmin ? "adminDash" : "employeeDash",
-          { name: req.user.name }
+          { name: req.user.name, username: req.user.name }
         );
         res.end();
       }

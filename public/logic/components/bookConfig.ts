@@ -38,9 +38,10 @@ $(".bookSearch form").on("submit", (event: Event): void => {
       data: JSON.stringify(Nineveh.searchInput("book"))
     })
     .done((res: string): void => {
-      
-      res === "[]" ?
-      Nineveh.displayErrorMsg("No match found!"):
+
+      res === "[]" &&
+        Nineveh.displayErrorMsg("No match found!");
+
       Nineveh.displayResults("book", res);
 
       Nineveh.play(<HTMLFormElement>event.target);
