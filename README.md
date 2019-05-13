@@ -1,6 +1,6 @@
 # About Nineveh
 
-Nineveh application was made by Miloš Marković, as graduation project for JavaScript course, within IT prequalification training organized by National Employment Service and Comtrade Code Academy. \
+Nineveh application was made by Miloš Marković, as graduation project for JavaScript course, within IT prequalification training organized by the Government of the Republic Serbia and Code by Comtrade. \
 \
 Named after city that housed first library known to human history, Nineveh is software designed to facilitate library records management activities. Key features are:
 * Handling database records:
