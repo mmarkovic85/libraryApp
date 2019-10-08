@@ -9,4 +9,10 @@ Named after city that housed first library known to human history, Nineveh is so
     * membership records, including: add, edit, or remove member accounts;
 * Member-books interaction, including lending and returning books to/from members;
 
+Technology Stack:
+* Express(Node.js) - server, routing
+* Passport(Node.js) - user authentication
+* MongoDB - data managment
+* TypeScript - OOP written code transpiled in ES5 for production
+
 For more information on setting up and using application, further consult user manual(./public/usermanual.pdf).
