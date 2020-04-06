@@ -1,4 +1,5 @@
-# File source: https://github.com/github/gitignore/blob/master/Node.gitignore
+# Webpack build output
+public/dist/
 
 # Logs
 logs
@@ -115,3 +116,5 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .pnp.*
+
+# File source: https://github.com/github/gitignore/blob/master/Node.gitignore
