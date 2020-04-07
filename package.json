@@ -4,9 +4,9 @@
   "description": "",
   "scripts": {
     "start": "node ./src/server/server.js",
+    "dev-server": "nodemon ./src/server/server.js",
     "build:dev": "webpack",
     "build:prod": "echo \"Error: production script not specified\"",
-    "dev-server": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -34,5 +34,14 @@
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
+  "nodemonConfig": {
+    "events": {
+      "start": "npm run build:dev"
+    },
+    "ignore": "public/dist/*"
   }
 }
