@@ -2,4 +2,4 @@
 
 List of necessary process.env variables:
 
-* PLACEHOLDER
+* MONGODB_URL - database connection string

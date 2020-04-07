@@ -1,10 +1,19 @@
 const path = require("path");
 const express = require("express");
+require("./db/mongoose");
 
 const server = express();
 const port = process.env.PORT || 3000;
-const public_directory_path = path.join(__dirname, "../../public");
 
-server.use(express.static(public_directory_path));
+// Serve public dir
+server.use(
+  express.static(
+    path.join(__dirname, "..", "..", "public")
+  )
+);
 
-server.listen(port, () => console.log(`Nineveh app is live on port: ${port}`));
+// Run server
+server.listen(
+  port,
+  () => console.log(`Nineveh app is live on port: ${port}`)
+);
