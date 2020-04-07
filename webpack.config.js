@@ -19,12 +19,6 @@ module.exports = (env) => {
         }
       ]
     },
-    devtool: isProduction ? "source-map" : "inline-source-map",
-    devServer: {
-      contentBase: path.join(__dirname, "public"),
-      publicPath: "/dist/",
-      port: 3000,
-      historyApiFallback: true
-    }
+    devtool: isProduction ? "source-map" : "inline-source-map"
   };
 };
