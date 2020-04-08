@@ -5,13 +5,13 @@ const isStringOfNumbers = string => string.every(isASCIINumber);
 
 const isValidLength = (string, ...lengths) => lengths.includes(string.length);
 
-const isYear = yearString =>
+const yearValidator = yearString =>
   isStringOfNumbers(yearString) && isValidLength(yearString, 4);
 
-const isIsbn = isbnString =>
+const isbnValidator = isbnString =>
   isStringOfNumbers(isbnString) && isValidLength(isbnString, 10, 13);
 
 module.exports = {
-  isYear,
-  isIsbn
+  yearValidator,
+  isbnValidator
 };
