@@ -7,7 +7,7 @@
     "dev-server": "nodemon -r dotenv/config ./src/server/server.js",
     "build:dev": "webpack",
     "build:prod": "echo \"Error: production script not specified\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -38,7 +38,11 @@
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
+    "jest": "^25.3.0",
     "nodemon": "^2.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "nodemonConfig": {
     "events": {
