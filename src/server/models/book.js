@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const { isYear, isIsbn } = require("../util/validator");
+
 const bookSchema = new mongoose.Schema({
   author: {
     type: String,
@@ -15,11 +17,9 @@ const bookSchema = new mongoose.Schema({
   },
   year: {
     type: String,
-    validate() {
-      // TODO:
-      // length == 4
-      // min - year of first printed book
-      // max - current year
+    validate: {
+      validator: isYear,
+      message: "Year input is not valid"
     }
   },
   genre: {
@@ -39,9 +39,9 @@ const bookSchema = new mongoose.Schema({
   },
   isbn: {
     type: String,
-    validate() {
-      // TODO:
-      // length == 10 || 13
+    validate: {
+      validator: isIsbn,
+      message: "ISBN input is not valid"
     }
   },
   notes: {
