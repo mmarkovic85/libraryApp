@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const { emailValidator } = require("../util/validator");
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -9,7 +11,8 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
     validate: {
-      // TODO
+      validator: emailValidator,
+      message: "Email input is not valid"
     }
   },
   username: {
@@ -24,10 +27,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Password field is required"],
     minlength: [8, "Password field must be 8 characters or more"],
-    maxlength: [20, "Password field must be 20 characters or less"],
-    validate: {
-      // TODO
-    }
+    maxlength: [20, "Password field must be 20 characters or less"]
   },
   tokens: [{
     token: {

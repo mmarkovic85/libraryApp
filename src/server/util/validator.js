@@ -1,3 +1,5 @@
+const validator = require("validator");
+
 const isASCIINumber = (ch) =>
   48 <= ch.charCodeAt() && ch.charCodeAt() <= 57;
 
@@ -11,7 +13,10 @@ const yearValidator = yearString =>
 const isbnValidator = isbnString =>
   isStringOfNumbers(isbnString) && isValidLength(isbnString, 10, 13);
 
+const emailValidator = email => validator.isEmail(email);
+
 module.exports = {
   yearValidator,
-  isbnValidator
+  isbnValidator,
+  emailValidator
 };
