@@ -11,11 +11,13 @@ import LoginPage from "../components/LoginPage";
 
 const AppRouter = () => (
   <Router>
-    <Switch>
-      <Route path="/" component={LoginPage} exect={true} />
-      <Route path="/dashboard" component={BookDashboardPage} />
-      <Route component={Error404Page} />
-    </Switch>
+    <div>
+      <Switch>
+        <Route path="/" component={LoginPage} exact={true} />
+        <Route path="/dashboard" component={BookDashboardPage} />
+        <Route component={Error404Page} />
+      </Switch>
+    </div>
   </Router>
 );
 

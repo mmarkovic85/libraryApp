@@ -2,8 +2,9 @@ const path = require("path");
 const express = require("express");
 require("./db/mongoose");
 
-const userRouter = require("./routers/user");
 const bookRouter = require("./routers/book");
+const clientRouter = require("./routers/client");
+const userRouter = require("./routers/user");
 
 const server = express();
 const port = process.env.PORT || 3000;
@@ -18,6 +19,8 @@ server.use(
 // API routes
 server.use("/api", userRouter);
 server.use("/api", bookRouter);
+// React route
+server.use("/", clientRouter);
 
 // Run server
 server.listen(
