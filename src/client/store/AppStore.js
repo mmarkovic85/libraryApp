@@ -4,12 +4,12 @@ import AppContextProvider from "../context/AppContext";
 import AppRouter from "../routers/AppRouter";
 
 const AppStore = () => {
-  const [message, setMessage] = useState("");
+  const [authToken, setAuthToken] = useState("");
 
   return (
     <AppContextProvider value={{
-      message,
-      setMessage
+      authToken,
+      setAuthToken
     }}>
       <AppRouter />
     </AppContextProvider>
