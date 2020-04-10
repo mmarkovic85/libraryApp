@@ -5,6 +5,7 @@ import {
   Route
 } from "react-router-dom";
 
+import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import BookDashboardPage from "../components/BookDashboardPage";
 import Error404Page from "../components/Error404Page";
@@ -15,7 +16,7 @@ const AppRouter = () => (
     <div>
       <Switch>
         <PublicRoute path="/" component={LoginPage} exact={true} />
-        <Route path="/dashboard" component={BookDashboardPage} />
+        <PrivateRoute path="/dashboard" component={BookDashboardPage} />
         <Route component={Error404Page} />
       </Switch>
     </div>
