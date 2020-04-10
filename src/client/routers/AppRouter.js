@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import BookDashboardPage from "../components/BookDashboardPage";
+import Error404Page from "../components/Error404Page";
 import LoginPage from "../components/LoginPage";
 
 const AppRouter = () => (
@@ -13,7 +14,7 @@ const AppRouter = () => (
     <Switch>
       <Route path="/" component={LoginPage} exect={true} />
       <Route path="/dashboard" component={BookDashboardPage} />
-      <Route conponent={/** TODO Page404 */} />
+      <Route component={Error404Page} />
     </Switch>
   </Router>
 );
