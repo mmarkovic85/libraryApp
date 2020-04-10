@@ -4,6 +4,6 @@ import "regenerator-runtime/runtime";
 import React from "react";
 import { render } from "react-dom";
 
-import Placeholder from "./components/Placeholder";
+import AppStore from "./store/AppStore";
 
-render(<Placeholder />, document.getElementById("app"));
+render(<AppStore />, document.getElementById("app"));
