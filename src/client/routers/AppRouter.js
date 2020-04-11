@@ -10,12 +10,14 @@ import PublicRoute from "./PublicRoute";
 import BookDashboardPage from "../components/BookDashboardPage";
 import Error404Page from "../components/Error404Page";
 import LoginPage from "../components/LoginPage";
+import RegistrationPage from "../components/RegistrationPage";
 
 const AppRouter = () => (
   <Router>
     <div>
       <Switch>
         <PublicRoute path="/" component={LoginPage} exact={true} />
+        <PublicRoute path="/registration" component={RegistrationPage} />
         <PrivateRoute path="/dashboard" component={BookDashboardPage} />
         <Route component={Error404Page} />
       </Switch>
