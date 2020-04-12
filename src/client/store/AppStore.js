@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import AppContextProvider from "../context/AppContext";
+import { AppContextProvider } from "../context/AppContext";
 import AppRouter from "../routers/AppRouter";
 
 const AppStore = () => {

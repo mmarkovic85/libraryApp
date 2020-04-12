@@ -10,6 +10,6 @@ const AppContextProvider = (props) => (
 );
 
 export {
-  AppContextProvider as default,
-  AppContext
+  AppContext as default,
+  AppContextProvider
 };

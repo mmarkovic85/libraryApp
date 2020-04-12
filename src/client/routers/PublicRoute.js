@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Route, Redirect } from "react-router-dom";
 
-import { AppContext } from "../context/AppContext";
+import AppContext from "../context/AppContext";
 
 const PublicRoute = ({ component: Component, ...rest }) => {
   const { authToken } = useContext(AppContext);
