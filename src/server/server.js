@@ -1,9 +1,9 @@
-const server = require("./app.js");
+const app = require("./app.js");
 
 const port = process.env.PORT || 3000;
 
 // Run server
-server.listen(
+app.listen(
   port,
   () => console.log(`Nineveh app is live on port: ${port}`)
 );
