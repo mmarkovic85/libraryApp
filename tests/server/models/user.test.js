@@ -4,10 +4,10 @@ const request = require("supertest");
 
 const app = require("../../../src/server/app");
 const User = require("../../../src/server/models/user");
+const { setupDatabase } = require("../../fixtures/db");
 
-// TODO import fn for beforeEach
 // TODO import fixtures
 
-beforeEach(() => {/** fn - setupDb */ });
+beforeEach(setupDatabase);
 
 test("Should test something", async () => { });
