@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Password field must be 8 characters or more"],
     maxlength: [20, "Password field must be 20 characters or less"]
   },
+  isProfilePrivate: {
+    type: Boolean,
+    default: false
+  },
   tokens: [{
     token: {
       type: String,
