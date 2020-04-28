@@ -55,6 +55,10 @@ const bookSchema = new mongoose.Schema({
     maxlength: [255, "Notes field must be 255 characters or less"],
     trim: true
   },
+  isBookRead: {
+    type: Boolean,
+    default: false
+  },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "Owner field is required"],
