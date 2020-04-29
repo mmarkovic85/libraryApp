@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bc = require("bcryptjs");
 
 const { emailValidator } = require("../util/validator");
 
@@ -47,7 +49,36 @@ userSchema.virtual("books", {
   ref: "Book",
   localField: "_id",
   foreignField: "owner"
-})
+});
+
+
+userSchema.method({
+  createJWT() { // create new jwt for user
+    const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET);
+    this.tokens.push({ token });
+    return token;
+  },
+  toJSON() { // custom json stringify
+    const userObject = this.toObject();
+    delete userObject.password;
+    delete userObject.tokens;
+    return userObject;
+  }
+});
+
+// find user by email and password static method
+userSchema.static("findByCredentials", async function (email, password) {
+  const user = await this.findOne({ email });
+  if (!user) throw new Error("Invalid credentials!");
+  if (!bc.compareSync(password, user.password)) throw new Error("Invalid credentials!");
+  return user;
+});
+
+// pre save hook
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) this.password = await bc.hash(this.password, 8);
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 
