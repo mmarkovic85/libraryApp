@@ -45,5 +45,5 @@ test("Should validate ISBN input", () => {
 
 test("Should validate email input", () => {
   expect(emailValidator("jon.doe@gmail.com")).toBe(true);
-  expect(emailValidator("no.a.email.address1337")).toBe(false)
+  expect(emailValidator("not.an.email.address1337")).toBe(false)
 });

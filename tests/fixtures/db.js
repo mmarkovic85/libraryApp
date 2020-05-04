@@ -1,26 +1,38 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
+const User = require("../../src/server/models/user");
+const Book = require("../../src/server/models/book");
+
+const userOneId = new mongoose.Types.ObjectId();
 const userOne = {
-  _id: new mongoose.Types.ObjectId(),
+  _id: userOneId,
   email: "filozof@atina.edu",
   username: "Sokrat",
   password: "nistaneznam",
   tokens: [{
-    token: jwt.sign({ _id: userTwoId._id }, process.env.JWT_SECRET)
+    token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
   }]
 };
 
+const userTwoId = new mongoose.Types.ObjectId();
 const userTwo = {
-  _id: new mongoose.Types.ObjectId(),
+  _id: userTwoId,
   email: "emperor@rome.com",
   username: "Cezar",
   password: "princeps",
   isProfilePrivate: true,
   tokens: [{
-    token: jwt.sign({ _id: userOneId._id }, process.env.JWT_SECRET)
+    token: jwt.sign({ _id: userTwoId }, process.env.JWT_SECRET)
   }]
 };
+
+const userThree = {
+  email: "cleo@pyramid.edu",
+  username: "Kleopatra",
+  password: "otrovnice",
+  isProfilePrivate: true
+}
 
 const bookOne = {
   author: "Rodžer Zelazni",
@@ -40,13 +52,13 @@ const bookTwo = {
   yaer: "2013",
   publisher: "Laguna",
   language: "srpski",
-  isbn: "978-86-521-1090-2",
+  isbn: "9788652110902",
   owner: userOne._id
 };
 
 const bookThree = {
-  author: "Sentimentalna povest Britanskog carstva",
-  title: "Borislav Pekić",
+  author: "Borislav Pekić",
+  title: "Sentimentalna povest Britanskog carstva",
   yaer: "2006",
   publisher: "Solaris",
   language: "srpski",
@@ -56,14 +68,20 @@ const bookThree = {
 
 const setupDatabase = async () => {
   await User.deleteMany();
+  await new User(userOne).save();
+  await new User(userTwo).save();
   await Book.deleteMany();
+  await new Book(bookOne).save();
+  await new Book(bookTwo).save();
+  await new Book(bookThree).save();
 };
 
 module.exports = {
+  userOne,
+  userTwo,
+  userThree,
   bookOne,
   bookTwo,
   bookThree,
-  userOne,
-  userTwo,
   setupDatabase
 };
