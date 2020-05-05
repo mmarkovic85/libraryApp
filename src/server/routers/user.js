@@ -1,5 +1,6 @@
 const express = require("express");
 
+const auth = require("../middleware/user-auth");
 const User = require("../models/user");
 
 const router = new express.Router();
@@ -33,8 +34,27 @@ router.post("/users/login", async (req, res) => {
     res.status(400).send({ error: e.message });
   };
 });
-// Read
-router.get("/users", async (req, res) => { });
+
+// Get user's profile
+router.get("/users/me", auth, async (req, res) => res.send({ user: req.user }));
+
+// Get profile of other users
+router.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find user
+    const user = await User.findById(id);
+    // Chsck if profile is private
+    if (user.isProfilePrivate) throw new Error();
+    // Send response
+    res.status(200).send({ user });
+  } catch (e) {
+    // In case of error, send error message
+    res.status(404).send({ error: e.message });;
+  };
+});
+
 // Update
 router.put("/users", async (req, res) => { });
 // Delete
