@@ -51,7 +51,7 @@ test("Should login existing user", async () => {
     user: {
       email, username, isProfilePrivate: false
     },
-    token: user.tokens[1].token
+    token: user.tokens[3].token
   });
   expect(user.password).not.toBe(password);
 });
@@ -64,6 +64,30 @@ test("Should not login nonexistent user", async () => {
       password: "userpassword"
     })
     .expect(400);
+});
+
+test("Should logout user from current device", async () => {
+  const { _id, tokens: [{ token }] } = userOne;
+
+  await request(app)
+    .post("/api/users/logout")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200);
+
+  const user = await User.findById(_id);
+  expect(user.tokens).not.toContain(token);
+});
+
+test("Should logout user from all devices", async () => {
+  const { _id, tokens: [{ token }] } = userOne;
+
+  await request(app)
+    .post("/api/users/logoutall")
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200);
+
+  const user = await User.findById(_id);
+  expect(user.tokens.length).toBe(0);
 });
 
 test("Should get profile for public user", async () => {

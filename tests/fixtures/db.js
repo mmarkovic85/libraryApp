@@ -12,6 +12,10 @@ const userOne = {
   password: "nistaneznam",
   tokens: [{
     token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
+  }, {
+    token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
+  }, {
+    token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
   }]
 };
 
