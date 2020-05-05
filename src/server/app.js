@@ -15,6 +15,9 @@ app.use(
   )
 );
 
+// Request body parser
+app.use(express.json());
+
 // API routes
 app.use("/api", userRouter);
 app.use("/api", bookRouter);

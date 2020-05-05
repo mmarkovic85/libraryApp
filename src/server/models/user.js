@@ -28,8 +28,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password field is required"],
-    minlength: [8, "Password field must be 8 characters or more"],
-    maxlength: [20, "Password field must be 20 characters or less"]
+    minlength: [8, "Password field must be 8 characters or more"]
   },
   isProfilePrivate: {
     type: Boolean,
@@ -51,20 +50,23 @@ userSchema.virtual("books", {
   foreignField: "owner"
 });
 
+userSchema.methods.toJSON = function () { // custom json stringify
+  const user = this;
+  const userObject = user.toObject();
+  delete userObject.password;
+  delete userObject.tokens;
+  return userObject;
+};
 
-userSchema.method({
-  createJWT() { // create new jwt for user
-    const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET);
-    this.tokens.push({ token });
-    return token;
-  },
-  toJSON() { // custom json stringify
-    const userObject = this.toObject();
-    delete userObject.password;
-    delete userObject.tokens;
-    return userObject;
-  }
-});
+userSchema.methods.createJWT = async function () { // create new jwt for user
+  const user = this;
+  const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET);
+
+  user.tokens = [...user.tokens, { token }];
+  user.save();
+
+  return token;
+};
 
 // find user by email and password static method
 userSchema.static("findByCredentials", async function (email, password) {

@@ -12,7 +12,7 @@ test("Should signup a new user", async () => {
   const { email, username, password, isProfilePrivate } = userThree;
 
   const response = await request(app)
-    .post("/users")
+    .post("/api/users")
     .send(userThree)
     .expect(201)
 
@@ -32,7 +32,7 @@ test("Should login existing user", async () => {
   const { email, password } = userOne;
 
   const response = await request(app)
-    .post("/users/login")
+    .post("/api/users/login")
     .send({
       email,
       password
@@ -53,7 +53,7 @@ test("Should login existing user", async () => {
 
 test("Should not login nonexistent user", async () => {
   await request(app)
-    .post("/users/login")
+    .post("/api/users/login")
     .send({
       email: "user@user.com",
       password: "userpassword"
