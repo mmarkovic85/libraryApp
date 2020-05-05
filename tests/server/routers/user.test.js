@@ -29,7 +29,7 @@ test("Should signup a new user", async () => {
 });
 
 test("Should login existing user", async () => {
-  const { email, password } = userOne;
+  const { email, password, username } = userOne;
 
   const response = await request(app)
     .post("/api/users/login")

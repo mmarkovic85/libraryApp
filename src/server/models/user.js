@@ -69,12 +69,12 @@ userSchema.methods.createJWT = async function () { // create new jwt for user
 };
 
 // find user by email and password static method
-userSchema.static("findByCredentials", async function (email, password) {
-  const user = await this.findOne({ email });
+userSchema.statics.findByCredentials = async (email, password) => {
+  const user = await User.findOne({ email });
   if (!user) throw new Error("Invalid credentials!");
   if (!bc.compareSync(password, user.password)) throw new Error("Invalid credentials!");
   return user;
-});
+}
 
 // pre save hook
 userSchema.pre("save", async function (next) {
