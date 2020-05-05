@@ -68,11 +68,9 @@ router.get("/users/me", auth, async (req, res) => res.send({ user: req.user }));
 
 // Get profile of other users
 router.get("/users/:id", async (req, res) => {
-  const { id } = req.params;
-
   try {
     // Find user
-    const user = await User.findById(id);
+    const user = await User.findById(req.params.id);
     // Chsck if profile is private
     if (user.isProfilePrivate) throw new Error();
     // Send response
@@ -85,7 +83,17 @@ router.get("/users/:id", async (req, res) => {
 
 // Update
 router.put("/users", async (req, res) => { });
-// Delete
-router.delete("/users", async (req, res) => { });
+
+// Delete user account
+router.delete("/users/delete", auth, async (req, res) => {
+  try {
+    // Delete user
+    await req.user.remove();
+    // Send response
+    res.status(200).send();
+  } catch (e) {
+    res.status(500).send();
+  };
+});
 
 module.exports = router;

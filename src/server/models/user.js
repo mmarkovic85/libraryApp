@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bc = require("bcryptjs");
 
+const Book = require("./book");
 const { emailValidator } = require("../util/validator");
 
 const userSchema = new mongoose.Schema({
@@ -79,6 +80,12 @@ userSchema.statics.findByCredentials = async (email, password) => {
 // pre save hook
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) this.password = await bc.hash(this.password, 8);
+  next();
+});
+
+userSchema.pre("remove", async function (next) {
+  const user = this;
+  await Book.deleteMany({ owner: user._id });
   next();
 });
 
