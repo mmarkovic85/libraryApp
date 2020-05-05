@@ -35,6 +35,34 @@ router.post("/users/login", async (req, res) => {
   };
 });
 
+// Logout user from current device
+router.post("/users/logout", auth, async (req, res) => {
+  try {
+    // Invalidate current auth JWT
+    req.user.tokens = req.user.tokens.filter(token => token.token !== req.token);
+    await req.user.save();
+
+    // Send response
+    res.status(200).send();
+  } catch (e) {
+    res.status(500).send();
+  };
+});
+
+// Logout user from all devices
+router.post("/users/logoutall", auth, async (req, res) => {
+  try {
+    // Invalidate all auth JWT
+    req.user.tokens = [];
+    await req.user.save();
+
+    // Send response
+    res.status(200).send();
+  } catch (e) {
+    res.status(500).send();
+  };
+});
+
 // Get user's profile
 router.get("/users/me", auth, async (req, res) => res.send({ user: req.user }));
 
