@@ -81,8 +81,23 @@ router.get("/users/:id", async (req, res) => {
   };
 });
 
-// Update
-router.put("/users", async (req, res) => { });
+// Update user account
+router.put("/users/me", auth, async (req, res) => {
+  // Check if updates are valid
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["email", "username", "password", "isProfilePrivate"];
+  const isValidUpd = updates.every(update => allowedUpdates.includes(update));
+
+  try {
+    if (!isValidUpd) throw new Error("Invalid updates!");
+
+    updates.forEach(updateKey => req.user[updateKey] = req.body[updateKey]);
+    await req.user.save();
+    res.send(req.user);
+  } catch (e) {
+    res.status(400).send({ error: e.message });
+  };
+});
 
 // Delete user account
 router.delete("/users/delete", auth, async (req, res) => {
