@@ -4,6 +4,7 @@ const request = require("supertest");
 
 const app = require("../../../src/server/app");
 const User = require("../../../src/server/models/user");
+const Book = require("../../../src/server/models/book");
 const {
   userOne,
   userTwo,
@@ -129,9 +130,27 @@ test("Should get user's private profile to him/her", async () => {
   });
 });
 
-test("Should delete account for user", async () => { });
+test("Should delete account for user", async () => {
+  const { _id, tokens: [{ token }] } = userOne;
 
-test("Should not delete account for unauthenticated user", async () => { });
+  await request(app)
+    .delete("/api/users/delete")
+    .set("Authorization", `Bearer ${token}`)
+    .send()
+    .expect(200);
+
+  const user = await User.findById(_id);
+  expect(user).toBeNull();
+  const books = await Book.find({ owner: _id });
+  expect(books.length).toBe(0);
+});
+
+test("Should not delete account for unauthenticated user", async () => {
+  await request(app)
+    .delete("/api/users/delete")
+    .send()
+    .expect(401);
+});
 
 test("Should update valid user fields", async () => { });
 
