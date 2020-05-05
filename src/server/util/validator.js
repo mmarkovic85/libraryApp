@@ -15,11 +15,14 @@ const isbnValidator = isbnString =>
 
 const emailValidator = email => isEmail(email);
 
+const isValidUserUpd = () => { };
+
 module.exports = {
   isASCIINumber,
   isStringOfNumbers,
   isValidLength,
   yearValidator,
   isbnValidator,
-  emailValidator
+  emailValidator,
+  isValidUserUpd
 };
