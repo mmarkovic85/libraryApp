@@ -15,7 +15,10 @@ const isbnValidator = isbnString =>
 
 const emailValidator = email => isEmail(email);
 
-const isValidUserUpd = () => { };
+const isValidUserUpd = (updates) => {
+  const allowedUpdates = ["email", "username", "password", "isProfilePrivate"];
+  return updates.every(update => allowedUpdates.includes(update));
+};
 
 module.exports = {
   isASCIINumber,

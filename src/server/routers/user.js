@@ -2,6 +2,7 @@ const express = require("express");
 
 const auth = require("../middleware/user-auth");
 const User = require("../models/user");
+const { isValidUserUpd } = require("../util/validator");
 
 const router = new express.Router();
 
@@ -28,7 +29,7 @@ router.post("/users/login", async (req, res) => {
     const user = await User.findByCredentials(email, password);
     const token = await user.createJWT();
     // Send response
-    res.status(200).send({ user, token });
+    res.send({ user, token });
   } catch (e) {
     // In case of error, send error message
     res.status(400).send({ error: e.message });
@@ -43,7 +44,7 @@ router.post("/users/logout", auth, async (req, res) => {
     await req.user.save();
 
     // Send response
-    res.status(200).send();
+    res.send();
   } catch (e) {
     res.status(500).send();
   };
@@ -57,7 +58,7 @@ router.post("/users/logoutall", auth, async (req, res) => {
     await req.user.save();
 
     // Send response
-    res.status(200).send();
+    res.send();
   } catch (e) {
     res.status(500).send();
   };
@@ -74,7 +75,7 @@ router.get("/users/:id", async (req, res) => {
     // Chsck if profile is private
     if (user.isProfilePrivate) throw new Error();
     // Send response
-    res.status(200).send({ user });
+    res.send({ user });
   } catch (e) {
     // In case of error, send error message
     res.status(404).send({ error: e.message });;
@@ -83,16 +84,14 @@ router.get("/users/:id", async (req, res) => {
 
 // Update user account
 router.put("/users/me", auth, async (req, res) => {
-  // Check if updates are valid
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ["email", "username", "password", "isProfilePrivate"];
-  const isValidUpd = updates.every(update => allowedUpdates.includes(update));
-
   try {
-    if (!isValidUpd) throw new Error("Invalid updates!");
-
+    const updates = Object.keys(req.body);
+    // Check if updates are valid
+    if (!isValidUserUpd(updates)) throw new Error("Invalid updates!");
+    // Update and save user
     updates.forEach(updateKey => req.user[updateKey] = req.body[updateKey]);
     await req.user.save();
+    // Send response
     res.send(req.user);
   } catch (e) {
     res.status(400).send({ error: e.message });
@@ -105,7 +104,7 @@ router.delete("/users/delete", auth, async (req, res) => {
     // Delete user
     await req.user.remove();
     // Send response
-    res.status(200).send();
+    res.send();
   } catch (e) {
     res.status(500).send();
   };
