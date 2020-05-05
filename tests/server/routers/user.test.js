@@ -4,7 +4,12 @@ const request = require("supertest");
 
 const app = require("../../../src/server/app");
 const User = require("../../../src/server/models/user");
-const { userOne, userThree, setupDatabase } = require("../../fixtures/db");
+const {
+  userOne,
+  userTwo,
+  userThree,
+  setupDatabase
+} = require("../../fixtures/db");
 
 beforeEach(setupDatabase);
 
@@ -61,11 +66,44 @@ test("Should not login nonexistent user", async () => {
     .expect(400);
 });
 
-test("Should get profile for public user", async () => { });
+test("Should get profile for public user", async () => {
+  const { _id: id, email, username, isProfilePrivate = false } = userOne;
 
-test("Should not get profile for private user", async () => { });
+  const response = await request(app)
+    .get(`/api/users/${id}`)
+    .send()
+    .expect(200);
 
-test("Should not get profile for unauthenticated user", async () => { })
+  expect(response.body).toMatchObject({
+    user: { email, username, isProfilePrivate }
+  });
+});
+
+test("Should not get profile for private user", async () => {
+  const { _id: id } = userTwo;
+  await request(app)
+    .get(`/api/users/${id}`)
+    .expect(404);
+});
+
+test("Should get user's private profile to him/her", async () => {
+  const {
+    email,
+    username,
+    isProfilePrivate,
+    tokens: [{ token }]
+  } = userTwo;
+
+  const response = await request(app)
+    .get("/api/users/me")
+    .set("Authorization", `Bearer ${token}`)
+    .send()
+    .expect(200);
+
+  expect(response.body).toMatchObject({
+    user: { email, username, isProfilePrivate }
+  });
+});
 
 test("Should delete account for user", async () => { });
 
