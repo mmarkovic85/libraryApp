@@ -1,0 +1,8 @@
+{
+  "testEnvironment": "node",
+  "setupFiles": [
+    "core-js/stable",
+    "regenerator-runtime/runtime",
+    "dotenv/config"
+  ]
+}

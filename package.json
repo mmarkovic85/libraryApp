@@ -7,7 +7,7 @@
     "dev-server": "nodemon -r dotenv/config ./src/server/server.js",
     "build:dev": "webpack",
     "build:prod": "echo \"Error: production script not specified\"",
-    "test": "jest --runInBand --forceExit --setupFiles dotenv/config"
+    "test": "jest --runInBand --forceExit --config=jest.config.json"
   },
   "repository": {
     "type": "git",
@@ -43,9 +43,6 @@
     "jest": "^25.5.2",
     "nodemon": "^2.0.3",
     "supertest": "^4.0.2"
-  },
-  "jest": {
-    "testEnvironment": "node"
   },
   "nodemonConfig": {
     "events": {

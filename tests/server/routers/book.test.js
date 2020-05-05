@@ -1,5 +1,3 @@
-require("core-js/stable");
-require("regenerator-runtime/runtime");
 const request = require("supertest");
 
 const app = require("../../../src/server/app");
