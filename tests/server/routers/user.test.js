@@ -152,8 +152,32 @@ test("Should not delete account for unauthenticated user", async () => {
     .expect(401);
 });
 
-test("Should update valid user fields", async () => { });
+test("Should update valid user fields", async () => {
+  const { _id: id, tokens: [{ token }] } = userTwo;
 
-test("Should not update invalid users field", async () => { });
+  await request(app)
+    .put("/api/users/me")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ username: "Oktavijan" })
+    .expect(200);
 
-test("Should not update user if unauthenticated", async () => { });
+  const user = await User.findById(id);
+  expect(user.username).toBe("Oktavijan");
+});
+
+test("Should not update invalid users field", async () => {
+  const { tokens: [{ token }] } = userOne;
+
+  await request(app)
+    .put("/api/users/me")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ location: "Sparta" })
+    .expect(400);
+});
+
+test("Should not update user if unauthenticated", async () => {
+  await request(app)
+    .put("/api/users/me")
+    .send()
+    .expect(401);
+});
