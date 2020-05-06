@@ -35,6 +35,29 @@ test("Should get book by id", async () => {
 
 });
 
-test("Should update book", async () => { });
+test("Should update book", async () => {
 
-test("Should delete book", async () => { });
+});
+
+test("Should delete user's book", async () => {
+  const { _id } = bookOne;
+  const { tokens: [{ token }] } = userOne;
+
+  await request(app)
+    .delete(`/api/books/${_id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200);
+
+  const book = await Book.findById(_id);
+  expect(book).toBeNull();
+});
+
+test("Should not delete book of another user", async () => {
+  const { _id } = bookThree;
+  const { tokens: [{ token }] } = userOne;
+
+  await request(app)
+    .delete(`/api/books/${_id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(404);
+});
