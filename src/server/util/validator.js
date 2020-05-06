@@ -20,6 +20,8 @@ const isValidUserUpd = (updates) => {
   return updates.every(update => allowedUpdates.includes(update));
 };
 
+const isValidBookUpd = () => { };
+
 module.exports = {
   isASCIINumber,
   isStringOfNumbers,
@@ -27,5 +29,6 @@ module.exports = {
   yearValidator,
   isbnValidator,
   emailValidator,
-  isValidUserUpd
+  isValidUserUpd,
+  isValidBookUpd
 };

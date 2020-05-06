@@ -5,9 +5,10 @@ const {
   yearValidator,
   isbnValidator,
   emailValidator,
-  isValidUserUpd
+  isValidUserUpd,
+  isValidBookUpd
 } = require("../../../src/server/util/validator");
-const { userData } = require("../../fixtures/db");
+const { userData, bookData } = require("../../fixtures/db");
 
 test("Should check if ASCII character is number", () => {
   expect(isASCIINumber("4")).toBe(true);
@@ -52,4 +53,9 @@ test("Should validate email input", () => {
 test("should validate user update fields", () => {
   expect(isValidUserUpd(Object.keys(userData))).toBe(true);
   expect(isValidUserUpd(["location"])).toBe(false);
+});
+
+test("should validate book update fields", () => {
+  expect(isValidBookUpd(Object.keys(bookData))).toBe(true);
+  expect(isValidBookUpd(["location"])).toBe(false);
 });
