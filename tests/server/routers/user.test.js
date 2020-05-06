@@ -163,7 +163,7 @@ test("Should update valid user fields", async () => {
   expect(user.username).toBe("Oktavijan");
 });
 
-test("Should not update invalid users field", async () => {
+test("Should not update invalid user field", async () => {
   const { tokens: [{ token }] } = userOne;
 
   await request(app)

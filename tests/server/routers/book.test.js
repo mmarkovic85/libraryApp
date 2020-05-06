@@ -35,8 +35,49 @@ test("Should get book by id", async () => {
 
 });
 
-test("Should update book", async () => {
+test("Should update user's book", async () => {
+  const { _id } = bookOne;
+  const { tokens: [{ token }] } = userOne;
 
+  await request(app)
+    .put(`/api/books/${_id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      author: "Aristotel",
+      title: "Nikomahova etika"
+    })
+    .expect(200);
+
+  const book = await Book.findById(_id);
+  expect(book.title).toBe("Nikomahova etika");
+  expect(book.author).toBe("Aristotel");
+});
+
+test("Should not update book of another user", async () => {
+  const { _id } = bookOne;
+  const { tokens: [{ token }] } = userTwo;
+
+  await request(app)
+    .put(`/api/books/${_id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      author: "Aristotel",
+      title: "Nikomahova etika"
+    })
+    .expect(400);
+});
+
+test("Should not update invalid book field", async () => {
+  const { _id } = bookOne;
+  const { tokens: [{ token }] } = userOne;
+
+  await request(app)
+    .put(`/api/books/${_id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      location: "Kinset"
+    })
+    .expect(400);
 });
 
 test("Should delete user's book", async () => {
