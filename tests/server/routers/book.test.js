@@ -6,6 +6,7 @@ const {
   bookOne,
   bookTwo,
   bookThree,
+  bookData,
   userOne,
   userTwo,
   setupDatabase
@@ -24,7 +25,7 @@ test("Should create new book", async () => {
 
   const book = await Book.findById(response.body._id);
   expect(book).not.toBeNull();
-  expect(book.owner).toBe(_id);
+  expect(book.owner).toEqual(_id);
 });
 
 test("Should get all user's books", async () => {
