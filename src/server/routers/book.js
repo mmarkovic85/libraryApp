@@ -20,9 +20,23 @@ router.post("/books", auth, async (req, res) => {
 });
 // Read
 router.get("/books", async (req, res) => { });
-// Update
-router.put("/books", async (req, res) => { });
-// Delete
-router.delete("/books/:id", async (req, res) => { });
+
+// Update user's book
+router.put("/books/:id", async (req, res) => { });
+
+// Delete user's book
+router.delete("/books/:id", auth, async (req, res) => {
+  try {
+    const book = await Book.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user._id
+    });
+    book ?
+      res.send(book) :
+      res.status(404).send();
+  } catch (e) {
+    res.status(500).send();
+  };
+});
 
 module.exports = router;
