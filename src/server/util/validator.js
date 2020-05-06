@@ -20,7 +20,20 @@ const isValidUserUpd = (updates) => {
   return updates.every(update => allowedUpdates.includes(update));
 };
 
-const isValidBookUpd = () => { };
+const isValidBookUpd = (updates) => {
+  const allowedUpdates = [
+    "author",
+    "title",
+    "year",
+    "genre",
+    "publisher",
+    "language",
+    "isbn",
+    "notes",
+    "isBookRead"
+  ];
+  return updates.every(update => allowedUpdates.includes(update));
+};
 
 module.exports = {
   isASCIINumber,
