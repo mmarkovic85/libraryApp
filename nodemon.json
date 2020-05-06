@@ -1,0 +1,10 @@
+{
+  "events": {
+    "start": "npm run build:dev"
+  },
+  "ignore": [
+    "public/dist/*",
+    "*.test.js",
+    "tests/fixtures/*"
+  ]
+}
