@@ -6,18 +6,18 @@ const Book = require("../../../src/server/models/book");
 const {
   userOne,
   userTwo,
-  userThree,
+  userData,
   setupDatabase
 } = require("../../fixtures/db");
 
 beforeEach(setupDatabase);
 
 test("Should signup a new user", async () => {
-  const { email, username, password, isProfilePrivate } = userThree;
+  const { email, username, password, isProfilePrivate } = userData;
 
   const response = await request(app)
     .post("/api/users")
-    .send(userThree)
+    .send(userData)
     .expect(201)
 
   const user = await User.findById(response.body.user._id);
@@ -90,10 +90,10 @@ test("Should logout user from all devices", async () => {
 });
 
 test("Should get profile for public user", async () => {
-  const { _id: id, email, username, isProfilePrivate = false } = userOne;
+  const { _id, email, username, isProfilePrivate = false } = userOne;
 
   const response = await request(app)
-    .get(`/api/users/${id}`)
+    .get(`/api/users/${_id}`)
     .send()
     .expect(200);
 
@@ -103,9 +103,9 @@ test("Should get profile for public user", async () => {
 });
 
 test("Should not get profile for private user", async () => {
-  const { _id: id } = userTwo;
+  const { _id } = userTwo;
   await request(app)
-    .get(`/api/users/${id}`)
+    .get(`/api/users/${_id}`)
     .expect(404);
 });
 
@@ -151,7 +151,7 @@ test("Should not delete account for unauthenticated user", async () => {
 });
 
 test("Should update valid user fields", async () => {
-  const { _id: id, tokens: [{ token }] } = userTwo;
+  const { _id, tokens: [{ token }] } = userTwo;
 
   await request(app)
     .put("/api/users/me")
@@ -159,7 +159,7 @@ test("Should update valid user fields", async () => {
     .send({ username: "Oktavijan" })
     .expect(200);
 
-  const user = await User.findById(id);
+  const user = await User.findById(_id);
   expect(user.username).toBe("Oktavijan");
 });
 

@@ -31,7 +31,7 @@ const userTwo = {
   }]
 };
 
-const userThree = {
+const userData = {
   email: "cleo@pyramid.edu",
   username: "Kleopatra",
   password: "otrovnice",
@@ -39,6 +39,7 @@ const userThree = {
 }
 
 const bookOne = {
+  _id: new mongoose.Types.ObjectId(),
   author: "Rodžer Zelazni",
   title: "Gospodar svetlosti",
   yaer: "2013",
@@ -51,6 +52,7 @@ const bookOne = {
 };
 
 const bookTwo = {
+  _id: new mongoose.Types.ObjectId(),
   author: "Svetislav Basara",
   title: "Fama o biciklistima",
   yaer: "2013",
@@ -61,6 +63,7 @@ const bookTwo = {
 };
 
 const bookThree = {
+  _id: new mongoose.Types.ObjectId(),
   author: "Borislav Pekić",
   title: "Sentimentalna povest Britanskog carstva",
   yaer: "2006",
@@ -69,6 +72,11 @@ const bookThree = {
   isBookRead: true,
   owner: userTwo._id
 };
+
+const bookData = {
+  author: "Horhe Luis Borhes",
+  title: "Maštarije",
+}
 
 const setupDatabase = async () => {
   await User.deleteMany();
@@ -83,9 +91,10 @@ const setupDatabase = async () => {
 module.exports = {
   userOne,
   userTwo,
-  userThree,
+  userData,
   bookOne,
   bookTwo,
   bookThree,
+  bookData,
   setupDatabase
 };

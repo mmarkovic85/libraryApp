@@ -7,7 +7,7 @@ const {
   emailValidator,
   isValidUserUpd
 } = require("../../../src/server/util/validator");
-const { userThree } = require("../../fixtures/db");
+const { userData } = require("../../fixtures/db");
 
 test("Should check if ASCII character is number", () => {
   expect(isASCIINumber("4")).toBe(true);
@@ -50,6 +50,6 @@ test("Should validate email input", () => {
 });
 
 test("should validate user update fields", () => {
-  expect(isValidUserUpd(Object.keys(userThree))).toBe(true);
+  expect(isValidUserUpd(Object.keys(userData))).toBe(true);
   expect(isValidUserUpd(["location"])).toBe(false);
 });
