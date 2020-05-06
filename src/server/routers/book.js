@@ -22,8 +22,15 @@ router.post("/books", auth, async (req, res) => {
   };
 });
 
-// Read
-router.get("/books", async (req, res) => { });
+// Get all books from users who have public profile
+router.get("/boks/public/:id", async (req, res) => {
+
+});
+
+// Get all books for user
+router.get("/books/private/", auth, async (req, res) => {
+
+});
 
 // Update user's book
 router.put("/books/:id", auth, async (req, res) => {

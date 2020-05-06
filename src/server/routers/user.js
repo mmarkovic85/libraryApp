@@ -78,7 +78,7 @@ router.get("/users/:id", async (req, res) => {
     res.send({ user });
   } catch (e) {
     // In case of error, send error message
-    res.status(404).send({ error: e.message });;
+    res.status(400).send({ error: e.message });;
   };
 });
 

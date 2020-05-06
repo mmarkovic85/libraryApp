@@ -106,7 +106,7 @@ test("Should not get profile for private user", async () => {
   const { _id } = userTwo;
   await request(app)
     .get(`/api/users/${_id}`)
-    .expect(404);
+    .expect(400);
 });
 
 test("Should get user's private profile to him/her", async () => {

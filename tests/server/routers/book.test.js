@@ -28,11 +28,37 @@ test("Should create new book", async () => {
   expect(book.owner).toEqual(_id);
 });
 
-test("Should get all user's books", async () => {
-});
+test(
+  "Should get all user's books if user profile is public",
+  async () => {
+    const { _id } = userOne;
+    const response = await request(app)
+      .get(`/api/books/public/${_id}`)
+      .expect(200);
 
-test("Should get book by id", async () => {
+    expect(response.body.length).toBe(2);
+  }
+);
 
+test(
+  "Should not get all user's books if user profile is private",
+  async () => {
+    const { _id } = userTwo;
+    await request(app)
+      .get(`/api/books/public/${_id}`)
+      .expect(400);
+  }
+);
+
+test("Should get all books for user", async () => {
+  const { tokens: [{ token }] } = userTwo;
+
+  const response = await request(app)
+    .get(`/api/books/private/`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(200);
+
+  expect(response.body.length).toBe(1);
 });
 
 test("Should update user's book", async () => {
