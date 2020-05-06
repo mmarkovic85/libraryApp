@@ -2,6 +2,7 @@ const express = require("express");
 
 const auth = require("../middleware/user-auth");
 const Book = require("../models/book");
+const User = require("../models/user");
 const { isValidBookUpd } = require("../util/validator");
 
 const router = new express.Router();
@@ -23,13 +24,31 @@ router.post("/books", auth, async (req, res) => {
 });
 
 // Get all books from users who have public profile
-router.get("/boks/public/:id", async (req, res) => {
-
+router.get("/books/public/:id", async (req, res) => {
+  try {
+    // Find user
+    const user = await User.findById(req.params.id);
+    // Checkout if profile is private
+    if (user.isProfilePrivate) throw new Error();
+    // Find user's books
+    await user.populate("books").execPopulate();
+    // Send response
+    res.send(user.books);
+  } catch (e) {
+    res.status(400).send();
+  };
 });
 
 // Get all books for user
 router.get("/books/private/", auth, async (req, res) => {
-
+  try {
+    // Find user's books
+    await req.user.populate("books").execPopulate();
+    // Send response
+    res.send(req.user.books);
+  } catch (e) {
+    res.status(400).send();
+  };
 });
 
 // Update user's book
