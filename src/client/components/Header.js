@@ -2,9 +2,10 @@ import React from "react";
 
 const Header = () => (
   <div>
-    <a href="/">
-      <h1>Nineveh</h1>
-    </a>
+    <h1>
+      <a href="/">Nineveh</a>
+    </h1>
+
     <div>
       <a href="/login">Login</a>
       <span> / </span>
