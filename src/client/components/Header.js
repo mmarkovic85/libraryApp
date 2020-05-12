@@ -1,7 +1,7 @@
 import React from "react";
 
 const Header = () => (
-  <div>
+  <header className="header">
     <h1>
       <a href="/">Nineveh</a>
     </h1>
@@ -11,7 +11,7 @@ const Header = () => (
       <span> / </span>
       <a href="/registration">Sign up</a>
     </div>
-  </div>
+  </header>
 );
 
 export default Header;
