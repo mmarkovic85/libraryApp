@@ -9,6 +9,7 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import UserDashboardPage from "../components/UserDashboardPage";
 import Error404Page from "../components/Error404Page";
+import Header from "../components/Header";
 import HomePage from "../components/HomePage";
 import LoginPage from "../components/LoginPage";
 import RegistrationPage from "../components/RegistrationPage";
@@ -16,6 +17,7 @@ import RegistrationPage from "../components/RegistrationPage";
 const AppRouter = () => (
   <Router>
     <div>
+      <Header />
       <Switch>
         <Route path="/" component={HomePage} exact={true} />
         <PublicRoute path="/login" component={LoginPage} />
