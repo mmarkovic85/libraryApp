@@ -7,7 +7,7 @@ import {
 
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
-import BookDashboardPage from "../components/BookDashboardPage";
+import UserDashboardPage from "../components/UserDashboardPage";
 import Error404Page from "../components/Error404Page";
 import LoginPage from "../components/LoginPage";
 import RegistrationPage from "../components/RegistrationPage";
@@ -18,7 +18,7 @@ const AppRouter = () => (
       <Switch>
         <PublicRoute path="/" component={LoginPage} exact={true} />
         <PublicRoute path="/registration" component={RegistrationPage} />
-        <PrivateRoute path="/dashboard" component={BookDashboardPage} />
+        <PrivateRoute path="/dashboard" component={UserDashboardPage} />
         <Route component={Error404Page} />
       </Switch>
     </div>
