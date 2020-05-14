@@ -1,27 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 
+import AppContext from "../context/AppContext"
+import LoginForm from "./LoginForm";
+
 const LoginPage = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(
-      e.target.username.value,
-      e.target.password.value
-    );
+  const { setAuthToken, setUser } = useContext(AppContext);
+
+  const handleLogin = ({ user, token }) => {
+    setUser(user);
+    setAuthToken(token);
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <fieldset>
-          <legend>Login:</legend>
-          <input type="text" name="username" placeholder="e-mail address" />
-          <br />
-          <input type="password" name="password" placeholder="password" />
-          <br />
-          <button type="submit">Sign in</button>
-        </fieldset>
-      </form>
+      <LoginForm handleLogin={handleLogin} />
       <Link to="/registration">
         <button>Sign up</button>
       </Link>
