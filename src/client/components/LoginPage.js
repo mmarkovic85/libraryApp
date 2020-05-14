@@ -15,7 +15,7 @@ const LoginPage = () => {
       <form onSubmit={handleSubmit}>
         <fieldset>
           <legend>Login:</legend>
-          <input type="text" name="username" placeholder="username or e-mail" />
+          <input type="text" name="username" placeholder="e-mail address" />
           <br />
           <input type="password" name="password" placeholder="password" />
           <br />

@@ -1,30 +1,20 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 
+import AppContext from "../context/AppContext"
+import RegistrationForm from "./RegistrationForm";
+
 const RegistrationPage = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(
-      e.target.username.value,
-      e.target.email.value,
-      e.target.password.value
-    );
+  const { setAuthToken, setUser } = useContext(AppContext);
+
+  const handleRegistration = ({ user, token }) => {
+    setUser(user);
+    setAuthToken(token);
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <fieldset>
-          <legend>Create account:</legend>
-          <input type="text" name="username" placeholder="username" />
-          <br />
-          <input type="email" name="email" placeholder="e-mail" />
-          <br />
-          <input type="password" name="password" placeholder="password" />
-          <br />
-          <button type="submit">Sign up</button>
-        </fieldset>
-      </form>
+      <RegistrationForm handleRegistration={handleRegistration} />
       <Link to="/login">
         <button>Sign in</button>
       </Link>
