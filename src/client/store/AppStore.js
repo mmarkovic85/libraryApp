@@ -6,13 +6,16 @@ import AppRouter from "../routers/AppRouter";
 const AppStore = () => {
   const [authToken, setAuthToken] = useState("");
   const [user, setUser] = useState({});
+  const [books, setBooks] = useState([]);
 
   return (
     <AppContextProvider value={{
       authToken,
       setAuthToken,
       user,
-      setUser
+      setUser,
+      books,
+      setBooks
     }}>
       <AppRouter />
     </AppContextProvider>
